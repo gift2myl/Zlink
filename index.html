@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="解约交接后，按您的情况了解门锁换新、旧锁维保与机械锁安装。">
+  <title>灵之智能｜解约业主门锁售后</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#choose">跳到方案选择</a>
+  <header class="header">
+    <nav class="wrap nav" aria-label="主要导航">
+      <a class="brand" href="#home" aria-label="灵之智能首页"><img src="assets/official-logo.png" alt="Z-LINK 灵之智能官方标志" width="208" height="27"></a>
+      <span class="nav-title">解约业主门锁售后</span>
+      <a class="nav-cta" href="#choose">找适合的方案 <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+  <main id="home">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="blue-line" aria-hidden="true"></span> 收回房子，也接好门锁的下一程</p>
+        <h1 id="hero-title">门锁怎么处理，<br><span>选一下就清楚。</span></h1>
+        <p class="hero-lead">纯自用、不想依赖自如 App 或额外网关？<br>优先了解鹿客 S6 Max，也可按需选择维保或机械锁。</p>
+        <a class="button primary" href="#choose">选择我的情况 <span aria-hidden="true">↘</span></a>
+        <p class="hero-small">换新升级 <span>／</span> 旧锁维保 <span>／</span> 机械锁安装</p>
+      </div>
+      <figure class="hero-figure s6-hero">
+        <span class="image-label">纯自用优先推荐</span>
+        <img src="assets/s6max.png" alt="鹿客 S6 Max 产品资料中的真实门锁图" width="480" height="680" fetchpriority="high">
+        <figcaption><strong>鹿客 S6 Max</strong><span>家用智能门锁</span></figcaption>
+      </figure>
+    </section>
+    <div class="key-bar wrap">
+      <svg aria-hidden="true" viewBox="0 0 32 32" fill="none"><circle cx="11" cy="12" r="6" stroke="currentColor" stroke-width="2"/><path d="m15.5 16.5 11 11M21 22l4-4M24 25l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <p><strong>新换装全系列，随附一把机械钥匙。</strong><span>安装交付时，请现场核对并妥善保管。</span></p>
+    </div>
+
+    <section class="choose section wrap" id="choose" aria-labelledby="choose-title">
+      <div class="section-heading"><div><p class="eyebrow blue">先选情况，再看方案</p><h2 id="choose-title">您现在更需要哪一种？</h2></div><p class="section-aside">选择后，推荐会直接显示。<br>随时可以更换选择。</p></div>
+      <ol class="progress" aria-label="使用步骤"><li><b>1</b> 选择业主情况</li><li><b>2</b> 立即得到推荐</li><li><b>3</b> 一键查看说明</li></ol>
+      <div class="chooser-layout">
+        <div class="situations" role="group" aria-label="选择您的门锁情况">
+          <button class="situation" data-scene="self" aria-pressed="false" aria-controls="recommendation"><span class="scene-number">01</span><span class="scene-text"><strong>纯自用，不想依赖自如 App</strong><small>不想另配网关，优先看家用门锁。</small></span><span class="scene-check" aria-hidden="true">↗</span></button>
+          <button class="situation" data-scene="new" aria-pressed="false" aria-controls="recommendation"><span class="scene-number">02</span><span class="scene-text"><strong>想换新，再比较一下</strong><small>按家人的使用习惯，核对适配型号。</small></span><span class="scene-check" aria-hidden="true">↗</span></button>
+          <button class="situation" data-scene="care" aria-pressed="false" aria-controls="recommendation"><span class="scene-number">03</span><span class="scene-text"><strong>旧锁继续用，想有人管</strong><small>咨询维保，或先检查已有故障。</small></span><span class="scene-check" aria-hidden="true">↗</span></button>
+          <button class="situation" data-scene="mech" aria-pressed="false" aria-controls="recommendation"><span class="scene-number">04</span><span class="scene-text"><strong>想改成普通机械锁</strong><small>卧室或入户门，先确认改装条件。</small></span><span class="scene-check" aria-hidden="true">↗</span></button>
+        </div>
+        <article class="recommendation" id="recommendation" aria-labelledby="result-title">
+          <div class="recommendation-top"><span class="result-label" id="result-label">您的推荐方案</span><span class="result-mark" aria-hidden="true">↗</span></div>
+          <h3 id="result-title" tabindex="-1">选好情况，<br>这里就有答案。</h3>
+          <p id="result-description">选择最符合您需要的一项，即可查看推荐和下一步。</p>
+          <ul class="result-features" id="result-features" aria-label="产品主要功能" hidden></ul>
+          <div class="result-next"><span id="next-label">交接时，先核对</span><p id="result-next">原锁型号、钥匙是否齐全，以及原有账号与使用权限。</p></div>
+          <button class="button primary result-button" id="explain-button" disabled>请先选择您的情况 <span aria-hidden="true">→</span></button>
+          <p class="result-footnote">具体型号、费用与服务安排，核实后再确认。</p>
+        </article>
+      </div>
+      <p class="sr-only" role="status" aria-live="polite" id="selection-status"></p>
+    </section>
+
+    <section class="service-section" id="services" aria-labelledby="services-title">
+      <div class="wrap section">
+        <div class="section-heading"><div><p class="eyebrow blue">三种服务，按需选择</p><h2 id="services-title">不用每把锁都换新。</h2></div><p class="section-aside">先看门锁状态，再看使用习惯。<br>入户门与卧室门可以分别安排。</p></div>
+        <div class="service-grid">
+          <article class="service-card"><span class="service-index">01 <span>换新</span></span><h3>自己住，优先看家用门锁。</h3><p>不想依赖自如 App 或额外网关，优先了解鹿客 S6 Max；日常开门与远程功能分别按需配置。</p><div class="service-tag">全系列随附一把机械钥匙</div><button class="text-button" data-explain="self">了解 S6 Max <span aria-hidden="true">↗</span></button></article>
+          <article class="service-card"><span class="service-index">02 <span>维保</span></span><h3>旧锁好用，就继续用。</h3><p>先确认型号、质保及故障情况，再核实可提供的维保服务。</p><div class="service-tag">先评估，再决定</div><button class="text-button" data-explain="care">了解维保 <span aria-hidden="true">↗</span></button></article>
+          <article class="service-card"><span class="service-index">03 <span>机械锁</span></span><h3>习惯用钥匙，也有方案。</h3><p>不再需要智能开门的房间，可评估拆旧与机械锁安装。</p><div class="service-tag">入户门、卧室门分别适配</div><button class="text-button" data-explain="mech">了解机械锁 <span aria-hidden="true">↗</span></button></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap products-section" id="products" aria-labelledby="products-title">
+      <div class="section-heading"><div><p class="eyebrow blue">看实物，认型号</p><h2 id="products-title">认清型号，再安排服务。</h2></div><p class="section-aside">找到现有门锁，核对铭牌型号。</p></div>
+      <div class="product-grid">
+        <figure class="product"><div class="product-image s6"><span class="product-badge">纯自用优先推荐</span><img src="assets/s6max.png" alt="鹿客 S6 Max 真实产品图" loading="lazy" width="480" height="680"></div><figcaption><h3>鹿客 S6 Max</h3><p>三面指脉、结构光 3D 人脸<br>天地双摄、4.7 英寸内屏</p><button class="text-button" data-explain="self">查看自用方案 <span aria-hidden="true">↗</span></button></figcaption></figure>
+        <figure class="product"><div class="product-image v5"><span class="product-badge">换新产品参考</span><img src="assets/v5air.png" alt="鹿客 V5 Air 产品图" loading="lazy" width="408" height="888"></div><figcaption><h3>鹿客 V5 Air</h3><p>换新前，核对门体与安装适配。</p></figcaption></figure>
+        <figure class="product"><div class="product-image"><span class="product-badge neutral">旧款识别</span><img src="assets/lingzhi_b0109.png" alt="灵之 ZH-B0109 旧款门锁识别图" loading="lazy" width="1140" height="1140"></div><figcaption><h3>灵之 ZH-B0109</h3><p>核对现有门锁，实际型号以铭牌为准。</p></figcaption></figure>
+        <figure class="product"><div class="product-image"><span class="product-badge neutral">旧款识别</span><img src="assets/lingzhi_b0209.png" alt="灵之 ZH-B0209 旧款门锁识别图" loading="lazy" width="1140" height="1140"></div><figcaption><h3>灵之 ZH-B0209</h3><p>核对现有门锁，实际型号以铭牌为准。</p></figcaption></figure>
+      </div>
+    </section>
+
+    <section class="faq-section wrap section" aria-labelledby="faq-title">
+      <div class="faq-heading"><p class="eyebrow blue">把关心的事说清楚</p><h2 id="faq-title">您可能还想了解</h2></div>
+      <div class="faq-list">
+        <details><summary>S6 Max 要用自如 App 或网关吗？<span aria-hidden="true">＋</span></summary><p>日常开门无需使用自如 App，也不需要额外网关，可使用指脉、人脸、密码或机械钥匙。如需远程视频对讲、远程开门等功能，需配置鹿客管家 App 和网络。</p></details>
+        <details><summary>解约后，一定要换锁吗？<span aria-hidden="true">＋</span></summary><p>不一定。先核实原锁状态、钥匙、账号权限和质保情况；能继续使用的门锁，可以先了解维保。</p></details>
+        <details><summary>换新会带机械钥匙吗？<span aria-hidden="true">＋</span></summary><p>会。新换装全系列随附一把机械钥匙。请在安装交付时现场核对，并按对应型号的说明妥善使用和保管。</p></details>
+        <details><summary>维修、换锁多少钱，什么时候能安排？<span aria-hidden="true">＋</span></summary><p>需先确认城市、门锁及门体情况，再确认服务范围、费用、质保与安排时间。</p></details>
+        <details><summary>卧室门能改装普通机械锁吗？<span aria-hidden="true">＋</span></summary><p>可以先评估。是否适合改装，要看门厚、锁体、孔位及门的开向；入户门与卧室门需要分别确认。</p></details>
+      </div>
+    </section>
+    <section class="closing wrap"><div><p class="eyebrow blue">先把情况选清楚</p><h2>门锁的下一步，由您决定。</h2></div><a href="#choose" class="button primary">回到方案选择 <span aria-hidden="true">↑</span></a></section>
+  </main>
+  <footer class="footer wrap"><div><img src="assets/official-logo.png" alt="Z-LINK 灵之智能" width="176" height="23"><p>解约业主门锁售后</p></div><div class="footer-right"><p>方案、费用及服务安排，以核实后确认为准。</p></div></footer>
+
+  <dialog id="explain-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-top"><span class="eyebrow blue" id="dialog-category">方案说明</span><button class="close-button" id="dialog-close" aria-label="关闭方案说明">×</button></div>
+    <h2 id="dialog-title"></h2><p class="dialog-lead" id="dialog-summary"></p>
+    <div class="dialog-block"><h3>适合您的原因</h3><p id="dialog-reason"></p></div>
+    <div class="dialog-block" id="dialog-features-block" hidden><h3>这款门锁有什么</h3><ul id="dialog-features"></ul></div>
+    <div class="dialog-block"><h3>下一步怎么做</h3><ol id="dialog-steps"></ol></div>
+    <div class="dialog-note" id="dialog-note"></div>
+    <button class="button primary full" id="dialog-done">明白了，返回方案</button>
+  </dialog>
+  <noscript><div class="noscript">当前浏览器未启用网页脚本。您仍可查看三种服务和常见问题；启用后可使用即时推荐。</div></noscript>
+</body>
+</html>

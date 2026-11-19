@@ -1,0 +1,438 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_kind": "user_provided_ops_snapshot",
+  "label": "用户提供运维快照",
+  "is_demo_data": false,
+  "is_live_data": false,
+  "sampled_at": null,
+  "sampling_date_status": "unknown",
+  "sampling_date_note": "三张原截图均未显示采样日期；不得由最后在线时间、约3.4年或文件日期反推采样日期。",
+  "sources": [
+    {
+      "source_id": "discussion",
+      "original_file_name": "image.png",
+      "source_folder": "灵之智能",
+      "title": "议题：交付业务达成同步",
+      "kind": "business_discussion_screenshot",
+      "sampled_at": null,
+      "contains_partial_text": true
+    },
+    {
+      "source_id": "devices",
+      "original_file_name": "image(1).png",
+      "source_folder": "灵之智能",
+      "title": "③ 单设备 TOP10 差（离线时长最长，NULL=从未上报在线）",
+      "kind": "operations_report_screenshot",
+      "sampled_at": null,
+      "declared_top_n": 10,
+      "visible_row_count": 8,
+      "not_visible_ranks": [
+        9,
+        10
+      ],
+      "last_visible_row_partially_cropped": true
+    },
+    {
+      "source_id": "models",
+      "original_file_name": "image(2).png",
+      "source_folder": "灵之智能",
+      "title": "② 型号 TOP10 差（按在线率升序，仅统计 ≥50 台的型号）",
+      "kind": "operations_report_screenshot",
+      "sampled_at": null,
+      "declared_top_n": 10,
+      "visible_row_count": 7,
+      "not_visible_ranks": [
+        8,
+        9,
+        10
+      ],
+      "last_visible_row_partially_cropped": false
+    }
+  ],
+  "report_definitions": {
+    "model_report": {
+      "source_id": "models",
+      "sort_by": "online_rate_percent",
+      "sort_order": "ascending",
+      "min_device_count": 50,
+      "count_unit": "台",
+      "online_rate_unit": "percent",
+      "online_rate_rounding": "截图保留一位小数",
+      "online_status_definition": null,
+      "observation_window": null,
+      "geographic_scope": null,
+      "business_scope": null,
+      "denominator_scope": "每个型号的设备数；仅收录截图中可见的 7 个型号。",
+      "limitation": "截图标题为 TOP10，但仅可见排名 1—7；该列表不是全部设备资产，不可据此计算全量在线率或全国设备总数。"
+    },
+    "device_report": {
+      "source_id": "devices",
+      "sort_by": "offline_duration",
+      "sort_order": "descending",
+      "null_last_online_meaning": "从未上报在线",
+      "observation_window": null,
+      "last_online_timezone": null,
+      "geographic_scope": null,
+      "business_scope": null,
+      "offline_duration_recalculated": false,
+      "limitation": "截图仅可见排名 1—8，且第 8 行位于裁切边缘但各字段可读；保留原报告的约数，未按当前日期重算离线时长。NULL 不自动解释为持续离线，应核对上报能力、资产状态和数据链路。"
+    }
+  },
+  "model_online_rankings": [
+    {
+      "rank": 1,
+      "model_name": "智控网关 MAXIII",
+      "device_count": 102,
+      "online_count": 67,
+      "online_rate_percent": 65.7,
+      "online_rate_display": "65.7%",
+      "offline_count": 35,
+      "source_note": "网关类不该这么差，重点排查",
+      "source_id": "models",
+      "source_row": 1
+    },
+    {
+      "rank": 2,
+      "model_name": "威士丹利_燃气传感器",
+      "device_count": 1201,
+      "online_count": 978,
+      "online_rate_percent": 81.4,
+      "online_rate_display": "81.4%",
+      "offline_count": 223,
+      "source_note": null,
+      "source_id": "models",
+      "source_row": 2
+    },
+    {
+      "rank": 3,
+      "model_name": "美的空调 KFR-50GW/MY101-1",
+      "device_count": 94,
+      "online_count": 77,
+      "online_rate_percent": 81.9,
+      "online_rate_display": "81.9%",
+      "offline_count": 17,
+      "source_note": null,
+      "source_id": "models",
+      "source_row": 3
+    },
+    {
+      "rank": 4,
+      "model_name": "威士丹利_烟雾传感器",
+      "device_count": 989,
+      "online_count": 811,
+      "online_rate_percent": 82,
+      "online_rate_display": "82.0%",
+      "offline_count": 178,
+      "source_note": null,
+      "source_id": "models",
+      "source_row": 4
+    },
+    {
+      "rank": 5,
+      "model_name": "摇光外门指纹锁",
+      "device_count": 179,
+      "online_count": 148,
+      "online_rate_percent": 82.7,
+      "online_rate_display": "82.7%",
+      "offline_count": 31,
+      "source_note": null,
+      "source_id": "models",
+      "source_row": 5
+    },
+    {
+      "rank": 6,
+      "model_name": "云丁外门指纹锁 D5F(link控制版)",
+      "device_count": 305,
+      "online_count": 261,
+      "online_rate_percent": 85.6,
+      "online_rate_display": "85.6%",
+      "offline_count": 44,
+      "source_note": null,
+      "source_id": "models",
+      "source_row": 6
+    },
+    {
+      "rank": 7,
+      "model_name": "美的·空调挂机·1匹·KFR-26GW/PH2",
+      "device_count": 978,
+      "online_count": 851,
+      "online_rate_percent": 87,
+      "online_rate_display": "87.0%",
+      "offline_count": 127,
+      "source_note": null,
+      "source_id": "models",
+      "source_row": 7
+    }
+  ],
+  "offline_device_rankings": [
+    {
+      "rank": 1,
+      "device_alias": "快照设备001",
+      "device_id": null,
+      "model_name": "摇光外门锁",
+      "city": "上海",
+      "property_alias": "快照房源001",
+      "property_id": null,
+      "last_online_at": null,
+      "last_online_date": null,
+      "last_online_status": "never_reported_online",
+      "last_online_display": "从未上报",
+      "report_record_month": "2021-02",
+      "offline_duration_seconds": null,
+      "offline_duration_approx_years": null,
+      "offline_duration_display": "上报记录停留在 2021-02",
+      "source_id": "devices",
+      "source_row": 1,
+      "row_partially_cropped": false
+    },
+    {
+      "rank": 2,
+      "device_alias": "快照设备002",
+      "device_id": null,
+      "model_name": "自如智能全屋智控网关(ZH-A0101)",
+      "city": "上海",
+      "property_alias": "快照房源001",
+      "property_id": null,
+      "last_online_at": null,
+      "last_online_date": null,
+      "last_online_status": "never_reported_online",
+      "last_online_display": "从未上报",
+      "report_record_month": "2021-02",
+      "offline_duration_seconds": null,
+      "offline_duration_approx_years": null,
+      "offline_duration_display": "上报记录停留在 2021-02",
+      "source_id": "devices",
+      "source_row": 2,
+      "row_partially_cropped": false
+    },
+    {
+      "rank": 3,
+      "device_alias": "快照设备003",
+      "device_id": null,
+      "model_name": "火河内门锁（老锁）",
+      "city": "深圳",
+      "property_alias": "快照房源002",
+      "property_id": null,
+      "last_online_at": null,
+      "last_online_date": null,
+      "last_online_status": "never_reported_online",
+      "last_online_display": "从未上报",
+      "report_record_month": "2023-05",
+      "offline_duration_seconds": null,
+      "offline_duration_approx_years": null,
+      "offline_duration_display": "上报记录停留在 2023-05",
+      "source_id": "devices",
+      "source_row": 3,
+      "row_partially_cropped": false
+    },
+    {
+      "rank": 4,
+      "device_alias": "快照设备004",
+      "device_id": null,
+      "model_name": "火河内门锁（老锁）",
+      "city": "深圳",
+      "property_alias": "快照房源003",
+      "property_id": null,
+      "last_online_at": null,
+      "last_online_date": null,
+      "last_online_status": "never_reported_online",
+      "last_online_display": "从未上报",
+      "report_record_month": "2023-05",
+      "offline_duration_seconds": null,
+      "offline_duration_approx_years": null,
+      "offline_duration_display": "上报记录停留在 2023-05",
+      "source_id": "devices",
+      "source_row": 4,
+      "row_partially_cropped": false
+    },
+    {
+      "rank": 5,
+      "device_alias": "快照设备005",
+      "device_id": null,
+      "model_name": "火河内门锁（老锁）",
+      "city": "上海",
+      "property_alias": "快照房源004",
+      "property_id": null,
+      "last_online_at": null,
+      "last_online_date": "2023-06-07",
+      "last_online_status": "date_reported",
+      "last_online_display": "2023-06-07",
+      "report_record_month": null,
+      "offline_duration_seconds": null,
+      "offline_duration_approx_years": 3.4,
+      "offline_duration_display": "~3.4 年",
+      "source_id": "devices",
+      "source_row": 5,
+      "row_partially_cropped": false
+    },
+    {
+      "rank": 6,
+      "device_alias": "快照设备006",
+      "device_id": null,
+      "model_name": "火河内门锁（老锁）",
+      "city": "上海",
+      "property_alias": "快照房源004",
+      "property_id": null,
+      "last_online_at": null,
+      "last_online_date": "2023-06-07",
+      "last_online_status": "date_reported",
+      "last_online_display": "2023-06-07",
+      "report_record_month": null,
+      "offline_duration_seconds": null,
+      "offline_duration_approx_years": 3.4,
+      "offline_duration_display": "~3.4 年",
+      "source_id": "devices",
+      "source_row": 6,
+      "row_partially_cropped": false
+    },
+    {
+      "rank": 7,
+      "device_alias": "快照设备007",
+      "device_id": null,
+      "model_name": "火河内门锁（老锁）",
+      "city": "上海",
+      "property_alias": "快照房源004",
+      "property_id": null,
+      "last_online_at": null,
+      "last_online_date": "2023-06-07",
+      "last_online_status": "date_reported",
+      "last_online_display": "2023-06-07",
+      "report_record_month": null,
+      "offline_duration_seconds": null,
+      "offline_duration_approx_years": 3.4,
+      "offline_duration_display": "~3.4 年",
+      "source_id": "devices",
+      "source_row": 7,
+      "row_partially_cropped": false
+    },
+    {
+      "rank": 8,
+      "device_alias": "快照设备008",
+      "device_id": null,
+      "model_name": "火河内门锁（老锁）",
+      "city": "北京",
+      "property_alias": "快照房源005",
+      "property_id": null,
+      "last_online_at": null,
+      "last_online_date": "2023-06-12",
+      "last_online_status": "date_reported",
+      "last_online_display": "2023-06-12",
+      "report_record_month": null,
+      "offline_duration_seconds": null,
+      "offline_duration_approx_years": 3.4,
+      "offline_duration_display": "~3.4 年",
+      "source_id": "devices",
+      "source_row": 8,
+      "row_partially_cropped": true
+    }
+  ],
+  "discussion_notes": {
+    "source_id": "discussion",
+    "title": "交付业务达成同步",
+    "data_date": null,
+    "notes": [
+      {
+        "item": 1,
+        "source_text_complete": true,
+        "source_text": "目标：形成「发现问题→解决问题→跟进」的快速闭环组织能力",
+        "summary": "以发现、解决、跟进构建快速闭环。"
+      },
+      {
+        "item": 2,
+        "source_text_complete": false,
+        "source_text": null,
+        "visible_text_fragments": [
+          "自下而上建闭环：先定每套房的基础数据采集与颗粒度，再用 agent/skill 抓取→分析→自动派",
+          "发到岗位→反作用于具体房源。"
+        ],
+        "unreadable_or_cropped_text": null,
+        "summary": "先确定每套房的基础数据采集和粒度，再由 agent/skill 支持抓取、分析与岗位跟进；最终作用到具体房源。",
+        "note": "原图右侧裁切，未补写缺失文字。"
+      },
+      {
+        "item": 3,
+        "source_text_complete": true,
+        "source_text": "闭环思维销售侧同理：不能只统计上周达成，要能看销售漏斗、最大单、预测下周签约额，并按人分工落到具体单。",
+        "summary": "销售侧同样应从结果统计转向漏斗、预测和具体单的责任跟进。"
+      },
+      {
+        "item": 4,
+        "source_text_complete": true,
+        "source_text": "ai化高效构建，工作方式重构；借黑客马拉松机会，参与进去；",
+        "summary": "用 AI 支持高效构建与工作方式重构，并通过黑客马拉松实践。"
+      },
+      {
+        "item": 5,
+        "source_text_complete": true,
+        "source_text": "部分指标标尺需要换，比如套均报修已经0.00几了 - 应直接列出报修单量与超期工单",
+        "summary": "当套均报修等平均指标不便于行动时，直接展示报修单量与超期工单。",
+        "example_repairs_per_home": null,
+        "example_value_is_qualitative": true
+      }
+    ]
+  },
+  "workflow_recommendations": {
+    "classification": "根据三张原图形成的设计建议，不属于已发生的业务事实",
+    "target": "房源级异常闭环",
+    "steps": [
+      {
+        "order": 1,
+        "label": "发现异常",
+        "description": "保留型号榜、设备榜和原始快照日期；异常清单区分从未上报在线、已知长期离线与数据待核验。"
+      },
+      {
+        "order": 2,
+        "label": "定位房源",
+        "description": "按房源聚合同户多设备问题，并保留设备与网关关系；同户重复告警先合并为待核实事件。"
+      },
+      {
+        "order": 3,
+        "label": "核验与诊断",
+        "description": "核对在管状态、在线口径、数据上报链路和网关状态；MAXIII 102 台中 35 台离线可作为排查入口，但不能仅凭截图认定原因。"
+      },
+      {
+        "order": 4,
+        "label": "生成任务",
+        "description": "每个房源事件形成处理任务或派单草稿，明确处理岗位、截止时间、证据要求及升级条件。"
+      },
+      {
+        "order": 5,
+        "label": "复验与回写",
+        "description": "处理后核验设备、网络及场景恢复，记录复验证据；通过后关闭问题并回写规则或知识条目。"
+      }
+    ],
+    "suggested_action_metrics": [
+      "待核验异常数",
+      "新增报修单量",
+      "待处理工单数",
+      "超期工单数",
+      "待复验工单数",
+      "同一房源重复告警数"
+    ],
+    "suggestion_only": true,
+    "automated_dispatch_performed": false
+  },
+  "display_contract": {
+    "required_badge": "用户提供运维快照 · 采样日期未知",
+    "keep_separate_from_demo_data": true,
+    "may_label_as_realtime": false,
+    "may_use_as_global_totals": false,
+    "recommended_sections": [
+      "型号在线率快照",
+      "单设备异常快照",
+      "业务闭环设计依据"
+    ],
+    "missing_value_display": "—",
+    "unknown_date_display": "采样日期未知",
+    "identity_display": "仅显示一致匿名代号；不同表的型号名称未经核验，不自动合并。",
+    "count_precision": "设备数、在线数、离线数均逐项抄录截图；未补足未显示的 TOP10 行。"
+  },
+  "privacy": {
+    "people_information_included": false,
+    "chat_avatars_included": false,
+    "source_watermarks_transcribed": false,
+    "original_device_ids_included": false,
+    "original_property_ids_included": false,
+    "alias_policy": "同一截图中相同房源使用相同匿名代号；设备 ID 和房源 ID 原值未写入本文件。"
+  }
+}

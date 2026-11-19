@@ -1,59 +1,64 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="收回房子，选把合适的新锁。先看自如高端指纹密码锁 ZH-B0100，再看自如3D人脸智能门锁与鹿客 S6MAX。选好型号，核对门体，再确认换装。">
-  <title>业主换锁｜自如高端指纹密码锁 · 自如3D人脸智能门锁 · S6MAX</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="style.css">
-  <script src="selection.js" defer></script>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>灵之智能 · 远程运维中心</title>
+  <meta name="description" content="灵之数字员工远程运维演示：北京房源分布、参考图三维重建、设备核验和工单闭环。">
+  <link rel="icon" href="./ops/assets/logo-color.png"><link rel="stylesheet" href="./ops/style.css">
+  <script type="importmap">{"imports":{"three":"./ops/assets/vendor/three.module.js","three/addons/controls/OrbitControls.js":"./ops/assets/vendor/OrbitControls.js"}}</script>
 </head>
 <body>
-  <a class="skip" href="#products">直接看门锁</a>
-  <header class="header">
-    <nav class="wrap nav" aria-label="主要导航">
-      <a class="brand" href="#home" aria-label="灵之智能首页"><img src="assets/official-logo.png" alt="Z-LINK 灵之智能官方标志" width="208" height="27"></a>
-      <div class="service-nav" aria-label="两大服务"><a href="index.html" aria-label="自如智能门锁无忧换新" aria-current="page"><span class="service-full">自如智能门锁无忧换新</span><span class="service-short">智能门锁换新</span></a><a href="mechanical-locks.html" aria-label="品质门锁拆装服务" ><span class="service-full">品质门锁拆装服务</span><span class="service-short">品质门锁拆装</span></a></div>
-      <a class="nav-link" href="#steps">服务流程 <span aria-hidden="true">↗</span></a>
-    </nav>
+  <header class="topbar">
+    <a class="brand" href="#overview" aria-label="灵之运维首页"><img src="./ops/assets/logo-white.png" alt="Z-LINK 自如灵之"></a>
+    <span class="app-title">数字员工远程运维中心</span>
+    <div class="top-spacer"></div>
+    <span class="environment"><i></i>交互演示环境</span>
+    <button class="quiet-btn" id="source-btn" data-icon="database">数据来源</button>
+    <time id="clock"></time>
+    <button class="avatar" aria-label="查看管理责任" id="owner-btn">灵</button>
   </header>
-  <main id="home">
-    <section class="storefront wrap" aria-labelledby="hero-title">
-      <div class="intro">
-        <p class="eyebrow"><span aria-hidden="true"></span> 自如解约后，房子有了新打算</p>
-        <h1 id="hero-title">老锁换新，<em>开门更省心。</em></h1>
-        <p class="lead">自住少输密码，家人进出更方便；再出租、准备出售，让交接有个新开始。</p><p class="upgrade-offer">自如业主专享 <strong>¥768起</strong><span>含物料·上门·拆装</span></p>
+  <aside class="nav-rail" aria-label="主导航">
+    <button class="nav-item active" data-page="overview"><span data-icon="dashboard"></span><span>总览</span></button>
+    <button class="nav-item" data-page="properties"><span data-icon="building"></span><span>房源</span></button>
+    <button class="nav-item" data-page="devices"><span data-icon="devices"></span><span>设备</span></button>
+    <button class="nav-item" data-page="agents"><span data-icon="agent"></span><span>员工</span></button>
+    <button class="nav-item" data-page="tickets"><span data-icon="ticket"></span><span>工单</span><b id="nav-ticket-count">0</b></button>
+    <div class="nav-bottom"><button class="nav-item" id="nav-data"><span data-icon="layers"></span><span>来源</span></button><span class="version">DEMO 1.0</span></div>
+  </aside>
+  <main id="app">
+    <section class="page-heading"><div><div class="eyebrow">Z-LINK OPERATIONS</div><h1 id="page-title">全域运维</h1><p id="page-description">从一套房、一个设备出发，让每个异常都有处理结果。</p></div><div class="heading-actions"><span class="city-chip" data-icon="pin">北京</span><button class="button" id="show-apartment-btn" data-icon="cube">三维房源样板</button><button class="button primary" id="tour-btn" data-icon="play">演示异常闭环</button></div></section>
+    <section id="overview-page" class="page active">
+      <div class="metrics">
+        <article class="metric"><div class="metric-name">灵之在租房源<span data-icon="building"></span></div><strong>500<span>+</span></strong><div class="metric-foot"><span class="tag blue">地图快照</span><span>2026.11.19 · 北京</span></div></article>
+        <article class="metric"><div class="metric-name">覆盖区域<span data-icon="map"></span></div><strong>10<span> 个</span></strong><div class="metric-foot"><span>已采样 <b id="sample-count">10</b> 条房源信息</span></div></article>
+        <article class="metric"><div class="metric-name">待处理事件<span data-icon="alert"></span></div><strong class="amber" id="open-events">4</strong><div class="metric-foot"><span class="tag amber">演示遥测</span><span id="events-sub">1 项优先处理</span></div></article>
+        <article class="metric"><div class="metric-name">数字员工<span data-icon="agent"></span></div><strong>4<span> 位</span></strong><div class="metric-foot"><span class="agent-dot"></span><span>监控 · 诊断 · 调度 · 蒸馏</span></div></article>
       </div>
-      <div class="products" id="products" aria-label="三款门锁，按推荐顺序排列">
-        <article class="product featured" id="b0100" aria-labelledby="b0100-title">
-          <div class="card-top"><button type="button" class="badge product-select" aria-pressed="true">性价比首选</button><span class="card-number" aria-hidden="true">01</span></div>
-          <a class="product-visual b0100-visual" href="product-zh-b0100.html" aria-label="查看该款门锁商品详情"><span class="install-badge">免费基础安装</span><img class="b0100-photo" src="assets/lingzhi_b0100.png" alt="自如高端指纹密码锁 ZH-B0100，用户提供的内外面板产品图" width="800" height="800" fetchpriority="high"></a>
-          <div class="product-copy"><p class="need">十年百万自如家庭验证，安全质量保障</p><h2 id="b0100-title"><a href="product-zh-b0100.html">自如高端指纹密码锁</a></h2><p class="description">老锁换新，一步补全“钥匙 + 指纹”</p><div class="price-block"><span class="price-label">自如业主专享价</span><strong class="price-amount">¥768</strong></div><a class="button primary product-detail-link" href="product-zh-b0100.html">了解这把锁 <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="product" id="v5air" aria-labelledby="v5air-title">
-          <div class="card-top"><button type="button" class="badge secondary product-select" aria-pressed="false">豪宅同款</button><span class="card-number" aria-hidden="true">02</span></div>
-          <a class="product-visual" href="product-v5air.html" aria-label="查看该款门锁商品详情"><span class="install-badge">免费基础安装</span><img class="v5-photo" src="assets/v5air.jpg" alt="自如3D人脸智能门锁猫眼大屏可视门锁（V5Air），用户提供的门侧及内外面板产品图" width="4800" height="4800" fetchpriority="high"></a>
-          <div class="product-copy"><p class="need">想选鹿客，看看这一款</p><h2 id="v5air-title"><a href="product-v5air.html">自如3D人脸智能门锁猫眼大屏可视门锁</a></h2><p class="description">自如豪宅品质，守护全时安全 ｜16mm 至薄机身，本地化全链路接入</p><p class="category">外门智能锁 · 鹿客品牌</p><div class="price-block"><span class="price-label">自如业主专享价</span><strong class="price-amount">¥1,930</strong></div><a class="button outline product-detail-link" href="product-v5air.html">了解这把锁 <span aria-hidden="true">↗</span></a></div>
-        </article>
-        <article class="product" id="s6max" aria-labelledby="s6max-title">
-          <div class="card-top"><button type="button" class="badge secondary product-select" aria-pressed="false">自住之选</button><span class="card-number" aria-hidden="true">03</span></div>
-          <a class="product-visual" href="product-s6max.html" aria-label="查看该款门锁商品详情"><span class="install-badge">免费基础安装</span><img class="s6-photo" src="assets/s6max.png" alt="鹿客 S6MAX，用户提供的内外面板产品图" width="800" height="832"></a>
-          <div class="product-copy"><p class="need">自己住，想要更多开门方式</p><h2 id="s6max-title"><a href="product-s6max.html">鹿客 <span>S6MAX</span></a></h2><p class="description">想用指脉、人脸开门，日常使用不依赖自如 App 或额外网关。</p><p class="category">外门智能锁 · 指脉与人脸</p><div class="price-block"><span class="price-label">自如业主专享价</span><strong class="price-amount">¥1,730</strong></div><a class="button outline product-detail-link" href="product-s6max.html">了解这把锁 <span aria-hidden="true">↗</span></a></div>
-        </article>
+      <div class="command-grid">
+        <section class="panel map-panel">
+          <div class="panel-heading"><div><h2 id="scene-title">北京灵之房源分布</h2><p id="scene-subtitle">区域聚合视图 · 点击区域查看房源</p></div><div class="segmented" id="scene-tabs"><button class="selected" data-scene="city">城市</button><button data-scene="apartment">房源</button></div></div>
+          <div class="scene-toolbar"><div class="scene-breadcrumb" id="scene-breadcrumb"><span>北京</span><span class="crumb-divider">/</span><strong>全部区域</strong></div><div class="scene-tools"><button id="top-view-btn" class="icon-btn" title="切换俯视视角" aria-label="切换俯视视角" data-icon="layers"></button><button id="rotate-btn" class="icon-btn" title="自动旋转" aria-label="自动旋转" data-icon="rotate"></button><button id="reset-camera" class="icon-btn" title="重置视角" aria-label="重置视角" data-icon="reset"></button><button id="fullscreen-btn" class="icon-btn" title="全屏三维场景" aria-label="全屏三维场景" data-icon="expand"></button></div></div>
+          <div id="scene-container"><div id="scene-loading"><span class="loader"></span><span>构建三维场景</span></div><div id="scene-labels"></div><div class="scene-detail" id="scene-detail" hidden></div><div class="scene-orientation"><span>北 N</span><svg viewBox="0 0 36 36"><path d="M18 2 28 30 18 24 8 30Z"/></svg></div></div>
+          <div class="scene-bottom"><div id="scene-legend"><span><i class="legend-dot blue"></i>灵之可租房源</span><span><i class="legend-dot amber"></i>演示事件</span></div><span id="scene-footnote">行政区聚合，非楼栋精确定位</span></div>
+          <div class="apartment-actions" id="apartment-actions" hidden><button class="button" id="reference-btn" data-icon="image">参考图对照</button><button class="button" id="cutaway-btn" data-icon="layers">切换墙体</button><span>拖动旋转 · 滚轮缩放 · 点击设备</span></div>
+        </section>
+        <aside class="panel event-panel"><div class="panel-heading"><div><h2>异常待办 <span class="number-badge" id="event-count">4</span></h2><p>按影响与优先级跟进</p></div><span class="tag amber">演示</span></div><div class="event-filters"><button class="selected" data-event-filter="all">全部</button><button data-event-filter="P1">P1 优先</button><button data-event-filter="P2">P2 关注</button></div><div id="event-list"></div><div class="event-panel-bottom"><span data-icon="shield"></span>操作只作用于本 Demo</div></aside>
       </div>
-      <p class="key-note"><span aria-hidden="true">✓</span> 价格含物料、上门费、拆装费；新换装均随附一把机械钥匙。</p>
+      <div class="lower-grid">
+        <section class="panel model-panel"><div class="panel-heading"><div><h2>重点设备型号</h2><p>用户运维快照 · 采样日期未知</p></div><button class="text-btn" data-go="devices">查看全部</button></div><div class="model-table" id="model-summary"></div></section>
+        <section class="panel activity-panel"><div class="panel-heading"><div><h2>数字员工工作动态</h2><p>每一步保留对象、证据和处理结果</p></div><span class="tag blue">演示记录</span></div><div id="activity-feed"></div></section>
+      </div>
     </section>
-    <div class="wrap alternative-service"><div><strong>更想用机械钥匙？</strong><span>室内门与防盗门整锁，含物料、上门和拆装。</span></div><a href="mechanical-locks.html">看看品质门锁拆装服务 <span aria-hidden="true">↗</span></a></div>
-    <section class="service-process" id="steps" aria-labelledby="steps-title"><div class="wrap"><div class="flow-heading"><p class="eyebrow">服务流程</p><h2 id="steps-title">从选锁到验收，七步完成。</h2><p>选好产品，确认安装条件，再按流程安排上门与验收。</p></div><ol class="service-flow-list"><li><span class="flow-index">01</span><h3>选好门锁产品</h3><p>选择智能门锁换新，或品质机械门锁拆装方案。</p></li><li><span class="flow-index">02</span><h3>VIP专群对接</h3><p>对接产品款式与服务需求，明确后续安排。</p></li><li><span class="flow-index">03</span><h3>确认门锁安装条件</h3><p>核对门体、开孔和开向；智能门锁同时确认配网与账号使用条件。</p></li><li><span class="flow-index">04</span><h3>小程序扫码支付定金</h3><p>通过对接人员提供的小程序二维码，确认订单后支付定金。</p></li><li><span class="flow-index">05</span><h3>安排工程师上门</h3><p>完成旧锁拆除与新锁安装；智能门锁完成配网，机械门锁完成安装调试。</p></li><li><span class="flow-index">06</span><h3>现场验收确认</h3><p>智能锁验收开门、联网及 App 账号管理；机械锁验收开关门和钥匙使用。</p></li><li><span class="flow-index">07</span><h3>服务完成支付尾款</h3><p>现场验收确认、服务完成后，按小程序订单支付尾款。</p></li></ol><p class="flow-note">定金与尾款金额、上门及服务安排，以 VIP 专群对接和小程序订单确认为准。</p></div></section>
-    <section class="wrap questions" aria-labelledby="questions-title"><h2 id="questions-title">您最关心问题</h2><div class="faq-list">
-      <details><summary>收回房子后，旧锁还能用吗？<span aria-hidden="true">＋</span></summary><p><strong>如果准备收回自住或给家人用，建议优先考虑换新升级。</strong>旧锁是否还能继续使用，需要结合门锁状态和交接后的使用条件判断。</p><p>自如配备的大部分门锁质保为<strong>2年</strong>，具体以原订单约定为准。房源出租期间长期反复使用，可能出现部件磨损、电机老化，电池及供电状态也需要检查。</p><p><strong>换新，既升级体验，也减少对旧设备老化的顾虑。</strong>可以按需要选择指纹、人脸等更便捷的开门方式，并更换已经使用多年的设备，让后续自住和家人使用更省心。实际稳定性仍与产品、安装和使用维护有关。</p><p>趁这次交接，把开门体验一起升级。<a class="inline-link" href="#products">自如业主专享 ¥768 起，含物料、上门费、拆装费，看看适合您的换新门锁 →</a></p></details>
-      <details><summary>这三款都需要自如 App 或网关吗？<span aria-hidden="true">＋</span></summary><p>S6MAX 日常开门无需自如 App 或额外网关；远程视频对讲、远程开门需配置鹿客管家 App 和网络。ZH-B0100、V5Air 的 App、联网及管理条件，请在选购时按实际供货版本确认。</p></details>
-      <details><summary>多少钱？多久能上门？<span aria-hidden="true">＋</span></summary><p>自如业主专享价：自如高端指纹密码锁 ¥768、自如3D人脸智能门锁（V5Air）¥1,930、鹿客 S6MAX ¥1,730，均含物料、上门费、拆装费。请提供安装地区和门体照片，确认基础安装范围、门体适配及可安排时间。</p></details>
-      <details><summary>暂时不换智能锁，有其他处理方式吗？<span aria-hidden="true">＋</span></summary><p>可选择旧锁检查与维保，或机械锁安装。先说明现有门锁和使用需求，由服务人员核对处理方式。</p></details>
-    </div></section>
+    <section id="properties-page" class="page"><div class="panel asset-panel"><div class="asset-toolbar"><label class="search-field"><span data-icon="search"></span><input id="property-search" placeholder="搜索小区、房源或地铁站" aria-label="搜索房源"></label><select id="district-select" aria-label="筛选区域"><option value="">全部区域</option></select><button class="button" id="import-btn" data-icon="upload">导入房源 CSV</button><button class="button" id="export-sample-btn" data-icon="download">下载导入模板</button></div><div class="dataset-banner"><span class="tag blue">真实房源样本</span><span id="property-scope">自如地图筛选快照，10 条列表样本；尚非全量房源清单。</span></div><p class="small-note" style="padding:0 22px">CSV 导入仅更新本地房源台账；地图布点需核验坐标系，三维重建需补齐户型、照片和尺寸。</p><div id="property-list"></div><input type="file" id="import-file" accept=".csv,text/csv" hidden></div></section>
+    <section id="devices-page" class="page"><div class="dataset-banner"><span class="tag blue">用户提供运维快照</span><span>采样日期未知，范围为截图可见行；不同城市的历史记录不与北京在租房源直接关联。</span></div><section class="panel"><div class="panel-heading"><div><h2>型号在线率</h2><p>仅统计 ≥50 台的型号 · 按在线率升序 · 截图可见 7 行</p></div><span class="tag">非实时数据</span></div><div id="model-full-table" class="table-wrap"></div></section><section class="panel spaced"><div class="panel-heading"><div><h2>长期离线与未上报设备</h2><p>保留原报告描述；“从未上报在线”先核对资产与上报链路</p></div></div><div id="offline-table" class="table-wrap"></div></section></section>
+    <section id="agents-page" class="page"><div class="agent-grid" id="agent-grid"></div><section class="panel spaced"><div class="panel-heading"><div><h2>专家经验蒸馏</h2><p>将一次处理的证据、判断规则和反例形成可复用技能草案</p></div><span class="tag blue">示范流程</span></div><div class="knowledge-flow"><div><b>01</b><strong>收集证据</strong><p>房源、设备、日志与执行回执</p></div><div><b>02</b><strong>提炼规则</strong><p>判断顺序、适用范围与例外</p></div><div><b>03</b><strong>专家核验</strong><p>确认结论，记录未知事项</p></div><div><b>04</b><strong>独立测试</strong><p>用新案例评估效果并维护版本</p></div></div><div class="knowledge-example"><span data-icon="book"></span><div><strong>同一房源多设备离线</strong><p>先核查共同网关、供电和上报链路，再判断单设备问题。当前为演示技能草案，待专家和独立案例验证。</p></div><button class="button" id="skill-btn">查看技能草案</button></div></section></section>
+    <section id="tickets-page" class="page"><div class="dataset-banner"><span class="tag amber">本地演示工单</span><span>由诊断流程生成，保存在当前浏览器；未向任何真实系统派单。</span></div><section class="panel"><div class="panel-heading"><div><h2>事件工单</h2><p>从异常到复验，每一步都可以追溯</p></div><button class="button" id="reset-demo-btn" data-icon="reset">重置演示</button></div><div id="ticket-list"></div></section></section>
+    <footer class="app-footer"><span>Z-LINK 自如灵之</span><span>房源：公开页面快照 · 运维：用户提供快照 · 遥测与动作：交互演示</span><button class="text-btn" id="footer-source">查看数据口径</button></footer>
   </main>
-  <footer class="footer"><div class="wrap footer-inner"><p>Z-LINK 灵之智能 · 业主换锁服务</p><p>所示价格含物料、上门费、拆装费；款式及门体适配，服务前确认。</p></div></footer>
+  <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
+  <aside id="event-drawer" class="drawer" aria-modal="true" role="dialog" aria-labelledby="drawer-title" hidden><div class="drawer-top"><div><div class="eyebrow">EVENT WORKSPACE</div><h2 id="drawer-title">事件工作台</h2></div><button class="icon-btn close-drawer" aria-label="关闭事件工作台" data-icon="close"></button></div><div id="drawer-body"></div></aside>
+  <dialog id="modal"><div class="modal-top"><h2 id="modal-title"></h2><button class="icon-btn" id="modal-close" aria-label="关闭弹窗" data-icon="close"></button></div><div id="modal-body"></div></dialog>
+  <div id="toast" role="status"></div>
+  <script type="module" src="./ops/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-19T18:53:42+08:00",
+  "purpose": "灵之运维 Demo 公共地图与地形来源；不代表全量房源重建或实时设备数据",
+  "renderModes": [
+    {
+      "id": "maplibre-three-terrain",
+      "label": "三维地形地图",
+      "renderer": "MapLibre GL JS 6.19.0 + Three.js custom layer",
+      "requires": "WebGL2",
+      "projection": "mercator",
+      "basemap": "osm",
+      "terrain": "aws-terrarium",
+      "threeSharedContext": true,
+      "supportsTerrain": true,
+      "browserRenderVerified": false
+    },
+    {
+      "id": "leaflet-2d",
+      "label": "二维兼容模式",
+      "renderer": "Leaflet 1.9.4",
+      "requires": "DOM/SVG/Canvas",
+      "projection": "EPSG:3857",
+      "basemap": "osm",
+      "terrain": null,
+      "threeSharedContext": false,
+      "supportsTerrain": false,
+      "reason": "WebGL2 不可用或三维地图初始化失败时显示",
+      "browserRenderVerified": true
+    }
+  ],
+  "libraries": {
+    "maplibre": {
+      "version": "6.19.0",
+      "license": "BSD-3-Clause",
+      "module": "assets/vendor/maplibre/maplibre-gl.mjs",
+      "worker": "assets/vendor/maplibre/maplibre-gl-worker.mjs?v=6.19.0",
+      "css": "assets/vendor/maplibre/maplibre-gl.css",
+      "licenseFile": "assets/vendor/maplibre/LICENSE.txt",
+      "manifest": "assets/vendor/maplibre/distribution-manifest.json",
+      "registry": "https://registry.npmjs.org/maplibre-gl/6.19.0",
+      "docs": "https://maplibre.org/maplibre-gl-js/docs/"
+    },
+    "leaflet": {
+      "version": "1.9.4",
+      "license": "BSD-2-Clause",
+      "script": "assets/vendor/leaflet/leaflet.js",
+      "css": "assets/vendor/leaflet/leaflet.css",
+      "images": "assets/vendor/leaflet/images/",
+      "licenseFile": "assets/vendor/leaflet/LICENSE",
+      "manifest": "assets/vendor/leaflet/distribution-manifest.json",
+      "registry": "https://registry.npmjs.org/leaflet/1.9.4",
+      "docs": "https://leafletjs.com/reference-1.9.4.html"
+    }
+  },
+  "basemap": {
+    "id": "osm",
+    "name": "OpenStreetMap Standard",
+    "type": "raster",
+    "tiles": [
+      "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+    ],
+    "tileSize": 256,
+    "scheme": "xyz",
+    "maxzoom": 19,
+    "projection": "EPSG:3857",
+    "attribution": "© <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap contributors</a>",
+    "dataLicense": "ODbL 1.0",
+    "licenseUrl": "https://www.openstreetmap.org/copyright",
+    "usagePolicy": "https://operations.osmfoundation.org/policies/tiles/",
+    "requestPolicy": "仅按用户实际视口正常请求；不预取、不批量下载、不绕过缓存；保留有效 Referer 和可见署名",
+    "serviceLevel": "best effort; no SLA",
+    "tilesDownloadedByDependencyTask": 0
+  },
+  "terrain": {
+    "id": "aws-terrarium",
+    "name": "Mapzen Terrain Tiles on AWS",
+    "type": "raster-dem",
+    "tiles": [
+      "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
+    ],
+    "tileSize": 256,
+    "encoding": "terrarium",
+    "projection": "EPSG:3857",
+    "heightUnit": "metre",
+    "decodeFormula": "R * 256 + G + B / 256 - 32768",
+    "demoMaxZoom": 14,
+    "demoMaxZoomMeaning": "演示用请求上限，非全源可用层级的验证结论",
+    "recommendedExaggeration": 1.2,
+    "attribution": "Terrain: <a href=\"https://registry.opendata.aws/terrain-tiles/\" target=\"_blank\" rel=\"noopener\">Mapzen / AWS</a> · <a href=\"https://github.com/tilezen/joerd/blob/master/docs/attribution.md\" target=\"_blank\" rel=\"noopener\">USGS, NOAA and other contributors</a>",
+    "license": "多来源数据，按各原始数据提供方条款与署名要求使用",
+    "licenseUrl": "https://github.com/tilezen/joerd/blob/master/docs/attribution.md",
+    "registry": "https://registry.opendata.aws/terrain-tiles/",
+    "formatDocs": "https://github.com/tilezen/joerd/blob/master/docs/formats.md",
+    "singleBeijingTileVerification": {
+      "observedAt": "2026-11-19T18:50:07+08:00",
+      "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/843/388.png",
+      "requestedPoint": [
+        116.4,
+        39.9
+      ],
+      "z": 10,
+      "x": 843,
+      "y": 388,
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "corsAllowOrigin": null,
+      "bodyBytes": 25900,
+      "sha256": "69d8bd89f2a0d7e6ef606bc47e635f1c8184481cdb6080cf61379acc993c2bdf",
+      "format": "PNG",
+      "width": 256,
+      "height": 256,
+      "samplePixel": [
+        128,
+        128
+      ],
+      "samplePixelElevationMeters": 28.0,
+      "downloadCount": 2,
+      "storedTile": false,
+      "corsVerification": {
+        "method": "HEAD",
+        "origin": "https://chatgpt.com",
+        "httpStatus": 200,
+        "allowOrigin": null,
+        "allowMethods": null
+      },
+      "corsGetVerification": {
+        "method": "GET",
+        "origin": "https://chatgpt.com",
+        "httpStatus": 200,
+        "allowOrigin": "*",
+        "allowMethods": "GET",
+        "vary": "Origin, Access-Control-Request-Headers, Access-Control-Request-Method",
+        "bodyMatches": true
+      },
+      "headCount": 1,
+      "corsResponseSupportsAnonymousGet": true,
+      "browserRenderVerified": false
+    },
+    "imageryOrBuildingGeometry": false
+  },
+  "coordinates": {
+    "publicMapInput": "WGS84 geographic longitude/latitude",
+    "tileProjection": "Web Mercator EPSG:3857",
+    "maplibreOrder": [
+      "longitude",
+      "latitude"
+    ],
+    "leafletOrder": [
+      "latitude",
+      "longitude"
+    ],
+    "policy": "只落已核验坐标的房源；未核验坐标系的外部点或边界不自动视为 WGS84，不将区域参考点当成房源精确坐标"
+  },
+  "validation": {
+    "packageIntegrityChecked": true,
+    "javascriptSyntaxChecked": true,
+    "oneUniqueTerrainTileChecked": true,
+    "terrainGetCorsHeader": "*",
+    "browserRenderVerifiedByDependencyTask": false,
+    "noZiroomRequests": true,
+    "noBrowserInstalledOrUsed": true,
+    "noOsmBulkDownload": true,
+    "applicationBrowserVerification": {
+      "observedAt": "2026-11-19T19:08:13.652097+08:00",
+      "mode": "leaflet-2d",
+      "osmTilesVisible": true,
+      "propertyMarkersAndList": true,
+      "districtAndBusinessFilters": true,
+      "pendingEventFilter": true,
+      "propertyToApartmentAndBack": true,
+      "propertyToEventDrawer": true,
+      "gpuTerrainVisuallyVerified": false,
+      "reason": "云浏览器没有可用 WebGL2；保留三维实现的审查边界。"
+    }
+  },
+  "integrationDocs": "tools/MAP-DATA.md"
+}

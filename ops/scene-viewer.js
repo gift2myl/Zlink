@@ -4,8 +4,8 @@ import { SVGRenderer } from './assets/vendor/renderers/SVGRenderer.js';
 import { createCityMap } from './city-model.js';
 
 export class SceneViewer {
-  constructor(container, { geojson, districts, onDistrict, onDevice, onReady }) {
-    this.container=container;this.geojson=geojson;this.districts=districts;this.onDistrict=onDistrict;this.onDevice=onDevice;this.onReady=onReady;
+  constructor(container, { geojson, districts, onDistrict, onDevice, onReady, active=true }) {
+    this.container=container;this.geojson=geojson;this.districts=districts;this.onDistrict=onDistrict;this.onDevice=onDevice;this.onReady=onReady;this.active=active;
     this.mode='city';this.topView=false;this.labelLayer=document.getElementById('scene-labels');this.labelEntries=[];this.apartment=null;this.cutaway=true;this.clock=new THREE.Clock();
     this.scene=new THREE.Scene();
     this.software=false;
@@ -13,7 +13,7 @@ export class SceneViewer {
     this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));this.renderer.setClearColor(0x111315,0);this.renderer.outputColorSpace=THREE.SRGBColorSpace;
     this.renderer.toneMapping=THREE.ACESFilmicToneMapping;this.renderer.toneMappingExposure=1.2;
     if(this.renderer.shadowMap){this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;}
-    this.renderer.domElement.setAttribute('aria-label','可旋转和缩放的三维房源场景');this.renderer.domElement.setAttribute('role','img');container.prepend(this.renderer.domElement);
+    this.renderer.domElement.setAttribute('aria-label','可旋转和缩放的三维房源场景');this.renderer.domElement.setAttribute('role','img');this.renderer.domElement.style.display=active?'':'none';container.prepend(this.renderer.domElement);
     this.camera=new THREE.PerspectiveCamera(40,1,.1,2000);
     this.controls=new OrbitControls(this.camera,this.renderer.domElement);this.controls.enableDamping=true;this.controls.dampingFactor=.07;this.controls.maxPolarAngle=Math.PI*.46;this.controls.minPolarAngle=.04;this.controls.enablePan=true;this.controls.autoRotateSpeed=.3;
     this.needsRender=true;this.controls.addEventListener('change',()=>this.needsRender=true);
@@ -31,9 +31,10 @@ export class SceneViewer {
     this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(container);
     this.setLabels(this.city.labels,'city');this.reset();this.resize();
     this.animationId=requestAnimationFrame(()=>this.animate());
-    const loading=document.getElementById('scene-loading');if(loading)loading.hidden=true;
+    const loading=document.getElementById('scene-loading');if(loading&&active)loading.hidden=true;
     this.onReady?.();
   }
+  setActive(active){this.active=!!active;this.renderer.domElement.style.display=this.active?'':'none';this.labelLayer.hidden=!this.active;if(!this.active)this.controls.autoRotate=false;else{this.needsRender=true;this.resize();}}
   async show(mode){
     this.mode=mode;this.controls.autoRotate=false;this.topView=false;
     if(mode==='apartment'&&!this.apartment){
@@ -88,7 +89,7 @@ export class SceneViewer {
   resize(){const r=this.container.getBoundingClientRect();if(r.width<1||r.height<1)return;this.renderer.setSize(r.width,r.height,false);this.camera.aspect=r.width/r.height;this.camera.updateProjectionMatrix();this.needsRender=true;}
   animate(){
     this.animationId=requestAnimationFrame(()=>this.animate());
-    const r=this.container.getBoundingClientRect();if(!r.width||!r.height||document.hidden)return;
+    const r=this.container.getBoundingClientRect();if(!this.active||!r.width||!r.height||document.hidden||r.bottom<0||r.top>innerHeight)return;
     this.controls.update();
     if(!this.software||this.needsRender){this.renderer.render(this.scene,this.camera);if(this.software)this.renderer.domElement.style.backgroundColor='transparent';this.needsRender=false;this.projectLabels(r);}
   }

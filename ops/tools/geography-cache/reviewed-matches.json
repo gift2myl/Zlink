@@ -1,0 +1,85 @@
+{
+  "map-sample-01": {
+    "kind": "community",
+    "osmType": "way",
+    "osmId": "233208147",
+    "confidence": "high",
+    "basis": "OSM住宅用地名「棕榈泉国际公寓」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+    "reviewedAt": "2026-11-19T10:53:50+00:00"
+  },
+  "map-sample-02": {
+    "kind": "community",
+    "osmType": "way",
+    "osmId": "690512170",
+    "confidence": "high",
+    "basis": "OSM住宅用地名「郁花园二里」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+    "reviewedAt": "2026-11-19T10:53:50+00:00"
+  },
+  "map-sample-04": {
+    "kind": "community",
+    "osmType": "way",
+    "osmId": "1029925588",
+    "confidence": "high",
+    "basis": "OSM住宅用地名「东大街6号院」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+    "reviewedAt": "2026-11-19T10:53:50+00:00"
+  },
+  "map-sample-06": {
+    "kind": "community",
+    "osmType": "way",
+    "osmId": "982189437",
+    "confidence": "high",
+    "basis": "OSM住宅用地名「东大街西里」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+    "reviewedAt": "2026-11-19T10:53:50+00:00"
+  },
+  "map-sample-08": {
+    "kind": "community",
+    "osmType": "way",
+    "osmId": "682594081",
+    "confidence": "high",
+    "basis": "OSM住宅用地名「美立方」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+    "reviewedAt": "2026-11-19T10:54:57+00:00"
+  },
+  "map-sample-09": {
+    "kind": "community",
+    "osmType": "way",
+    "osmId": "1016753880",
+    "confidence": "high",
+    "basis": "OSM住宅用地名「日新家园」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+    "reviewedAt": "2026-11-19T10:54:57+00:00"
+  },
+  "map-sample-10": {
+    "kind": "community",
+    "osmType": "way",
+    "osmId": "1303643495",
+    "confidence": "high",
+    "basis": "OSM住宅用地名「东方雅苑」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+    "reviewedAt": "2026-11-19T10:54:57+00:00"
+  },
+  "810151211": {
+    "kind": "station",
+    "osmType": "node",
+    "osmId": "3369356934",
+    "confidence": "medium",
+    "basis": "OSM railway=station 对象名「阜通」与原列表最近地铁站一致，行政区及北京市一致；只确认地铁站位置，未定位房屋或小区。",
+    "communityResultNote": "望京路3号院小区名称检索无结果；没有把阜通站坐标解释为房屋坐标。",
+    "reviewedAt": "2026-11-19T10:55:31+00:00"
+  },
+  "map-sample-03": {
+    "kind": "station",
+    "osmType": "node",
+    "osmId": "6172173584",
+    "confidence": "medium",
+    "basis": "OSM railway=station 对象名「杨庄」与原列表最近地铁站一致，行政区及北京市一致；只确认地铁站位置，未定位房屋或小区。",
+    "communityResultNote": "海特花园西区小区检索仅返回名称为海特花园的公交站，已拒绝该公交站候选；采用原列表杨庄地铁站作参考。",
+    "reviewedAt": "2026-11-19T10:55:31+00:00"
+  },
+  "map-sample-07": {
+    "kind": "station",
+    "osmType": "node",
+    "osmId": "5430533767",
+    "confidence": "medium",
+    "basis": "OSM railway=station 对象名「西二旗」与原列表最近地铁站一致，行政区及北京市一致；只确认地铁站位置，未定位房屋或小区。",
+    "communityResultNote": "辉煌国际小区名称检索无结果；采用原列表西二旗地铁站作参考，不以同名片区对象代替住宅。",
+    "reviewedAt": "2026-11-19T10:55:31+00:00"
+  }
+}

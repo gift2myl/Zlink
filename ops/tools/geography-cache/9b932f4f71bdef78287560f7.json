@@ -1,0 +1,13 @@
+{
+  "query": "辉煌国际, 海淀区, 北京市, 中国",
+  "kind": "community",
+  "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E8%BE%89%E7%85%8C%E5%9B%BD%E9%99%85%2C+%E6%B5%B7%E6%B7%80%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+  "requestedAt": "2026-11-19T10:53:04+00:00",
+  "provider": "OSM Nominatim",
+  "httpStatus": 200,
+  "status": "ok",
+  "results": [],
+  "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "bodyBytes": 2,
+  "retrievedAt": "2026-11-19T10:53:11+00:00"
+}

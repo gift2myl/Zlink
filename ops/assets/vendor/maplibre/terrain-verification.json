@@ -1,0 +1,45 @@
+{
+  "observedAt": "2026-11-19T18:50:07+08:00",
+  "url": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/10/843/388.png",
+  "requestedPoint": [
+    116.4,
+    39.9
+  ],
+  "z": 10,
+  "x": 843,
+  "y": 388,
+  "httpStatus": 200,
+  "contentType": "image/png",
+  "corsAllowOrigin": null,
+  "bodyBytes": 25900,
+  "sha256": "69d8bd89f2a0d7e6ef606bc47e635f1c8184481cdb6080cf61379acc993c2bdf",
+  "format": "PNG",
+  "width": 256,
+  "height": 256,
+  "samplePixel": [
+    128,
+    128
+  ],
+  "samplePixelElevationMeters": 28.0,
+  "downloadCount": 2,
+  "storedTile": false,
+  "corsVerification": {
+    "method": "HEAD",
+    "origin": "https://chatgpt.com",
+    "httpStatus": 200,
+    "allowOrigin": null,
+    "allowMethods": null
+  },
+  "corsGetVerification": {
+    "method": "GET",
+    "origin": "https://chatgpt.com",
+    "httpStatus": 200,
+    "allowOrigin": "*",
+    "allowMethods": "GET",
+    "vary": "Origin, Access-Control-Request-Headers, Access-Control-Request-Method",
+    "bodyMatches": true
+  },
+  "headCount": 1,
+  "corsResponseSupportsAnonymousGet": true,
+  "browserRenderVerified": false
+}

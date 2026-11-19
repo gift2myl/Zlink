@@ -25,13 +25,13 @@ p{color:var(--muted)}
 button,.button,a,input,select{touch-action:manipulation}
 
 /* A quiet, centred brand header remains available above every workspace. */
-.topbar{height:var(--header-height);padding:0 6vw;display:flex;align-items:center;gap:24px;position:fixed;inset:0 0 auto;z-index:60;background:transparent;color:#fff;transition:background .25s,color .25s,box-shadow .25s}
+.topbar{height:var(--header-height);padding:0 6vw;display:flex;align-items:center;gap:24px;position:fixed;inset:0 0 auto;z-index:60;background:rgba(255,255,255,.98);color:#191919;box-shadow:0 1px 0 #00000012}
 .header-left{display:flex;align-items:center;gap:22px;min-width:0}
 .menu-toggle{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 8px 0 0;font-size:16px;white-space:nowrap}
 .menu-toggle svg{width:24px;height:24px}
 .app-title{font-size:15px;font-weight:400;letter-spacing:.02em;white-space:nowrap}
 .brand{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:210px;padding:0;line-height:1}
-.brand img{display:block;width:100%;height:auto;max-height:48px;object-fit:contain;transition:filter .25s}
+.brand img{display:block;width:100%;height:auto;max-height:48px;object-fit:contain;filter:brightness(0)}
 .brand:hover{text-decoration:none}
 .top-spacer{flex:1}
 .header-actions{margin-left:auto;display:flex;align-items:center;gap:22px;min-width:0}
@@ -43,32 +43,11 @@ button,.button,a,input,select{touch-action:manipulation}
 .quiet-btn:hover{opacity:.7}
 #clock{font-size:12px;font-variant-numeric:tabular-nums;letter-spacing:.02em;white-space:nowrap;color:inherit}
 .avatar{width:34px;height:34px;flex:0 0 34px;border:1px solid currentColor;border-radius:50%;background:transparent;color:inherit;font-size:13px}
-body.header-scrolled .topbar,body:not([data-page="overview"]) .topbar,body.menu-open .topbar{background:rgba(255,255,255,.98);color:#191919;box-shadow:0 1px 0 #00000012}
-body.header-scrolled .brand img,body:not([data-page="overview"]) .brand img,body.menu-open .brand img{filter:brightness(0)}
 
-/* Full-bleed architectural image and typography, followed by an open white page. */
-.brand-hero{position:relative;isolation:isolate;display:flex;align-items:center;height:82vh;min-height:620px;max-height:900px;background:#252628 url('./assets/hero-residence.webp') center center/cover no-repeat;color:#fff;overflow:hidden}
-.brand-hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.26) 52%,rgba(0,0,0,.08) 100%),linear-gradient(0deg,rgba(0,0,0,.32),transparent 35%)}
-body:not([data-page="overview"]) .brand-hero{display:none}
-.hero-copy{width:min(var(--content-width),88%);margin:0 auto;padding:72px 0 80px;position:relative;z-index:1}
 .eyebrow{font-size:12px;font-weight:500;letter-spacing:.18em;color:var(--muted);line-height:1.5;margin-bottom:14px}
-.hero-copy .eyebrow{color:#fff;opacity:.9;font-size:12px;letter-spacing:.22em;margin-bottom:25px}
-.hero-copy h1{font-size:clamp(52px,5.6vw,90px);line-height:1.13;font-weight:300;letter-spacing:-.055em;white-space:pre-line;max-width:1100px;text-wrap:balance}
-.hero-description{max-width:580px;margin-top:26px;font-size:18px;line-height:1.8;color:#fff;opacity:.92;font-weight:400}
-.hero-actions{display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin-top:35px}
-.hero-actions .button{min-height:54px;min-width:176px;padding:14px 25px;border-color:#fff;background:transparent;color:#fff;font-size:16px}
-.hero-actions .button.primary,.hero-actions .hero-primary{color:#191919;background:#fff;border-color:#fff}
-.hero-actions .button:hover{background:rgba(255,255,255,.15);color:#fff;border-color:#fff}
-.hero-actions .button.primary:hover,.hero-actions .hero-primary:hover{color:#191919;background:#e9e9e9;border-color:#e9e9e9}
-.hero-bottom{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:min(var(--content-width),88%);display:flex;justify-content:space-between;align-items:center;gap:24px;z-index:2;font-size:12px;letter-spacing:.03em;color:#fff}
-.hero-bottom>span,.hero-bottom .hero-note{max-width:50%;opacity:.85;line-height:1.5}
-.hero-bottom .hero-edition{font-size:11px;letter-spacing:.16em;text-align:right}
-.hero-bottom button,.hero-scroll{display:inline-flex;align-items:center;gap:12px;color:#fff;font-size:13px;min-height:44px;padding:4px 0}
-.hero-bottom button svg{width:20px;height:20px;transition:transform .2s}
-.hero-bottom button:hover svg{transform:translateY(3px)}
 
 .nav-rail{position:sticky;top:var(--header-height);z-index:45;display:flex;align-items:center;gap:34px;min-height:74px;padding:0 max(6vw,calc((100vw - var(--content-width))/2));background:#fff;border-bottom:1px solid var(--border)}
-body:not([data-page="overview"]) .nav-rail{margin-top:var(--header-height)}
+.nav-rail{margin-top:var(--header-height)}
 .nav-item{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:73px;padding:0 2px;white-space:nowrap;color:#666;font-size:16px;transition:color .2s}
 .nav-item svg{width:18px;height:18px}
 .nav-item:hover,.nav-item.active{color:#191919}
@@ -78,7 +57,7 @@ body:not([data-page="overview"]) .nav-rail{margin-top:var(--header-height)}
 .nav-bottom{margin-left:auto;display:flex;align-items:center;gap:26px}
 .nav-bottom .nav-item{font-size:14px}
 .version{font-size:11px;letter-spacing:.1em;white-space:nowrap;color:var(--dim)}
-main#app{width:min(var(--content-width),88%);margin:0 auto;padding:76px 0 28px;min-width:0}
+main#app{width:min(var(--content-width),88%);margin:0 auto;padding:48px 0 28px;min-width:0}
 #app,.map-panel{scroll-margin-top:150px}
 .page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:42px;margin-bottom:58px}
 .page-heading>div:first-child{min-width:0}
@@ -161,8 +140,8 @@ main#app{width:min(var(--content-width),88%);margin:0 auto;padding:76px 0 28px;m
 .scene-bottom{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-shrink:0;min-height:46px;padding:8px 24px;border-top:1px solid #ffffff1f;background:#1c1d1fe6;color:#c8c8c8;font-size:12px;line-height:1.5;z-index:4}
 #scene-legend{display:flex;gap:17px;flex-wrap:wrap}
 #scene-legend>span{display:flex;align-items:center;gap:7px}
-.legend-dot{display:inline-block;width:6px;height:6px;border-radius:50%}
-.legend-dot.blue{background:#e8e8e8}.legend-dot.amber{background:#d5a86a}
+.legend-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#f0f0f0;border:1px solid #bbb}
+.legend-dot.blue{background:#8ea3b1;border-style:dashed;border-radius:1px;transform:rotate(45deg)}.legend-dot.amber{background:#d5a86a;border-color:#d5a86a}
 #scene-footnote{text-align:right}
 .scene-orientation{position:absolute;right:20px;bottom:20px;display:flex;flex-direction:column;align-items:center;gap:5px;color:#d2d2d2;font-size:12px;pointer-events:none}
 .scene-orientation svg{fill:#b9b9b9;stroke:#e6e6e6;width:25px;height:25px}
@@ -368,7 +347,6 @@ body.drawer-open{overflow:hidden}
   .command-grid{grid-template-columns:minmax(0,1fr)370px;gap:32px}
   .map-panel,.event-panel{height:690px}
   .event-item{padding-block:24px}
-  .hero-copy h1{font-size:90px}
 }
 @media(max-width:1280px){
   #clock{display:none}
@@ -444,9 +422,7 @@ body.drawer-open{overflow:hidden}
   .app-footer>span:nth-child(2){max-width:55%}
 }
 @media(max-width:760px){
-  main#app{width:88%;padding-top:56px}
-  .hero-copy h1{font-size:52px}
-  .hero-description{font-size:16px;max-width:450px}
+  main#app{width:88%;padding-top:40px}
   .topbar{gap:14px}
   .topbar .app-title{display:none}
   .brand{width:185px}
@@ -505,18 +481,6 @@ body.drawer-open{overflow:hidden}
   .header-actions{gap:0}
   .topbar .app-title,.topbar #clock,.topbar .environment,.topbar #source-btn{display:none}
   .avatar{width:32px;height:32px;flex-basis:32px;font-size:12px}
-  .brand-hero{height:82svh;min-height:580px;max-height:800px;background-position:60% center}
-  .brand-hero::before{background:linear-gradient(90deg,rgba(0,0,0,.62),rgba(0,0,0,.14)),linear-gradient(0deg,rgba(0,0,0,.38),transparent 45%)}
-  .hero-copy{width:calc(100% - 40px);padding:70px 0 100px}
-  .hero-copy .eyebrow{font-size:11px;letter-spacing:.18em;margin-bottom:24px}
-  .hero-copy h1{font-size:38px;line-height:1.22;font-weight:300;letter-spacing:-.05em;max-width:100%}
-  .hero-description{max-width:360px;font-size:15px;line-height:1.8;margin-top:22px}
-  .hero-actions{gap:10px;margin-top:29px}
-  .hero-actions .button{min-height:48px;min-width:0;padding:11px 17px;font-size:14px}
-  .hero-bottom{width:calc(100% - 40px);bottom:21px;align-items:flex-end;gap:18px}
-  .hero-bottom>span,.hero-bottom .hero-note{font-size:11px;max-width:43%;line-height:1.7}
-  .hero-bottom .hero-edition{display:none}
-  .hero-bottom button,.hero-scroll{font-size:12px;gap:8px;line-height:1.6;text-align:right;max-width:57%}
   .nav-rail{display:none;position:fixed;inset:var(--header-height) 0 auto;z-index:55;flex-direction:column;align-items:stretch;gap:0;min-height:0;max-height:calc(100svh - var(--header-height));padding:15px 24px 25px;margin-top:0!important;border-bottom:1px solid #d8d8d8;background:#fff;overflow:auto;box-shadow:0 18px 30px #00000012}
   body.menu-open .nav-rail{display:flex}
   .nav-item{justify-content:flex-start;gap:13px;min-height:57px;padding:9px 2px;font-size:17px}
@@ -527,8 +491,7 @@ body.drawer-open{overflow:hidden}
   .nav-bottom{display:flex;justify-content:space-between;align-items:center;margin:15px 0 0;padding-top:10px;border-top:1px solid #ddd}
   .nav-bottom .nav-item{font-size:15px;min-height:45px}
   .nav-bottom .version{display:block;font-size:10px}
-  main#app{width:calc(100% - 40px);padding:47px 0 22px}
-  body:not([data-page="overview"]) main#app{padding-top:calc(var(--header-height) + 42px)}
+  main#app{width:calc(100% - 40px);padding:calc(var(--header-height) + 32px) 0 22px}
   .page-heading{margin-bottom:38px}
   .page-heading .eyebrow{font-size:11px;margin-bottom:14px;letter-spacing:.14em}
   .page-heading h1{font-size:36px;line-height:1.25;font-weight:300}
@@ -682,10 +645,7 @@ body.drawer-open{overflow:hidden}
   .menu-toggle{font-size:13px;gap:5px}
   .menu-toggle svg{width:20px;height:20px}
   .avatar{width:29px;height:29px;flex-basis:29px}
-  .hero-copy,.hero-bottom,main#app{width:calc(100% - 32px)}
-  .hero-copy h1{font-size:36px}
-  .hero-description{font-size:14px}
-  .hero-actions .button{font-size:13px;padding-inline:14px}
+  main#app{width:calc(100% - 32px)}
   .heading-actions .button{font-size:13px;padding-inline:9px}
   .metric{padding-inline:12px}
   .metric-name{font-size:12px}
@@ -727,4 +687,110 @@ body.drawer-open{overflow:hidden}
  .pagination-actions .button{min-height:42px;padding:9px 13px;font-size:13px}
  #modal-body .crawl-status-lead{padding:20px 18px}
  #modal-body .crawl-status-lead h3{font-size:26px}
+}
+
+/* Geographic city view and the existing apartment view share one framed viewport. */
+.command-grid>.map-panel,.command-grid>.geo-panel{height:790px}
+.command-grid #scene-container{min-height:500px}
+#geo-city-map{position:absolute;inset:0;z-index:1;isolation:isolate;background:#e8e7e3;color:#242424;overflow:hidden}
+#geo-city-map .maplibregl-canvas-container,#geo-city-map .maplibregl-canvas{width:100%;height:100%}
+#geo-city-map .leaflet-tile,#geo-city-map .leaflet-pane img{max-width:none!important;max-height:none!important}
+#geo-city-map .leaflet-overlay-pane svg{width:auto;height:auto;stroke:none;fill:none;stroke-width:0;vertical-align:initial}
+#geo-city-map .maplibregl-ctrl svg{width:20px;height:20px;stroke:none;fill:currentColor;stroke-width:0}
+#geo-city-map .maplibregl-ctrl-group,#geo-city-map .leaflet-bar{border:1px solid #c7c7c7;border-radius:4px;background:#fff;box-shadow:0 2px 8px #00000015}
+#geo-city-map .maplibregl-ctrl-group button,#geo-city-map .leaflet-bar a{background-color:#fff;color:#222}
+#geo-city-map .maplibregl-ctrl-group button:hover,#geo-city-map .leaflet-bar a:hover{background-color:#ececec}
+#geo-city-map .maplibregl-ctrl-attrib,#geo-city-map .leaflet-control-attribution{background:#fffffff0;color:#444;font-size:11px;line-height:1.55;padding:3px 6px;max-width:min(430px,calc(100vw - 64px))}
+#geo-city-map .maplibregl-ctrl-attrib a,#geo-city-map .leaflet-control-attribution a{color:#333;text-decoration:underline;text-underline-offset:2px}
+#geo-city-map .maplibregl-ctrl-bottom-right{z-index:4}
+#geo-city-map .leaflet-bottom{z-index:600}
+.geo-map-status{position:absolute;left:16px;top:13px;z-index:5;max-width:calc(100% - 108px);padding:7px 11px;border:1px solid #777;border-radius:4px;background:#232527ed;color:#f4f4f4;font-size:12px;line-height:1.65;pointer-events:none;box-shadow:0 2px 8px #0002}
+.command-grid .scene-detail{top:65px;width:min(290px,calc(100% - 46px))}
+.geo-map-error{display:flex;height:100%;padding:30px;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;line-height:1.7}
+.geo-filters{display:grid;grid-template-columns:1fr 1.2fr 1.15fr;gap:12px;padding:2px 24px 14px}
+.geo-filters label{display:flex;flex-direction:column;gap:6px;min-width:0;color:#c4c4c4;font-size:12px;line-height:1.4}
+.geo-filters select{width:100%;min-width:0;min-height:42px;padding:8px 31px 8px 11px;border:1px solid #666;border-radius:4px;color:#f4f4f4;background:#2a2c2f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='m5 7 5 5 5-5' fill='none' stroke='%23e2e2e2' stroke-width='1.5'/%3E%3C/svg%3E") right 9px center/16px no-repeat;font-size:14px;line-height:1.5;cursor:pointer}
+.geo-filters select:focus-visible{outline-color:#f4f4f4;outline-offset:3px}
+.geo-filters option{background:#2a2c2f;color:#f4f4f4}
+.geo-terrain-button{min-height:36px;padding:7px 12px;margin-right:5px;border:1px solid #777;background:transparent;color:#f3f3f3;font-size:13px;line-height:1.4}
+.geo-terrain-button:hover,.geo-terrain-button.active,.geo-terrain-button[aria-pressed="true"]{background:#ededed;border-color:#ededed;color:#191919}
+.geo-panel{display:flex;flex-direction:column;min-width:0;min-height:0}
+.geo-panel>.panel-heading{flex-shrink:0;align-items:flex-start;padding:27px 24px 21px;border-bottom:1px solid #dedede}
+.geo-panel>.panel-heading>div{width:100%;min-width:0}
+#geo-coverage-summary{font-size:13px;line-height:1.85;margin-top:10px;color:#666;overflow-wrap:anywhere}
+.geo-property-list{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#aaa transparent}
+.geo-property-item{position:relative;display:flex;align-items:flex-start;gap:12px;width:100%;min-width:0;padding:20px 22px;border:0;border-bottom:1px solid #e5e5e5;background:#fff;color:#242424;text-align:left;font-size:16px;line-height:1.55;transition:background .18s}
+.geo-property-item:last-child{border-bottom:0}
+.geo-property-item:hover{background:#f7f7f7}
+.geo-property-item.is-selected,.geo-property-item[aria-selected="true"],.geo-property-item[aria-pressed="true"]{background:#f4f4f4;box-shadow:inset 3px 0 #222}
+.geo-property-index{display:flex;align-items:center;justify-content:center;flex:0 0 29px;width:29px;height:29px;margin-top:1px;border:1px solid #d8d8d8;border-radius:4px;background:#f6f6f6;color:#333;font-size:12px;font-variant-numeric:tabular-nums;line-height:1}
+.geo-property-main{flex:1;min-width:0}
+.geo-property-item strong,.geo-property-name{display:block;color:#232323;font-size:16px;font-weight:400;line-height:1.55;overflow-wrap:anywhere}
+.geo-property-item p,.geo-property-region{font-size:12px;color:#6b6b6b;line-height:1.75;margin:5px 0 0;overflow-wrap:anywhere}
+.geo-property-status{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.geo-property-item .tag{font-size:11px;line-height:1.6;margin-top:7px;white-space:normal;text-align:left}
+.geo-property-item .tag.neutral{color:#5b5b5b;background:#f5f5f5;border-color:#d8d8d8}
+.geo-panel-note{flex-shrink:0;padding:16px 23px;border-top:1px solid #dedede;background:#fafafa;color:#6a6a6a;font-size:12px;line-height:1.75}
+.geo-list-empty{padding:38px 24px;font-size:14px;color:#6b6b6b;text-align:center}
+
+/* Marker transforms belong to the map renderer; geometry sits in a pseudo-element. */
+.geo-map-marker{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;width:40px;height:40px;min-width:40px;padding:0;border:0;background:transparent;color:#202020;font-size:14px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1;cursor:pointer;user-select:none}
+.geo-map-marker::before{content:"";position:absolute;inset:2px;z-index:-1;border:1px solid #4b4b4b;border-radius:50%;background:#fff;box-shadow:0 2px 7px #0004;transition:background .18s,box-shadow .18s}
+.geo-map-marker:hover::before{box-shadow:0 0 0 3px #ffffff90,0 3px 12px #0005}
+.geo-map-marker.is-proxy::before{inset:6px;border-style:dashed;border-radius:4px;transform:rotate(45deg) scale(1.08);background:#f2efea}
+.geo-map-marker.is-alert::after{content:"";position:absolute;right:0;top:0;width:10px;height:10px;border:2px solid #fff;border-radius:50%;background:#a27535;box-shadow:0 1px 4px #0003}
+.geo-map-marker.is-selected{color:#fff}
+.geo-map-marker.is-selected::before{background:#252525;border-color:#fff;box-shadow:0 0 0 3px #fff9,0 3px 12px #0005}
+.geo-map-marker:focus-visible{outline:2px solid #222;outline-offset:3px;border-radius:50%}
+
+/* The previous exception workflow remains fully available below the geographic view. */
+.lower-grid>.event-panel{grid-column:1/-1;height:auto;min-height:0}
+.lower-grid>.event-panel #event-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}
+.lower-grid>.event-panel .event-item{border-bottom:1px solid #e5e5e5}
+.lower-grid>.event-panel .event-item:nth-child(odd){border-right:1px solid #e5e5e5}
+.lower-grid>.event-panel .event-panel-bottom{border-top:0}
+@media(min-width:1700px){
+ .command-grid>.map-panel,.command-grid>.geo-panel{height:830px}
+}
+@media(max-width:1280px){
+ .geo-filters{padding-inline:18px;gap:9px}
+ .geo-filters select{font-size:13px;padding-left:9px}
+ .geo-panel>.panel-heading{padding:24px 21px 20px}
+ .geo-property-item{padding:19px 20px;gap:10px}
+ .geo-property-index{width:27px;height:27px;flex-basis:27px}
+ .geo-panel-note{padding-inline:20px}
+}
+@media(max-width:1050px){
+ .command-grid>.map-panel{height:790px}
+ .command-grid>.geo-panel{height:auto;max-height:580px}
+ .geo-property-list{flex:0 1 auto;max-height:405px}
+ .geo-filters{padding-inline:24px;gap:14px}
+ .geo-filters select{font-size:14px}
+}
+@media(max-width:760px){
+ .command-grid>.map-panel{height:auto}
+ .command-grid #scene-container{flex:none;height:500px;min-height:500px}
+ .geo-filters{padding-inline:23px;gap:10px}
+ .geo-filters select{font-size:13px}
+ .command-grid .scene-toolbar{padding-bottom:9px}
+ .command-grid>.geo-panel{max-height:560px}
+ .geo-property-list{max-height:390px}
+}
+@media(max-width:640px){
+ .geo-filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px;padding:1px 20px 14px}
+ .geo-filters label{font-size:11px;gap:5px}
+ .geo-filters .geo-status-field{grid-column:1/-1;display:grid;grid-template-columns:68px minmax(0,1fr);align-items:center;gap:10px}
+ .geo-filters select{min-height:42px;font-size:14px}
+ .geo-map-status{left:12px;top:11px;max-width:calc(100% - 82px);padding:6px 9px;font-size:11px;line-height:1.6}
+ .command-grid .scene-detail{top:66px}
+ .geo-terrain-button{min-height:35px;padding:6px 9px;font-size:12px;margin-right:3px}
+ .geo-panel>.panel-heading{padding:23px 21px 19px}
+ #geo-coverage-summary{font-size:12px;line-height:1.8;margin-top:8px}
+ .geo-property-item{padding:19px 21px;gap:12px}
+ .geo-property-item strong,.geo-property-name{font-size:16px}
+ .geo-property-item p,.geo-property-region{font-size:12px}
+ .geo-panel-note{padding:14px 21px;font-size:11px}
+ .lower-grid>.event-panel #event-list{display:block}
+ .lower-grid>.event-panel .event-item:nth-child(odd){border-right:0}
+ #geo-city-map .maplibregl-ctrl-attrib,#geo-city-map .leaflet-control-attribution{font-size:10px;max-width:calc(100vw - 62px)}
 }

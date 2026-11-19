@@ -1,0 +1,86 @@
+{
+  "query": "西二旗, 海淀区, 北京市, 中国",
+  "kind": "station",
+  "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E8%A5%BF%E4%BA%8C%E6%97%97%2C+%E6%B5%B7%E6%B7%80%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+  "requestedAt": "2026-11-19T10:54:39+00:00",
+  "provider": "OSM Nominatim",
+  "httpStatus": 200,
+  "status": "ok",
+  "results": [
+    {
+      "place_id": 219579229,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 5430533767,
+      "lat": "40.0517165",
+      "lon": "116.3001813",
+      "category": "railway",
+      "type": "station",
+      "place_rank": 30,
+      "importance": 0.3501849283177136,
+      "addresstype": "railway",
+      "name": "西二旗",
+      "display_name": "西二旗, 京新高速西二旗桥, 上地街道, 海淀区, 北京市, 100193, 中国",
+      "address": {
+        "railway": "西二旗",
+        "road": "京新高速西二旗桥",
+        "suburb": "上地街道",
+        "city": "海淀区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "postcode": "100193",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "西二旗",
+        "name:en": "Xi'erqi",
+        "name:ru": "Сиэрци",
+        "name:zh": "西二旗"
+      },
+      "boundingbox": [
+        "40.0467165",
+        "40.0567165",
+        "116.2951813",
+        "116.3051813"
+      ]
+    },
+    {
+      "place_id": 431407472,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 14305559412,
+      "lat": "40.0532179",
+      "lon": "116.3050011",
+      "category": "place",
+      "type": "neighbourhood",
+      "place_rank": 24,
+      "importance": 0.08006051041428242,
+      "addresstype": "neighbourhood",
+      "name": "西二旗",
+      "display_name": "西二旗, 清河街道, 海淀区, 北京市, 100193, 中国",
+      "address": {
+        "neighbourhood": "西二旗",
+        "suburb": "清河街道",
+        "city": "海淀区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "postcode": "100193",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "西二旗",
+        "name:zh": "西二旗",
+        "name:zh-Hant": "西二旗"
+      },
+      "boundingbox": [
+        "40.0432179",
+        "40.0632179",
+        "116.2950011",
+        "116.3150011"
+      ]
+    }
+  ],
+  "sha256": "36e1da7a3211baca3eeb20bd0ba24c94c2031b5ad23d91d59c2da3954e9eeae0",
+  "bodyBytes": 1521,
+  "retrievedAt": "2026-11-19T10:54:47+00:00"
+}

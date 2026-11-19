@@ -1,0 +1,46 @@
+{
+  "query": "东方雅苑, 朝阳区, 北京市, 中国",
+  "kind": "community",
+  "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E4%B8%9C%E6%96%B9%E9%9B%85%E8%8B%91%2C+%E6%9C%9D%E9%98%B3%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+  "requestedAt": "2026-11-19T10:53:49+00:00",
+  "provider": "OSM Nominatim",
+  "httpStatus": 200,
+  "status": "ok",
+  "results": [
+    {
+      "place_id": 221089331,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1303643495,
+      "lat": "39.8862248",
+      "lon": "116.4689238",
+      "category": "landuse",
+      "type": "residential",
+      "place_rank": 24,
+      "importance": 0.08008344167238877,
+      "addresstype": "residential",
+      "name": "东方雅苑",
+      "display_name": "东方雅苑, 劲松街道, 朝阳区, 北京市, 中国",
+      "address": {
+        "residential": "东方雅苑",
+        "suburb": "劲松街道",
+        "city": "朝阳区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "东方雅苑"
+      },
+      "boundingbox": [
+        "39.8844876",
+        "39.8871859",
+        "116.4672893",
+        "116.4697152"
+      ]
+    }
+  ],
+  "sha256": "0684b76347ddafbb2012346655509d1ddfedd837cdd1bcda447ae9da44ee82d5",
+  "bodyBytes": 655,
+  "retrievedAt": "2026-11-19T10:53:55+00:00"
+}

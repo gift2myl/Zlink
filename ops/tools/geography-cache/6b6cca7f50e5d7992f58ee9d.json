@@ -1,0 +1,88 @@
+{
+  "query": "阜通, 朝阳区, 北京市, 中国",
+  "kind": "station",
+  "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E9%98%9C%E9%80%9A%2C+%E6%9C%9D%E9%98%B3%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+  "requestedAt": "2026-11-19T10:54:21+00:00",
+  "provider": "OSM Nominatim",
+  "httpStatus": 200,
+  "status": "ok",
+  "results": [
+    {
+      "place_id": 221043526,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 3369356934,
+      "lat": "39.9906798",
+      "lon": "116.4650632",
+      "category": "railway",
+      "type": "station",
+      "place_rank": 30,
+      "importance": 0.3307177672703685,
+      "addresstype": "railway",
+      "name": "阜通",
+      "display_name": "阜通, 广顺南大街, 赵家坟, 望京街道, 朝阳区, 北京市, 100102, 中国",
+      "address": {
+        "railway": "阜通",
+        "road": "广顺南大街",
+        "neighbourhood": "赵家坟",
+        "suburb": "望京街道",
+        "city": "朝阳区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "postcode": "100102",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "阜通",
+        "name:en": "Futong",
+        "name:zh": "阜通"
+      },
+      "boundingbox": [
+        "39.9856798",
+        "39.9956798",
+        "116.4600632",
+        "116.4700632"
+      ]
+    },
+    {
+      "place_id": 221090318,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 3363536025,
+      "lat": "39.9903624",
+      "lon": "116.4656422",
+      "category": "railway",
+      "type": "stop",
+      "place_rank": 30,
+      "importance": 8.344167238875436e-05,
+      "addresstype": "railway",
+      "name": "阜通",
+      "display_name": "阜通, 广顺南大街, 赵家坟, 望京街道, 朝阳区, 北京市, 100102, 中国",
+      "address": {
+        "railway": "阜通",
+        "road": "广顺南大街",
+        "neighbourhood": "赵家坟",
+        "suburb": "望京街道",
+        "city": "朝阳区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "postcode": "100102",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "阜通",
+        "name:en": "Futong",
+        "name:zh": "阜通"
+      },
+      "boundingbox": [
+        "39.9903124",
+        "39.9904124",
+        "116.4655922",
+        "116.4656922"
+      ]
+    }
+  ],
+  "sha256": "b50396767eac418691af54124177a428aa916b432d12ce377e417b6ac70888e4",
+  "bodyBytes": 1539,
+  "retrievedAt": "2026-11-19T10:54:28+00:00"
+}

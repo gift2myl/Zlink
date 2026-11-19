@@ -1,0 +1,13 @@
+{
+  "query": "望京路3号院, 朝阳区, 北京市, 中国",
+  "kind": "community",
+  "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E6%9C%9B%E4%BA%AC%E8%B7%AF3%E5%8F%B7%E9%99%A2%2C+%E6%9C%9D%E9%98%B3%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+  "requestedAt": "2026-11-19T10:52:08+00:00",
+  "provider": "OSM Nominatim",
+  "httpStatus": 200,
+  "status": "ok",
+  "results": [],
+  "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "bodyBytes": 2,
+  "retrievedAt": "2026-11-19T10:52:16+00:00"
+}

@@ -1,0 +1,50 @@
+{
+  "query": "海特花园西区, 石景山区, 北京市, 中国",
+  "kind": "community",
+  "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E6%B5%B7%E7%89%B9%E8%8A%B1%E5%9B%AD%E8%A5%BF%E5%8C%BA%2C+%E7%9F%B3%E6%99%AF%E5%B1%B1%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+  "requestedAt": "2026-11-19T10:52:43+00:00",
+  "provider": "OSM Nominatim",
+  "httpStatus": 200,
+  "status": "ok",
+  "results": [
+    {
+      "place_id": 223341744,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 11293368536,
+      "lat": "39.9331604",
+      "lon": "116.1808383",
+      "category": "highway",
+      "type": "bus_stop",
+      "place_rank": 30,
+      "importance": 5.467078660253326e-05,
+      "addresstype": "highway",
+      "name": "海特花园",
+      "display_name": "海特花园, 西井路, 金顶山, 苹果园街道, 石景山区, 北京市, 100043, 中国",
+      "address": {
+        "highway": "海特花园",
+        "road": "西井路",
+        "hamlet": "金顶山",
+        "suburb": "苹果园街道",
+        "city": "石景山区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "postcode": "100043",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "海特花园",
+        "name:zh": "海特花园"
+      },
+      "boundingbox": [
+        "39.9331104",
+        "39.9332104",
+        "116.1807883",
+        "116.1808883"
+      ]
+    }
+  ],
+  "sha256": "5fb4dcdf0d42395f06d6fc667c6f8dde4c9ea90a10e1bd9b8d8a1f4a0d6edf03",
+  "bodyBytes": 777,
+  "retrievedAt": "2026-11-19T10:52:51+00:00"
+}

@@ -1,0 +1,121 @@
+{
+  "query": "杨庄, 石景山区, 北京市, 中国",
+  "kind": "station",
+  "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E6%9D%A8%E5%BA%84%2C+%E7%9F%B3%E6%99%AF%E5%B1%B1%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+  "requestedAt": "2026-11-19T10:54:28+00:00",
+  "provider": "OSM Nominatim",
+  "httpStatus": 200,
+  "status": "ok",
+  "results": [
+    {
+      "place_id": 221405652,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 6172173584,
+      "lat": "39.9264588",
+      "lon": "116.1795516",
+      "category": "railway",
+      "type": "station",
+      "place_rank": 30,
+      "importance": 0.33029660482760953,
+      "addresstype": "railway",
+      "name": "杨庄",
+      "display_name": "杨庄, 苹果园大街, 金顶山, 苹果园街道, 石景山区, 北京市, 100043, 中国",
+      "address": {
+        "railway": "杨庄",
+        "road": "苹果园大街",
+        "hamlet": "金顶山",
+        "suburb": "苹果园街道",
+        "city": "石景山区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "postcode": "100043",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "杨庄",
+        "name:en": "Yang Zhuang",
+        "name:zh": "杨庄"
+      },
+      "boundingbox": [
+        "39.9214588",
+        "39.9314588",
+        "116.1745516",
+        "116.1845516"
+      ]
+    },
+    {
+      "place_id": 221517891,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 11076869549,
+      "lat": "39.9236113",
+      "lon": "116.1831556",
+      "category": "highway",
+      "type": "bus_stop",
+      "place_rank": 30,
+      "importance": 5.467078660253326e-05,
+      "addresstype": "highway",
+      "name": "杨庄",
+      "display_name": "杨庄, 阜石路, 古城街道, 石景山区, 北京市, 100043, 中国",
+      "address": {
+        "highway": "杨庄",
+        "road": "阜石路",
+        "suburb": "古城街道",
+        "city": "石景山区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "postcode": "100043",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "杨庄",
+        "name:zh": "杨庄"
+      },
+      "boundingbox": [
+        "39.9235613",
+        "39.9236613",
+        "116.1831056",
+        "116.1832056"
+      ]
+    },
+    {
+      "place_id": 221538473,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 10259709911,
+      "lat": "39.9232757",
+      "lon": "116.1804011",
+      "category": "highway",
+      "type": "bus_stop",
+      "place_rank": 30,
+      "importance": 5.467078660253326e-05,
+      "addresstype": "highway",
+      "name": "杨庄",
+      "display_name": "杨庄, 杨庄大街, 古城街道, 石景山区, 北京市, 100043, 中国",
+      "address": {
+        "highway": "杨庄",
+        "road": "杨庄大街",
+        "suburb": "古城街道",
+        "city": "石景山区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "postcode": "100043",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "杨庄",
+        "name:zh": "杨庄"
+      },
+      "boundingbox": [
+        "39.9232257",
+        "39.9233257",
+        "116.1803511",
+        "116.1804511"
+      ]
+    }
+  ],
+  "sha256": "8407cd1075bba6d248a2e985fb56a905ecb8167941eae033cb8fe6c92f03dd4a",
+  "bodyBytes": 2203,
+  "retrievedAt": "2026-11-19T10:54:39+00:00"
+}

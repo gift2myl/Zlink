@@ -1,0 +1,80 @@
+{
+  "query": "郁花园二里, 大兴区, 北京市, 中国",
+  "kind": "community",
+  "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E9%83%81%E8%8A%B1%E5%9B%AD%E4%BA%8C%E9%87%8C%2C+%E5%A4%A7%E5%85%B4%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+  "requestedAt": "2026-11-19T10:52:22+00:00",
+  "provider": "OSM Nominatim",
+  "httpStatus": 200,
+  "status": "ok",
+  "results": [
+    {
+      "place_id": 221865035,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 690512170,
+      "lat": "39.7728577",
+      "lon": "116.3268191",
+      "category": "landuse",
+      "type": "residential",
+      "place_rank": 24,
+      "importance": 0.08008344167238877,
+      "addresstype": "residential",
+      "name": "郁花园二里",
+      "display_name": "郁花园二里, 高米店街道, 大兴区, 北京市, 中国",
+      "address": {
+        "residential": "郁花园二里",
+        "suburb": "高米店街道",
+        "city": "大兴区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "郁花园二里"
+      },
+      "boundingbox": [
+        "39.7714109",
+        "39.7751928",
+        "116.3248245",
+        "116.3287315"
+      ]
+    },
+    {
+      "place_id": 223914916,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 12020482917,
+      "lat": "39.7754127",
+      "lon": "116.3264367",
+      "category": "highway",
+      "type": "bus_stop",
+      "place_rank": 30,
+      "importance": 8.344167238875436e-05,
+      "addresstype": "highway",
+      "name": "郁花园二里",
+      "display_name": "郁花园二里, 北兴路, 高米店街道, 大兴区, 北京市, 102617, 中国",
+      "address": {
+        "highway": "郁花园二里",
+        "road": "北兴路",
+        "suburb": "高米店街道",
+        "city": "大兴区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "postcode": "102617",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "郁花园二里"
+      },
+      "boundingbox": [
+        "39.7753627",
+        "39.7754627",
+        "116.3263867",
+        "116.3264867"
+      ]
+    }
+  ],
+  "sha256": "e5b8a8802741af9f18f0d278a2b7846cefc963d49f0033baa7d47af1e404a546",
+  "bodyBytes": 1395,
+  "retrievedAt": "2026-11-19T10:52:29+00:00"
+}

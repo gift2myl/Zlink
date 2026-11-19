@@ -1,0 +1,46 @@
+{
+  "query": "日新家园, 丰台区, 北京市, 中国",
+  "kind": "community",
+  "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E6%97%A5%E6%96%B0%E5%AE%B6%E5%9B%AD%2C+%E4%B8%B0%E5%8F%B0%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+  "requestedAt": "2026-11-19T10:53:39+00:00",
+  "provider": "OSM Nominatim",
+  "httpStatus": 200,
+  "status": "ok",
+  "results": [
+    {
+      "place_id": 220994275,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1016753880,
+      "lat": "39.8381421",
+      "lon": "116.4188926",
+      "category": "landuse",
+      "type": "residential",
+      "place_rank": 24,
+      "importance": 0.08008344167238877,
+      "addresstype": "residential",
+      "name": "日新家园",
+      "display_name": "日新家园, 石榴庄街道, 丰台区, 北京市, 中国",
+      "address": {
+        "residential": "日新家园",
+        "suburb": "石榴庄街道",
+        "city": "丰台区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "日新家园"
+      },
+      "boundingbox": [
+        "39.8378986",
+        "39.8385796",
+        "116.4175460",
+        "116.4202443"
+      ]
+    }
+  ],
+  "sha256": "7af91e75df7bcb3d3f2b32b67ef620d079860a2e6820bc98f748b0de68f7613f",
+  "bodyBytes": 661,
+  "retrievedAt": "2026-11-19T10:53:49+00:00"
+}

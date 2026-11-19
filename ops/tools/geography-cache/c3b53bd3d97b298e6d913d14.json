@@ -1,0 +1,46 @@
+{
+  "query": "东大街6号院, 丰台区, 北京市, 中国",
+  "kind": "community",
+  "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E4%B8%9C%E5%A4%A7%E8%A1%976%E5%8F%B7%E9%99%A2%2C+%E4%B8%B0%E5%8F%B0%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+  "requestedAt": "2026-11-19T10:52:51+00:00",
+  "provider": "OSM Nominatim",
+  "httpStatus": 200,
+  "status": "ok",
+  "results": [
+    {
+      "place_id": 219956417,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1029925588,
+      "lat": "39.8613370",
+      "lon": "116.2927141",
+      "category": "landuse",
+      "type": "residential",
+      "place_rank": 24,
+      "importance": 0.08008344167238877,
+      "addresstype": "residential",
+      "name": "东大街6号院",
+      "display_name": "东大街6号院, 丰台街道, 丰台区, 北京市, 中国",
+      "address": {
+        "residential": "东大街6号院",
+        "suburb": "丰台街道",
+        "city": "丰台区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "东大街6号院"
+      },
+      "boundingbox": [
+        "39.8600757",
+        "39.8628606",
+        "116.2883327",
+        "116.2940100"
+      ]
+    }
+  ],
+  "sha256": "87ed4cb1ca758238fdd711b84db0bfe69089bb7c5deacecd570e164d0e20d685",
+  "bodyBytes": 671,
+  "retrievedAt": "2026-11-19T10:52:58+00:00"
+}

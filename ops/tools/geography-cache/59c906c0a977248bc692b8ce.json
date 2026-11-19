@@ -1,0 +1,46 @@
+{
+  "query": "东大街西里, 丰台区, 北京市, 中国",
+  "kind": "community",
+  "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E4%B8%9C%E5%A4%A7%E8%A1%97%E8%A5%BF%E9%87%8C%2C+%E4%B8%B0%E5%8F%B0%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+  "requestedAt": "2026-11-19T10:52:58+00:00",
+  "provider": "OSM Nominatim",
+  "httpStatus": 200,
+  "status": "ok",
+  "results": [
+    {
+      "place_id": 221091062,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 982189437,
+      "lat": "39.8602348",
+      "lon": "116.2866265",
+      "category": "landuse",
+      "type": "residential",
+      "place_rank": 24,
+      "importance": 0.08008344167238877,
+      "addresstype": "residential",
+      "name": "东大街西里",
+      "display_name": "东大街西里, 丰台街道, 丰台区, 北京市, 中国",
+      "address": {
+        "residential": "东大街西里",
+        "suburb": "丰台街道",
+        "city": "丰台区",
+        "ISO3166-2-lvl4": "CN-BJ",
+        "country": "中国",
+        "country_code": "cn"
+      },
+      "namedetails": {
+        "name": "东大街西里"
+      },
+      "boundingbox": [
+        "39.8598784",
+        "39.8608753",
+        "116.2850481",
+        "116.2878130"
+      ]
+    }
+  ],
+  "sha256": "bcd78c407ac6e9c6bc46030ae4609168b019947b2aa740d764c1cbe4ec34644d",
+  "bodyBytes": 666,
+  "retrievedAt": "2026-11-19T10:53:04+00:00"
+}

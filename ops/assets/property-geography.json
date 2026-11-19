@@ -1,0 +1,888 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-19T10:55:32+00:00",
+  "provider": "OpenStreetMap / Nominatim",
+  "coordinateSystem": "WGS84",
+  "coordinateOrder": [
+    "longitude",
+    "latitude"
+  ],
+  "scope": "现有10条列表样本的一次性地理补全；不是北京全量房源，也不是房间或设备精确坐标。",
+  "sourcePropertiesFile": "assets/properties.json",
+  "sourcePropertiesSha256": "26d416915c11cf2c0106d8736b53cfeed85c3f2298e6f0b6d33667043d5a759b",
+  "attribution": {
+    "text": "© OpenStreetMap contributors",
+    "url": "https://www.openstreetmap.org/copyright",
+    "license": "ODbL 1.0"
+  },
+  "documentation": {
+    "searchApi": "https://nominatim.org/release-docs/latest/api/Search/",
+    "outputCentroid": "https://nominatim.org/release-docs/latest/api/Output/",
+    "coordinateSystem": "https://wiki.openstreetmap.org/wiki/FAQ#What_geographic_datums_are_used_in_OpenStreetMap?"
+  },
+  "confidenceMeaning": {
+    "high": "小区同名住宅对象与行政区一致；只确认社区级参考位置。",
+    "medium": "地铁站对象已匹配，但房屋或小区未定位；站点仅用于区域参考。",
+    "unverified": "没有采用可核验的定位结果。"
+  },
+  "policy": {
+    "url": "https://operations.osmfoundation.org/policies/nominatim/",
+    "endpoint": "https://nominatim.openstreetmap.org/search",
+    "userAgent": "LingzhiOpsDemoGeography/1.0 (+https://zlink.help)",
+    "singleThread": true,
+    "minimumIntervalSeconds": 1.2,
+    "cacheEnabled": true,
+    "maxProperties": 10,
+    "maxNetworkRequests": 20,
+    "mode": "one_time_offline_enrichment",
+    "clientSideApiCalls": false,
+    "prohibitedUses": [
+      "autocomplete",
+      "reverse_geocoding_grid",
+      "area_poi_enumeration"
+    ]
+  },
+  "businessDistrictPolicy": "自如商圈、OSM地址层级和地铁站周边候选分开记录；不将OSM suburb自动认定为自如商圈。",
+  "querySummary": {
+    "sampleCount": 10,
+    "communityMatches": 7,
+    "stationProxies": 3,
+    "unmatched": 0,
+    "exactPropertyLocations": 0,
+    "networkRequests": 13,
+    "serviceStopped": false,
+    "confirmedBusinessDistricts": 1,
+    "businessDistrictCandidates": 9
+  },
+  "properties": [
+    {
+      "id": "map-sample-01",
+      "name": "棕榈泉国际公寓",
+      "district": "朝阳",
+      "coordinate": [
+        116.4742731,
+        39.9308749
+      ],
+      "coordinateSystem": "WGS84",
+      "matchType": "community",
+      "precision": "community_centroid",
+      "confidence": "high",
+      "isExactPropertyLocation": false,
+      "accuracyMeters": null,
+      "label": "棕榈泉国际公寓小区参考位置（非房间）",
+      "osm": {
+        "type": "way",
+        "id": "233208147",
+        "name": "棕榈泉国际公寓",
+        "displayName": "棕榈泉国际公寓, 六里屯街道, 朝阳区, 北京市, 中国",
+        "address": {
+          "residential": "棕榈泉国际公寓",
+          "suburb": "六里屯街道",
+          "city": "朝阳区",
+          "ISO3166-2-lvl4": "CN-BJ",
+          "country": "中国",
+          "country_code": "cn"
+        },
+        "longitudeRaw": "116.4742731",
+        "latitudeRaw": "39.9308749",
+        "boundingBox": [
+          "39.9300110",
+          "39.9320863",
+          "116.4725554",
+          "116.4760239"
+        ],
+        "boundingBoxOrder": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "category": "landuse",
+        "featureType": "residential",
+        "placeRank": 24,
+        "namedetails": {
+          "name": "棕榈泉国际公寓",
+          "name:en": "Palm Springs",
+          "name:zh": "棕榈泉国际公寓"
+        },
+        "objectUrl": "https://www.openstreetmap.org/way/233208147"
+      },
+      "evidence": [
+        {
+          "kind": "community",
+          "query": "棕榈泉国际公寓, 朝阳区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E6%A3%95%E6%A6%88%E6%B3%89%E5%9B%BD%E9%99%85%E5%85%AC%E5%AF%93%2C+%E6%9C%9D%E9%98%B3%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:52:22+00:00",
+          "status": "ok",
+          "candidateCount": 1,
+          "cacheFile": "tools/geography-cache/c47b4a16a9531faade9138e4.json"
+        }
+      ],
+      "businessDistrict": {
+        "name": null,
+        "status": "inferred_pending_verification",
+        "sourceType": "station_inference",
+        "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+        "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+        "candidate": "朝阳公园站周边",
+        "observedAt": "2026-11-19"
+      },
+      "station": {
+        "name": "朝阳公园",
+        "distanceMeters": 408,
+        "distanceBasis": "原自如列表距离；未由OSM重新计算"
+      },
+      "matchBasis": "OSM住宅用地名「棕榈泉国际公寓」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+      "reviewedAt": "2026-11-19T10:53:50+00:00"
+    },
+    {
+      "id": "map-sample-02",
+      "name": "郁花园二里",
+      "district": "大兴",
+      "coordinate": [
+        116.3268191,
+        39.7728577
+      ],
+      "coordinateSystem": "WGS84",
+      "matchType": "community",
+      "precision": "community_centroid",
+      "confidence": "high",
+      "isExactPropertyLocation": false,
+      "accuracyMeters": null,
+      "label": "郁花园二里小区参考位置（非房间）",
+      "osm": {
+        "type": "way",
+        "id": "690512170",
+        "name": "郁花园二里",
+        "displayName": "郁花园二里, 高米店街道, 大兴区, 北京市, 中国",
+        "address": {
+          "residential": "郁花园二里",
+          "suburb": "高米店街道",
+          "city": "大兴区",
+          "ISO3166-2-lvl4": "CN-BJ",
+          "country": "中国",
+          "country_code": "cn"
+        },
+        "longitudeRaw": "116.3268191",
+        "latitudeRaw": "39.7728577",
+        "boundingBox": [
+          "39.7714109",
+          "39.7751928",
+          "116.3248245",
+          "116.3287315"
+        ],
+        "boundingBoxOrder": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "category": "landuse",
+        "featureType": "residential",
+        "placeRank": 24,
+        "namedetails": {
+          "name": "郁花园二里"
+        },
+        "objectUrl": "https://www.openstreetmap.org/way/690512170"
+      },
+      "evidence": [
+        {
+          "kind": "community",
+          "query": "郁花园二里, 大兴区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E9%83%81%E8%8A%B1%E5%9B%AD%E4%BA%8C%E9%87%8C%2C+%E5%A4%A7%E5%85%B4%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:52:29+00:00",
+          "status": "ok",
+          "candidateCount": 2,
+          "cacheFile": "tools/geography-cache/ee323f1946f5b3276d530171.json"
+        }
+      ],
+      "businessDistrict": {
+        "name": null,
+        "status": "inferred_pending_verification",
+        "sourceType": "station_inference",
+        "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+        "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+        "candidate": "高米店北站周边",
+        "observedAt": "2026-11-19"
+      },
+      "station": {
+        "name": "高米店北",
+        "distanceMeters": 508,
+        "distanceBasis": "原自如列表距离；未由OSM重新计算"
+      },
+      "matchBasis": "OSM住宅用地名「郁花园二里」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+      "reviewedAt": "2026-11-19T10:53:50+00:00"
+    },
+    {
+      "id": "map-sample-03",
+      "name": "海特花园西区",
+      "district": "石景山",
+      "coordinate": [
+        116.1795516,
+        39.9264588
+      ],
+      "coordinateSystem": "WGS84",
+      "matchType": "station_proxy",
+      "precision": "station_proxy",
+      "confidence": "medium",
+      "isExactPropertyLocation": false,
+      "accuracyMeters": null,
+      "label": "杨庄站参考位置（非房屋）",
+      "osm": {
+        "type": "node",
+        "id": "6172173584",
+        "name": "杨庄",
+        "displayName": "杨庄, 苹果园大街, 金顶山, 苹果园街道, 石景山区, 北京市, 100043, 中国",
+        "address": {
+          "railway": "杨庄",
+          "road": "苹果园大街",
+          "hamlet": "金顶山",
+          "suburb": "苹果园街道",
+          "city": "石景山区",
+          "ISO3166-2-lvl4": "CN-BJ",
+          "postcode": "100043",
+          "country": "中国",
+          "country_code": "cn"
+        },
+        "longitudeRaw": "116.1795516",
+        "latitudeRaw": "39.9264588",
+        "boundingBox": [
+          "39.9214588",
+          "39.9314588",
+          "116.1745516",
+          "116.1845516"
+        ],
+        "boundingBoxOrder": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "category": "railway",
+        "featureType": "station",
+        "placeRank": 30,
+        "namedetails": {
+          "name": "杨庄",
+          "name:en": "Yang Zhuang",
+          "name:zh": "杨庄"
+        },
+        "objectUrl": "https://www.openstreetmap.org/node/6172173584"
+      },
+      "evidence": [
+        {
+          "kind": "community",
+          "query": "海特花园西区, 石景山区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E6%B5%B7%E7%89%B9%E8%8A%B1%E5%9B%AD%E8%A5%BF%E5%8C%BA%2C+%E7%9F%B3%E6%99%AF%E5%B1%B1%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:52:51+00:00",
+          "status": "ok",
+          "candidateCount": 1,
+          "cacheFile": "tools/geography-cache/7c271550bfbbbec6133c4be9.json"
+        },
+        {
+          "kind": "station",
+          "query": "杨庄, 石景山区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E6%9D%A8%E5%BA%84%2C+%E7%9F%B3%E6%99%AF%E5%B1%B1%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:54:39+00:00",
+          "status": "ok",
+          "candidateCount": 3,
+          "cacheFile": "tools/geography-cache/d5458825f7f9f5f5af3385bf.json"
+        }
+      ],
+      "businessDistrict": {
+        "name": null,
+        "status": "inferred_pending_verification",
+        "sourceType": "station_inference",
+        "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+        "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+        "candidate": "杨庄站周边",
+        "observedAt": "2026-11-19"
+      },
+      "station": {
+        "name": "杨庄",
+        "distanceMeters": 981,
+        "distanceBasis": "原自如列表距离；未由OSM重新计算"
+      },
+      "matchBasis": "OSM railway=station 对象名「杨庄」与原列表最近地铁站一致，行政区及北京市一致；只确认地铁站位置，未定位房屋或小区。",
+      "reviewedAt": "2026-11-19T10:55:31+00:00",
+      "geocodingNote": "海特花园西区小区检索仅返回名称为海特花园的公交站，已拒绝该公交站候选；采用原列表杨庄地铁站作参考。"
+    },
+    {
+      "id": "map-sample-04",
+      "name": "东大街6号院",
+      "district": "丰台",
+      "coordinate": [
+        116.2927141,
+        39.861337
+      ],
+      "coordinateSystem": "WGS84",
+      "matchType": "community",
+      "precision": "community_centroid",
+      "confidence": "high",
+      "isExactPropertyLocation": false,
+      "accuracyMeters": null,
+      "label": "东大街6号院小区参考位置（非房间）",
+      "osm": {
+        "type": "way",
+        "id": "1029925588",
+        "name": "东大街6号院",
+        "displayName": "东大街6号院, 丰台街道, 丰台区, 北京市, 中国",
+        "address": {
+          "residential": "东大街6号院",
+          "suburb": "丰台街道",
+          "city": "丰台区",
+          "ISO3166-2-lvl4": "CN-BJ",
+          "country": "中国",
+          "country_code": "cn"
+        },
+        "longitudeRaw": "116.2927141",
+        "latitudeRaw": "39.8613370",
+        "boundingBox": [
+          "39.8600757",
+          "39.8628606",
+          "116.2883327",
+          "116.2940100"
+        ],
+        "boundingBoxOrder": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "category": "landuse",
+        "featureType": "residential",
+        "placeRank": 24,
+        "namedetails": {
+          "name": "东大街6号院"
+        },
+        "objectUrl": "https://www.openstreetmap.org/way/1029925588"
+      },
+      "evidence": [
+        {
+          "kind": "community",
+          "query": "东大街6号院, 丰台区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E4%B8%9C%E5%A4%A7%E8%A1%976%E5%8F%B7%E9%99%A2%2C+%E4%B8%B0%E5%8F%B0%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:52:58+00:00",
+          "status": "ok",
+          "candidateCount": 1,
+          "cacheFile": "tools/geography-cache/c3b53bd3d97b298e6d913d14.json"
+        }
+      ],
+      "businessDistrict": {
+        "name": null,
+        "status": "inferred_pending_verification",
+        "sourceType": "station_inference",
+        "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+        "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+        "candidate": "七里庄站周边",
+        "observedAt": "2026-11-19"
+      },
+      "station": {
+        "name": "七里庄",
+        "distanceMeters": 328,
+        "distanceBasis": "原自如列表距离；未由OSM重新计算"
+      },
+      "matchBasis": "OSM住宅用地名「东大街6号院」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+      "reviewedAt": "2026-11-19T10:53:50+00:00"
+    },
+    {
+      "id": "810151211",
+      "name": "望京路3号院",
+      "district": "朝阳",
+      "coordinate": [
+        116.4650632,
+        39.9906798
+      ],
+      "coordinateSystem": "WGS84",
+      "matchType": "station_proxy",
+      "precision": "station_proxy",
+      "confidence": "medium",
+      "isExactPropertyLocation": false,
+      "accuracyMeters": null,
+      "label": "阜通站参考位置（非房屋）",
+      "osm": {
+        "type": "node",
+        "id": "3369356934",
+        "name": "阜通",
+        "displayName": "阜通, 广顺南大街, 赵家坟, 望京街道, 朝阳区, 北京市, 100102, 中国",
+        "address": {
+          "railway": "阜通",
+          "road": "广顺南大街",
+          "neighbourhood": "赵家坟",
+          "suburb": "望京街道",
+          "city": "朝阳区",
+          "ISO3166-2-lvl4": "CN-BJ",
+          "postcode": "100102",
+          "country": "中国",
+          "country_code": "cn"
+        },
+        "longitudeRaw": "116.4650632",
+        "latitudeRaw": "39.9906798",
+        "boundingBox": [
+          "39.9856798",
+          "39.9956798",
+          "116.4600632",
+          "116.4700632"
+        ],
+        "boundingBoxOrder": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "category": "railway",
+        "featureType": "station",
+        "placeRank": 30,
+        "namedetails": {
+          "name": "阜通",
+          "name:en": "Futong",
+          "name:zh": "阜通"
+        },
+        "objectUrl": "https://www.openstreetmap.org/node/3369356934"
+      },
+      "evidence": [
+        {
+          "kind": "community",
+          "query": "望京路3号院, 朝阳区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E6%9C%9B%E4%BA%AC%E8%B7%AF3%E5%8F%B7%E9%99%A2%2C+%E6%9C%9D%E9%98%B3%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:52:16+00:00",
+          "status": "ok",
+          "candidateCount": 0,
+          "cacheFile": "tools/geography-cache/33bd2bd7cca6b8554da857eb.json"
+        },
+        {
+          "kind": "station",
+          "query": "阜通, 朝阳区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E9%98%9C%E9%80%9A%2C+%E6%9C%9D%E9%98%B3%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:54:28+00:00",
+          "status": "ok",
+          "candidateCount": 2,
+          "cacheFile": "tools/geography-cache/6b6cca7f50e5d7992f58ee9d.json"
+        }
+      ],
+      "businessDistrict": {
+        "name": "太阳宫",
+        "status": "confirmed_existing_detail_read",
+        "sourceType": "ziroom_detail",
+        "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+        "basis": "本会话此前实读该房源自如详情的商圈标签；本次未重新请求自如。",
+        "candidate": null,
+        "observedAt": "2026-11-19"
+      },
+      "station": {
+        "name": "阜通",
+        "distanceMeters": 156,
+        "distanceBasis": "原自如列表距离；未由OSM重新计算"
+      },
+      "matchBasis": "OSM railway=station 对象名「阜通」与原列表最近地铁站一致，行政区及北京市一致；只确认地铁站位置，未定位房屋或小区。",
+      "reviewedAt": "2026-11-19T10:55:31+00:00",
+      "geocodingNote": "望京路3号院小区名称检索无结果；没有把阜通站坐标解释为房屋坐标。"
+    },
+    {
+      "id": "map-sample-06",
+      "name": "东大街西里",
+      "district": "丰台",
+      "coordinate": [
+        116.2866265,
+        39.8602348
+      ],
+      "coordinateSystem": "WGS84",
+      "matchType": "community",
+      "precision": "community_centroid",
+      "confidence": "high",
+      "isExactPropertyLocation": false,
+      "accuracyMeters": null,
+      "label": "东大街西里小区参考位置（非房间）",
+      "osm": {
+        "type": "way",
+        "id": "982189437",
+        "name": "东大街西里",
+        "displayName": "东大街西里, 丰台街道, 丰台区, 北京市, 中国",
+        "address": {
+          "residential": "东大街西里",
+          "suburb": "丰台街道",
+          "city": "丰台区",
+          "ISO3166-2-lvl4": "CN-BJ",
+          "country": "中国",
+          "country_code": "cn"
+        },
+        "longitudeRaw": "116.2866265",
+        "latitudeRaw": "39.8602348",
+        "boundingBox": [
+          "39.8598784",
+          "39.8608753",
+          "116.2850481",
+          "116.2878130"
+        ],
+        "boundingBoxOrder": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "category": "landuse",
+        "featureType": "residential",
+        "placeRank": 24,
+        "namedetails": {
+          "name": "东大街西里"
+        },
+        "objectUrl": "https://www.openstreetmap.org/way/982189437"
+      },
+      "evidence": [
+        {
+          "kind": "community",
+          "query": "东大街西里, 丰台区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E4%B8%9C%E5%A4%A7%E8%A1%97%E8%A5%BF%E9%87%8C%2C+%E4%B8%B0%E5%8F%B0%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:53:04+00:00",
+          "status": "ok",
+          "candidateCount": 1,
+          "cacheFile": "tools/geography-cache/59c906c0a977248bc692b8ce.json"
+        }
+      ],
+      "businessDistrict": {
+        "name": null,
+        "status": "inferred_pending_verification",
+        "sourceType": "station_inference",
+        "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+        "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+        "candidate": "七里庄站周边",
+        "observedAt": "2026-11-19"
+      },
+      "station": {
+        "name": "七里庄",
+        "distanceMeters": 597,
+        "distanceBasis": "原自如列表距离；未由OSM重新计算"
+      },
+      "matchBasis": "OSM住宅用地名「东大街西里」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+      "reviewedAt": "2026-11-19T10:53:50+00:00"
+    },
+    {
+      "id": "map-sample-07",
+      "name": "辉煌国际",
+      "district": "海淀",
+      "coordinate": [
+        116.3001813,
+        40.0517165
+      ],
+      "coordinateSystem": "WGS84",
+      "matchType": "station_proxy",
+      "precision": "station_proxy",
+      "confidence": "medium",
+      "isExactPropertyLocation": false,
+      "accuracyMeters": null,
+      "label": "西二旗站参考位置（非房屋）",
+      "osm": {
+        "type": "node",
+        "id": "5430533767",
+        "name": "西二旗",
+        "displayName": "西二旗, 京新高速西二旗桥, 上地街道, 海淀区, 北京市, 100193, 中国",
+        "address": {
+          "railway": "西二旗",
+          "road": "京新高速西二旗桥",
+          "suburb": "上地街道",
+          "city": "海淀区",
+          "ISO3166-2-lvl4": "CN-BJ",
+          "postcode": "100193",
+          "country": "中国",
+          "country_code": "cn"
+        },
+        "longitudeRaw": "116.3001813",
+        "latitudeRaw": "40.0517165",
+        "boundingBox": [
+          "40.0467165",
+          "40.0567165",
+          "116.2951813",
+          "116.3051813"
+        ],
+        "boundingBoxOrder": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "category": "railway",
+        "featureType": "station",
+        "placeRank": 30,
+        "namedetails": {
+          "name": "西二旗",
+          "name:en": "Xi'erqi",
+          "name:ru": "Сиэрци",
+          "name:zh": "西二旗"
+        },
+        "objectUrl": "https://www.openstreetmap.org/node/5430533767"
+      },
+      "evidence": [
+        {
+          "kind": "community",
+          "query": "辉煌国际, 海淀区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E8%BE%89%E7%85%8C%E5%9B%BD%E9%99%85%2C+%E6%B5%B7%E6%B7%80%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:53:11+00:00",
+          "status": "ok",
+          "candidateCount": 0,
+          "cacheFile": "tools/geography-cache/9b932f4f71bdef78287560f7.json"
+        },
+        {
+          "kind": "station",
+          "query": "西二旗, 海淀区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E8%A5%BF%E4%BA%8C%E6%97%97%2C+%E6%B5%B7%E6%B7%80%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:54:47+00:00",
+          "status": "ok",
+          "candidateCount": 2,
+          "cacheFile": "tools/geography-cache/5ce54a581983ea462eefe8ec.json"
+        }
+      ],
+      "businessDistrict": {
+        "name": null,
+        "status": "inferred_pending_verification",
+        "sourceType": "station_inference",
+        "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+        "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+        "candidate": "西二旗站周边",
+        "observedAt": "2026-11-19"
+      },
+      "station": {
+        "name": "西二旗",
+        "distanceMeters": 549,
+        "distanceBasis": "原自如列表距离；未由OSM重新计算"
+      },
+      "matchBasis": "OSM railway=station 对象名「西二旗」与原列表最近地铁站一致，行政区及北京市一致；只确认地铁站位置，未定位房屋或小区。",
+      "reviewedAt": "2026-11-19T10:55:31+00:00",
+      "geocodingNote": "辉煌国际小区名称检索无结果；采用原列表西二旗地铁站作参考，不以同名片区对象代替住宅。"
+    },
+    {
+      "id": "map-sample-08",
+      "name": "美立方",
+      "district": "朝阳",
+      "coordinate": [
+        116.4121585,
+        40.0372553
+      ],
+      "coordinateSystem": "WGS84",
+      "matchType": "community",
+      "precision": "community_centroid",
+      "confidence": "high",
+      "isExactPropertyLocation": false,
+      "accuracyMeters": null,
+      "label": "美立方小区参考位置（非房间）",
+      "osm": {
+        "type": "way",
+        "id": "682594081",
+        "name": "美立方",
+        "displayName": "美立方, 11, 奥运村街道, 朝阳区, 北京市, 100012, 中国",
+        "address": {
+          "residential": "美立方",
+          "house_number": "11",
+          "suburb": "奥运村街道",
+          "city": "朝阳区",
+          "ISO3166-2-lvl4": "CN-BJ",
+          "postcode": "100012",
+          "country": "中国",
+          "country_code": "cn"
+        },
+        "longitudeRaw": "116.4121585",
+        "latitudeRaw": "40.0372553",
+        "boundingBox": [
+          "40.0365393",
+          "40.0383549",
+          "116.4108869",
+          "116.4134316"
+        ],
+        "boundingBoxOrder": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "category": "landuse",
+        "featureType": "residential",
+        "placeRank": 24,
+        "namedetails": {
+          "name": "美立方"
+        },
+        "objectUrl": "https://www.openstreetmap.org/way/682594081"
+      },
+      "evidence": [
+        {
+          "kind": "community",
+          "query": "美立方, 朝阳区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E7%BE%8E%E7%AB%8B%E6%96%B9%2C+%E6%9C%9D%E9%98%B3%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:53:39+00:00",
+          "status": "ok",
+          "candidateCount": 1,
+          "cacheFile": "tools/geography-cache/5041ffa2972c47fc4a3b0e65.json"
+        }
+      ],
+      "businessDistrict": {
+        "name": null,
+        "status": "inferred_pending_verification",
+        "sourceType": "station_inference",
+        "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+        "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+        "candidate": "立水桥南站周边",
+        "observedAt": "2026-11-19"
+      },
+      "station": {
+        "name": "立水桥南",
+        "distanceMeters": 641,
+        "distanceBasis": "原自如列表距离；未由OSM重新计算"
+      },
+      "matchBasis": "OSM住宅用地名「美立方」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+      "reviewedAt": "2026-11-19T10:54:57+00:00"
+    },
+    {
+      "id": "map-sample-09",
+      "name": "日新家园",
+      "district": "丰台",
+      "coordinate": [
+        116.4188926,
+        39.8381421
+      ],
+      "coordinateSystem": "WGS84",
+      "matchType": "community",
+      "precision": "community_centroid",
+      "confidence": "high",
+      "isExactPropertyLocation": false,
+      "accuracyMeters": null,
+      "label": "日新家园小区参考位置（非房间）",
+      "osm": {
+        "type": "way",
+        "id": "1016753880",
+        "name": "日新家园",
+        "displayName": "日新家园, 石榴庄街道, 丰台区, 北京市, 中国",
+        "address": {
+          "residential": "日新家园",
+          "suburb": "石榴庄街道",
+          "city": "丰台区",
+          "ISO3166-2-lvl4": "CN-BJ",
+          "country": "中国",
+          "country_code": "cn"
+        },
+        "longitudeRaw": "116.4188926",
+        "latitudeRaw": "39.8381421",
+        "boundingBox": [
+          "39.8378986",
+          "39.8385796",
+          "116.4175460",
+          "116.4202443"
+        ],
+        "boundingBoxOrder": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "category": "landuse",
+        "featureType": "residential",
+        "placeRank": 24,
+        "namedetails": {
+          "name": "日新家园"
+        },
+        "objectUrl": "https://www.openstreetmap.org/way/1016753880"
+      },
+      "evidence": [
+        {
+          "kind": "community",
+          "query": "日新家园, 丰台区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E6%97%A5%E6%96%B0%E5%AE%B6%E5%9B%AD%2C+%E4%B8%B0%E5%8F%B0%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:53:49+00:00",
+          "status": "ok",
+          "candidateCount": 1,
+          "cacheFile": "tools/geography-cache/60dc3cdbebde2e7b2ae5e356.json"
+        }
+      ],
+      "businessDistrict": {
+        "name": null,
+        "status": "inferred_pending_verification",
+        "sourceType": "station_inference",
+        "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+        "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+        "candidate": "宋家庄站周边",
+        "observedAt": "2026-11-19"
+      },
+      "station": {
+        "name": "宋家庄",
+        "distanceMeters": 812,
+        "distanceBasis": "原自如列表距离；未由OSM重新计算"
+      },
+      "matchBasis": "OSM住宅用地名「日新家园」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+      "reviewedAt": "2026-11-19T10:54:57+00:00"
+    },
+    {
+      "id": "map-sample-10",
+      "name": "东方雅苑",
+      "district": "朝阳",
+      "coordinate": [
+        116.4689238,
+        39.8862248
+      ],
+      "coordinateSystem": "WGS84",
+      "matchType": "community",
+      "precision": "community_centroid",
+      "confidence": "high",
+      "isExactPropertyLocation": false,
+      "accuracyMeters": null,
+      "label": "东方雅苑小区参考位置（非房间）",
+      "osm": {
+        "type": "way",
+        "id": "1303643495",
+        "name": "东方雅苑",
+        "displayName": "东方雅苑, 劲松街道, 朝阳区, 北京市, 中国",
+        "address": {
+          "residential": "东方雅苑",
+          "suburb": "劲松街道",
+          "city": "朝阳区",
+          "ISO3166-2-lvl4": "CN-BJ",
+          "country": "中国",
+          "country_code": "cn"
+        },
+        "longitudeRaw": "116.4689238",
+        "latitudeRaw": "39.8862248",
+        "boundingBox": [
+          "39.8844876",
+          "39.8871859",
+          "116.4672893",
+          "116.4697152"
+        ],
+        "boundingBoxOrder": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "category": "landuse",
+        "featureType": "residential",
+        "placeRank": 24,
+        "namedetails": {
+          "name": "东方雅苑"
+        },
+        "objectUrl": "https://www.openstreetmap.org/way/1303643495"
+      },
+      "evidence": [
+        {
+          "kind": "community",
+          "query": "东方雅苑, 朝阳区, 北京市, 中国",
+          "queryUrl": "https://nominatim.openstreetmap.org/search?q=%E4%B8%9C%E6%96%B9%E9%9B%85%E8%8B%91%2C+%E6%9C%9D%E9%98%B3%E5%8C%BA%2C+%E5%8C%97%E4%BA%AC%E5%B8%82%2C+%E4%B8%AD%E5%9B%BD&format=jsonv2&limit=3&countrycodes=cn&addressdetails=1&namedetails=1&accept-language=zh-CN%2Cen",
+          "retrievedAt": "2026-11-19T10:53:55+00:00",
+          "status": "ok",
+          "candidateCount": 1,
+          "cacheFile": "tools/geography-cache/77aad3046e1bf245083d57dc.json"
+        }
+      ],
+      "businessDistrict": {
+        "name": null,
+        "status": "inferred_pending_verification",
+        "sourceType": "station_inference",
+        "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+        "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+        "candidate": "平乐园站周边",
+        "observedAt": "2026-11-19"
+      },
+      "station": {
+        "name": "平乐园",
+        "distanceMeters": 447,
+        "distanceBasis": "原自如列表距离；未由OSM重新计算"
+      },
+      "matchBasis": "OSM住宅用地名「东方雅苑」与原列表小区名完全一致，行政区与北京市一致；采用该住宅用地对象的Nominatim中心点，不代表房间、楼栋或设备位置。",
+      "reviewedAt": "2026-11-19T10:54:57+00:00"
+    }
+  ]
+}

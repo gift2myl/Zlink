@@ -10,18 +10,18 @@ export class SceneViewer {
     this.scene=new THREE.Scene();
     this.software=false;
     try{this.renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});}catch(error){this.renderer=new SVGRenderer();this.renderer.setPrecision(2);this.software=true;this.container.dataset.renderMode='svg';}
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));this.renderer.setClearColor(0x081523,0);this.renderer.outputColorSpace=THREE.SRGBColorSpace;
+    this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));this.renderer.setClearColor(0x111315,0);this.renderer.outputColorSpace=THREE.SRGBColorSpace;
     this.renderer.toneMapping=THREE.ACESFilmicToneMapping;this.renderer.toneMappingExposure=1.2;
     if(this.renderer.shadowMap){this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;}
     this.renderer.domElement.setAttribute('aria-label','可旋转和缩放的三维房源场景');this.renderer.domElement.setAttribute('role','img');container.prepend(this.renderer.domElement);
     this.camera=new THREE.PerspectiveCamera(40,1,.1,2000);
     this.controls=new OrbitControls(this.camera,this.renderer.domElement);this.controls.enableDamping=true;this.controls.dampingFactor=.07;this.controls.maxPolarAngle=Math.PI*.46;this.controls.minPolarAngle=.04;this.controls.enablePan=true;this.controls.autoRotateSpeed=.3;
     this.needsRender=true;this.controls.addEventListener('change',()=>this.needsRender=true);
-    this.scene.add(new THREE.HemisphereLight(0xb6d9ff,0x2c4762,2));
+    this.scene.add(new THREE.HemisphereLight(0xf1f4f7,0x353a40,2));
     this.sun=new THREE.DirectionalLight(0xfff6e9,3.8);this.sun.position.set(30,65,40);this.sun.castShadow=true;this.sun.shadow.mapSize.set(2048,2048);this.sun.shadow.camera.left=-12;this.sun.shadow.camera.right=12;this.sun.shadow.camera.top=15;this.sun.shadow.camera.bottom=-15;this.sun.shadow.camera.near=.1;this.sun.shadow.camera.far=130;this.sun.shadow.bias=-.0003;this.sun.shadow.normalBias=.04;this.scene.add(this.sun);
-    const rim=new THREE.DirectionalLight(0x75bfff,2);rim.position.set(-20,25,-30);this.scene.add(rim);
-    this.fill=new THREE.DirectionalLight(0xe8f5ff,1.3);this.fill.position.set(-15,12,20);this.scene.add(this.fill);this.rim=rim;
-    if(this.software){this.sun.intensity=.85;rim.intensity=.22;this.fill.intensity=.12;this.ambient=new THREE.AmbientLight(0xb5c8dd,.55);this.scene.add(this.ambient);}
+    const rim=new THREE.DirectionalLight(0xdbe3eb,2);rim.position.set(-20,25,-30);this.scene.add(rim);
+    this.fill=new THREE.DirectionalLight(0xf0f3f5,1.3);this.fill.position.set(-15,12,20);this.scene.add(this.fill);this.rim=rim;
+    if(this.software){this.sun.intensity=.85;rim.intensity=.22;this.fill.intensity=.12;this.ambient=new THREE.AmbientLight(0xc7cbd1,.55);this.scene.add(this.ambient);}
     this.city=createCityMap(geojson,districts);this.scene.add(this.city.group);
     this.cityTarget=this.city.bounds.getCenter(new THREE.Vector3());this.cityTarget.y=0;
     this.raycaster=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.pointerDown=null;

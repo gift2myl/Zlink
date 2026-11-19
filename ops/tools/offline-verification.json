@@ -1,0 +1,23 @@
+{
+  "verifiedAt": "2026-11-19T18:26:56+08:00",
+  "mode": "offline only",
+  "checks": {
+    "strict_boolean_verification": true,
+    "pagination_default_false": true,
+    "http200_challenge_rejected_without_body_leak": true,
+    "id_string_model_false_contacts_removed": true,
+    "empty_html_zero_total_not_complete": true,
+    "zero_results_preserve_previous_dataset": true,
+    "unverified_config_no_http_calls": true,
+    "offline_adapter_rejects_string_verification": true,
+    "actual_status_and_10_demo_samples_unchanged": true,
+    "first_partial_does_not_claim_retained_history": true,
+    "partial_merge_and_verified_full_backup": true
+  },
+  "passed": true,
+  "liveArtifactHashes": {
+    "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/properties.json": "26d416915c11cf2c0106d8736b53cfeed85c3f2298e6f0b6d33667043d5a759b",
+    "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json": "b6681a286fdda3d2ee0d335b0324b55172567ebf6759165bf51d1787781a9422",
+    "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawled-properties.json": "8985bcb5f794320166c1bca9d646dda34a07cbdc744e906e468cca14ee8865da"
+  }
+}

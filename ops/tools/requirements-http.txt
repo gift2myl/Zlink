@@ -1,0 +1,2 @@
+scrapling==0.5.1
+curl_cffi==0.17.0

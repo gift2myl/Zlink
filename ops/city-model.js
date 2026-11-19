@@ -63,7 +63,7 @@ function makeGeographicGrid(bounds) {
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
   const material = new THREE.LineBasicMaterial({
-    color: 0x22617a, transparent: true, opacity: 0.23, depthWrite: false,
+    color: 0x68717a, transparent: true, opacity: 0.23, depthWrite: false,
   });
   group.add(new THREE.LineSegments(geometry, material));
   return group;
@@ -80,7 +80,7 @@ function makeMarker(district) {
   const core = new THREE.Mesh(
     new THREE.CylinderGeometry(radius * 0.52, radius * 0.52, 1.45, 20),
     new THREE.MeshStandardMaterial({
-      color: 0xa0f8f1, emissive: 0x37dacf, emissiveIntensity: 0.8,
+      color: 0xf0f3f5, emissive: 0xa9b7c2, emissiveIntensity: 0.8,
       roughness: 0.25, metalness: 0.3,
     }),
   );
@@ -90,7 +90,7 @@ function makeMarker(district) {
   group.add(core);
   const ring = new THREE.Mesh(
     new THREE.RingGeometry(radius * 1.25, radius * 1.48, 48),
-    new THREE.MeshBasicMaterial({ color: 0x67e8ed, transparent: true, opacity: 0.9, side: THREE.DoubleSide }),
+    new THREE.MeshBasicMaterial({ color: 0xe8edf2, transparent: true, opacity: 0.9, side: THREE.DoubleSide }),
   );
   ring.rotation.x = -Math.PI / 2;
   ring.position.y = 0.16;
@@ -99,7 +99,7 @@ function makeMarker(district) {
   group.add(ring);
   const outerRing = new THREE.Mesh(
     new THREE.RingGeometry(radius * 1.9, radius * 1.96, 48),
-    new THREE.MeshBasicMaterial({ color: 0x58c9e5, transparent: true, opacity: 0.45, side: THREE.DoubleSide }),
+    new THREE.MeshBasicMaterial({ color: 0xa8b2bd, transparent: true, opacity: 0.45, side: THREE.DoubleSide }),
   );
   outerRing.rotation.x = -Math.PI / 2;
   outerRing.position.y = 0.12;
@@ -127,12 +127,12 @@ export function createCityMap(geojson, districts = []) {
   const focusPositions = Object.create(null);
   const bounds = new THREE.Box3();
   const topMaterial = new THREE.MeshStandardMaterial({
-    color: 0x164d73, roughness: 0.55, metalness: 0.28,
-    emissive: 0x082c48, emissiveIntensity: 0.45,
+    color: 0x535d68, roughness: 0.55, metalness: 0.28,
+    emissive: 0x20252c, emissiveIntensity: 0.45,
   });
   const sideMaterial = new THREE.MeshStandardMaterial({
-    color: 0x082e49, roughness: 0.68, metalness: 0.18,
-    emissive: 0x03131f, emissiveIntensity: 0.35,
+    color: 0x242a32, roughness: 0.68, metalness: 0.18,
+    emissive: 0x101317, emissiveIntensity: 0.35,
   });
   for (const feature of geojson.features) {
     if (!feature.geometry || !['Polygon', 'MultiPolygon'].includes(feature.geometry.type)) continue;

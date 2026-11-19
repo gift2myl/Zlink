@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "110000",
+  "startUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+  "filter": {
+    "name": "灵之智能",
+    "verified": false,
+    "evidence": null,
+    "requiredQuery": {}
+  },
+  "pagination": {
+    "verified": false,
+    "evidence": null,
+    "mode": "next_link",
+    "nextCss": null,
+    "pageParam": null,
+    "startPage": 1,
+    "maxPages": 500
+  },
+  "extraction": {
+    "verified": false,
+    "format": "html",
+    "recordCss": null,
+    "fields": {}
+  },
+  "coverage": {
+    "expectedTotal": null,
+    "totalEvidence": null
+  },
+  "delaySeconds": 2
+}

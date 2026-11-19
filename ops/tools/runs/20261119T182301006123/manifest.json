@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "engine": {
+    "name": "Scrapling",
+    "version": "0.5.1",
+    "transport": "urllib",
+    "parser": "Scrapling Selector",
+    "fetcherAvailable": false,
+    "fallbackReason": "native_fetcher_dependency_blocked",
+    "browserUsed": false,
+    "impersonationEnabled": false,
+    "stealthHeadersEnabled": false
+  },
+  "scope": {
+    "city": "北京",
+    "cityCode": "110000",
+    "filter": "灵之智能"
+  },
+  "startedAt": "2026-11-19T18:22:52+08:00",
+  "finishedAt": "2026-11-19T18:23:01+08:00",
+  "status": "blocked",
+  "filterVerified": false,
+  "pagesFetched": 0,
+  "requestsAttempted": 1,
+  "uniqueCount": 0,
+  "isFullInventory": false,
+  "reason": "challenge_page",
+  "message": "公开地图返回访问校验页，已停止；未执行校验脚本或使用验证 Cookie。",
+  "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+  "evidence": {
+    "httpStatus": 200,
+    "bodyBytes": 986,
+    "sha256": "fd65cb8794166884870f97ce8025bf122e04ad2e6d22e940e8d779425253dad5",
+    "title": null,
+    "challengeMarkers": [
+      "EO_Bot_Ssid",
+      "__tst_status"
+    ]
+  },
+  "datasetFile": "crawled-properties.json",
+  "pages": [
+    {
+      "attempt": 1,
+      "url": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "fetchedAt": "2026-11-19T18:23:01+08:00",
+      "httpStatus": 200,
+      "bodyBytes": 986,
+      "sha256": "fd65cb8794166884870f97ce8025bf122e04ad2e6d22e940e8d779425253dad5",
+      "title": null,
+      "challengeMarkers": [
+        "EO_Bot_Ssid",
+        "__tst_status"
+      ]
+    }
+  ],
+  "datasetCount": 0,
+  "retainedHistory": false,
+  "existingDemoSamplesPreserved": true
+}

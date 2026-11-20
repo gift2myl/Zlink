@@ -41,9 +41,10 @@ function positionLabel(entry) {
 
 function propertyFacts(property) {
   const area = finite(property.area) && property.area > 0 ? `${property.area}㎡${property.areaScope === 'listed_bedroom' ? '（该卧室）' : ''}` : '面积待核验';
-  const layout = string(property.roomLabel) || string(property.layout) || (finite(property.bedrooms) && property.bedrooms > 0 ? `${property.bedrooms}居` : '户型待核验');
-  const floor = finite(property.floor) && finite(property.totalFloors) ? `${property.floor}/${property.totalFloors}层` : '';
-  return [area, layout, floor].filter(Boolean).join(' · ');
+  const layout = string(property.layout) || (finite(property.bedrooms) && property.bedrooms > 0 ? `${property.bedrooms}居` : '');
+  const room = string(property.roomLabel);
+  const floor = finite(property.floor) ? (finite(property.totalFloors) ? `${property.floor}/${property.totalFloors}层` : `${property.floor}层`) : '';
+  return [area,layout || (room?'':'户型待核验'),room!==layout?room:'',floor].filter(Boolean).join(' · ');
 }
 
 function devicePlan(property, profile) {
@@ -86,11 +87,17 @@ export class PropertyMapWorkspace {
     ].map(id => [id, document.getElementById(id)]));
     this.originalTitles = new Map(['geo-terrain-btn', 'top-view-btn', 'rotate-btn'].map(id => [id, this.elements[id]?.title || '']));
     this.listeners = [];
+    this.mapCard=document.createElement('section');
+    this.mapCard.id='geo-listing-card';
+    this.mapCard.className='geo-listing-card';
+    this.mapCard.hidden=true;
+    this.mapCard.setAttribute('aria-label','地图房源');
+    this.container.append(this.mapCard);
     this.updateData(properties, events);
     this.viewer = new GeographicMap(container, {
       entries: [], sources: this.sources,
-      onProperty: id => this.openMarker(id),
-      onNearby: entries => this.showPointChoices(entries,'附近位置'),
+      onProperty: pin => this.openMarker(pin),
+      onNearby: pins => this.chooseListings(pins.flatMap(pin => pin.members || [pin])),
       onStatus: status => this.receiveStatus(status)
     });
     this.visibilityObserver = new IntersectionObserver(records => {
@@ -189,17 +196,31 @@ export class PropertyMapWorkspace {
       if (control) this.viewer.select(this.selectedPin(control.dataset.geoGroup || control.dataset.geoPropertyId)?.id || null);
     };
     for (const event of ['pointerover','focusin']) this.listen(list, event, highlight);
-    const restore = () => this.viewer.select(this.selectedPin(this.selectedId)?.id || null);
+    const restore = () => this.viewer.select(this.selectedPin(this.selectedId)?.id || null,this.selectedId);
     this.listen(list, 'pointerleave', restore);
     this.listen(list, 'focusout', event => { if (!list.contains(event.relatedTarget)) restore(); });
-    this.listen(this.elements['scene-detail'], 'click', event => {
-      const option = event.target.closest?.('[data-geo-option]');
-      if (option && this.active) {
-        const id = option.dataset.geoOption;
-        if (this.pins.some(pin => pin.id === id)) this.openMarker(id);
-        else this.openEntry(id);
-        return;
+    this.listen(this.mapCard,'click',event=>{
+      const button=event.target.closest('button');
+      if(!button || !this.active)return;
+      if(button.dataset.geoPick) {
+        this.focusProperty(button.dataset.geoPick,{reveal:false});
+      } else if(button.dataset.geoMapGroup) {
+        this.openMarker(this.groups.find(group=>group.id===button.dataset.geoMapGroup));
+      } else if(button.hasAttribute('data-geo-card-close')) {
+        this.dismissCard();
+      } else if(button.hasAttribute('data-geo-card-detail')) {
+        this.revealDetail();
+      } else if(button.hasAttribute('data-geo-card-siblings')) {
+        this.chooseListings(this.filteredEntries);
+      } else if(button.hasAttribute('data-geo-card-city')) {
+        this.reset();
+        this.elements['scene-breadcrumb']?.querySelector('[data-geo-crumb=city]')?.focus({preventScroll:true});
       }
+    });
+    this.listen(this.mapCard,'keydown',event=>{
+      if(event.key==='Escape'){event.preventDefault();this.dismissCard();}
+    });
+    this.listen(this.elements['scene-detail'], 'click', event => {
       const button = event.target.closest?.('[data-geo-action]');
       if (!button || !this.active) return;
       const entry = this.entries.find(item => item.id === this.selectedId);
@@ -263,15 +284,14 @@ export class PropertyMapWorkspace {
       this.matchesStatus(entry)
     );
     if (this.communityKey && !this.entries.some(e => e.businessKey === this.filters.business && e.communityKey === this.communityKey)) this.communityKey = '';
-    const detail = this.elements['scene-detail'];
-    if (this.active && detail?.querySelector('.geo-point-options')) detail.hidden = true;
     this.filteredEntries = this.communityKey ? scoped.filter(e => e.communityKey === this.communityKey) : scoped;
     this.level = this.communityKey ? 'property' : this.filters.business ? 'community' : 'business';
     this.groups = this.level === 'property' ? [] : mapGroups(this.filteredEntries, this.level);
-    this.pins = combineMapPoints(this.level === 'property' ? this.filteredEntries : this.groups);
+    const listingPins = combineMapPoints(this.filteredEntries);
+    this.pins = this.level === 'property' ? listingPins : combineMapPoints(this.groups);
     if (this.selectedId && !this.filteredEntries.some(entry => entry.id === this.selectedId)) this.closeDetail();
-    this.viewer?.setEntries(this.pins);
-    this.viewer?.select(this.selectedPin(this.selectedId)?.id || null);
+    this.viewer?.setEntries(this.pins, listingPins);
+    this.viewer?.select(this.selectedPin(this.selectedId)?.id || null,this.selectedId);
     this.renderList();
     this.renderCoverage();
     this.renderMonitorSummary();
@@ -297,7 +317,7 @@ export class PropertyMapWorkspace {
       const pendingLabel = entry.hasPending ? `${entry.priority ? entry.priority + ' ' : ''}演示待办 · ${entry.pendingCount}条` : '暂无演示待办';
       const pendingTag = entry.priority === 'P1' ? 'red' : entry.hasPending ? 'amber' : 'neutral';
       return `<button type="button" class="geo-property-item${priorityClass}${entry.id === this.selectedId ? ' is-selected' : ''}" data-geo-property-id="${esc(entry.id)}" aria-pressed="${entry.id === this.selectedId}">
-        <span class="geo-property-index">${entry.mapIndex}</span><span class="geo-property-main"><strong>${esc(entry.property.realListingId || entry.id)}</strong><span class="geo-property-region">${esc(entry.name)}${entry.property.businessId ? " · "+esc(entry.property.businessId) : ""}</span>
+        <span class="geo-property-index">${entry.mapIndex}</span><span class="geo-property-main"><strong>${esc(entry.property.realListingId || entry.id)}</strong><span class="geo-property-region">${esc(entry.name)}${(entry.property.officialHouseCode || entry.property.businessId) ? ' · '+esc(entry.property.officialHouseCode || entry.property.businessId) : ''}</span>
         <span class="geo-property-region" style="display:block">${esc(entry.district)} · ${esc(entry.businessLabel)}</span>
         <span class="geo-property-region" style="display:block">${esc(propertyFacts(entry.property))}</span>
         <span class="geo-property-status"><span class="tag neutral">${precision}</span><span class="tag ${pendingTag}">${pendingLabel}</span></span>
@@ -366,25 +386,61 @@ export class PropertyMapWorkspace {
     this.renderBusinessFilter(); this.applyFilters(true);
   }
 
-  openEntry(id) {
-    if (this.groups.some(item => item.id === id)) this.openGroup(id);
-    else this.focusProperty(id);
-  }
-
-  openMarker(id) {
-    const pin = this.pins.find(item => item.id === id);
+  openMarker(pin) {
     if (!pin) return;
-    if (!pin.options) { this.openEntry(id); return; }
-    this.showPointChoices(pin.options,'同一参考位置',id);
+    if (pin.type === 'business') { this.openGroup(pin.id); return; }
+    if (pin.type === 'community' && pin.members.length > 1) {
+      this.openGroup(pin.id);
+      this.chooseListings(pin.members);
+      return;
+    }
+    if(pin.options?.some(option=>option.type)) {
+      const options=pin.options.map(option=>`<button type="button" class="geo-listing-choice" data-geo-map-group="${esc(option.id)}">
+        <strong>${esc(option.name)}</strong><span>${esc(option.district)} · ${option.members.length} 套</span></button>`).join('');
+      const label=pin.options[0].type==='business'?'选择商圈':'选择小区';
+      this.setMapCard(label,`<div class="geo-listing-choices">${options}</div>`,true);
+      return;
+    }
+    this.chooseListings(pin.members || [pin]);
   }
 
-  showPointChoices(options, heading, pinId = null) {
-    this.closeDetail();
-    this.viewer.select(pinId);
-    const box = this.elements['scene-detail'];
-    box.hidden = false;
-    box.innerHTML = `<button type="button" class="icon-btn close-scene-detail" data-geo-action="close" aria-label="关闭选择">×</button><h3>${esc(heading)}</h3><div class="geo-point-options">${options.map(e => `<button type="button" class="button" data-geo-option="${esc(e.id)}">${esc(e.type ? e.name + ' · ' + e.district : e.property.realListingId || e.id)}</button>`).join('')}</div>`;
-    this.revealDetail();
+  chooseListings(entries) {
+    const listings=[...new Map(entries.map(entry=>[entry.id,entry])).values()];
+    if(!listings.length)return;
+    if(listings.length===1){ this.focusProperty(listings[0].id,{reveal:false}); return; }
+    const names = new Set(listings.map(entry=>entry.name));
+    const heading = names.size===1 ? listings[0].name : '附近房源';
+    const choices = listings.map(entry=>{
+      const id=entry.property.realListingId || entry.id;
+      return `<button type="button" class="geo-listing-choice" data-geo-pick="${esc(entry.id)}" aria-pressed="${entry.id===this.selectedId}">
+        <strong>${names.size===1?'':esc(entry.name)+' · '}${entry.property.realListingId?'挂牌':'记录'} ${esc(id)}</strong>
+        <span>${esc(propertyFacts(entry.property))}</span></button>`;
+    }).join('');
+    this.setMapCard(heading+' · '+listings.length+' 套',`<div class="geo-listing-choices">${choices}</div>`,true);
+  }
+
+  setMapCard(title,html,focus=false) {
+    this.mapCard.hidden=false;
+    this.mapCard.innerHTML=`<div class="geo-listing-card-head"><h3 tabindex="-1">${esc(title)}</h3>
+      <button type="button" data-geo-card-close aria-label="收起地图房源信息">×</button></div>${html}`;
+    if(focus)this.mapCard.querySelector('h3').focus({preventScroll:true});
+  }
+
+  showSelectedListing(entry,focus=false) {
+    const id=entry.property.realListingId || entry.id;
+    this.setMapCard(entry.name,`<p><strong>${entry.property.realListingId?'挂牌号':'记录号'} ${esc(id)}</strong> · ${esc(positionLabel(entry))}</p>
+      <p>${esc(propertyFacts(entry.property))}</p><div class="geo-listing-actions">
+      <button type="button" data-geo-card-detail>设备详情</button>
+      ${this.filteredEntries.length>1?`<button type="button" data-geo-card-siblings>本小区 ${this.filteredEntries.length} 套</button>`:''}
+      <button type="button" data-geo-card-city>返回北京地图</button></div>`,focus);
+  }
+
+  dismissCard() {
+    this.mapCard.hidden=true;
+    const marker=this.viewer.markerRecords.find(record=>record.element.classList.contains('is-selected')) ||
+      this.viewer.markerRecords[0];
+    if(marker)marker.element.focus({preventScroll:true});
+    else {this.container.tabIndex=-1;this.container.focus({preventScroll:true});}
   }
 
   revealDetail() {
@@ -406,7 +462,7 @@ export class PropertyMapWorkspace {
     return entry.id === MODEL_PROPERTY_ID && entry.property.imported !== true && entry.property.modelReady === true;
   }
 
-  async focusProperty(value) {
+  async focusProperty(value, {reveal=true}={}) {
     const id = string(value);
     const entry = this.entries.find(item => item.id === id);
     if (!entry) return false;
@@ -420,9 +476,10 @@ export class PropertyMapWorkspace {
     }
     this.selectedId = id; this.deferredFocusId = null;
     this.renderFilters(); this.applyFilters(false);
-    this.viewer.select(this.selectedPin(id)?.id || null);
+    this.viewer.select(this.selectedPin(id)?.id || null,id);
     this.renderDetail(entry);
-    this.revealDetail();
+    this.showSelectedListing(entry,!reveal);
+    if (reveal) this.revealDetail();
     this.viewer.setRotate(false);
     this.syncControls();
     if (!entry.position) return false;
@@ -456,7 +513,7 @@ export class PropertyMapWorkspace {
       sourceUrl && `<a href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">房源来源</a>`].filter(Boolean);
     element.hidden = false;
     element.innerHTML = `<button type="button" class="icon-btn close-scene-detail" data-geo-action="close" aria-label="关闭房源地图详情">×</button>
-      <div class="geo-detail-heading"><h3>${esc(entry.name)}</h3><p>${entry.property.realListingId ? '挂牌号' : '记录号'} ${esc(entry.id)}${entry.property.businessId ? ' · ' + esc(entry.property.businessId) : ''}</p><p>${esc(entry.district)} · ${esc(entry.businessLabel)} · ${esc(propertyFacts(entry.property))}</p></div>
+      <div class="geo-detail-heading"><h3>${esc(entry.name)}</h3><p>${entry.property.realListingId ? '挂牌号' : '记录号'} ${esc(entry.id)}${(entry.property.officialHouseCode || entry.property.businessId) ? ' · ' + esc(entry.property.officialHouseCode || entry.property.businessId) : ''}</p><p>${esc(entry.district)} · ${esc(entry.businessLabel)} · ${esc(propertyFacts(entry.property))}</p></div>
       <div class="geo-detail-actions">
         ${this.callbacks.onOpenPlan ? `<button type="button" class="button primary" data-geo-action="plan" aria-controls="overview-plan-pane" aria-expanded="${document.getElementById('overview-plan-pane')?.hidden === false}">${entry.property.publicFloorplanUrl ? '查看户型与设备点位' : '查看本套配置方案'}</button>` : ''}
         <button type="button" class="button" data-geo-action="operations">查看家庭运行</button>
@@ -485,6 +542,7 @@ export class PropertyMapWorkspace {
   }
 
   closeDetail() {
+    this.mapCard.hidden=true;
     this.callbacks.onClosePlan?.();
     this.planProfile = 'base';
     this.selectedId = null;
@@ -529,11 +587,12 @@ export class PropertyMapWorkspace {
   setVisible(visible) {
     this.active = Boolean(visible);
     this.viewer.setVisible(this.active);
+    if (!this.active) this.mapCard.hidden=true;
     if (this.elements['geo-map-status']) this.elements['geo-map-status'].hidden = !this.active;
     if (this.active) {
       this.renderBreadcrumb(); this.syncControls();
       const selected = this.entries.find(entry => entry.id === this.selectedId);
-      if (selected) this.renderDetail(selected);
+      if (selected) {this.renderDetail(selected);this.showSelectedListing(selected);}
       if (this.deferredFocusId) this.applyDeferredFocus();
     } else {
       for (const id of ['geo-terrain-btn', 'top-view-btn', 'rotate-btn']) {
@@ -576,6 +635,7 @@ export class PropertyMapWorkspace {
     this.listeners.forEach(remove => remove());
     this.listeners = [];
     this.visibilityObserver.disconnect();
+    this.mapCard.remove();
     this.viewer.dispose();
   }
 }

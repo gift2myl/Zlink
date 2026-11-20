@@ -1,3 +1,4 @@
+import { mountMapListingSearch } from './map-listing-search.js';
 import { mountListingPlanViewer, loadListingPlanIndex } from './listing-plan-viewer.js';
 import { projectPublicInventory } from './public-inventory-data.js';
 import { updatedRegistry } from './inventory-register-view.js';
@@ -86,6 +87,7 @@ state.page='overview';state.scene='city';state.activeEvent=null;state.propertyPa
 let data,ops,geo,viewer,mapWorkspace,geography,mapSources,householdWorkspace,modelCoverage,listingInventory,twinWorkspace,inventoryRegistry;let diagnosisTimer=null;
 let activeTwinPropertyId=MODEL_PROPERTY_ID;
 let inventoryExplorer=null,propertyDetailController=null,inventoryRefreshRunning=false;
+let mapListingSearch=null;
 let mapInventoryScope='collected', planCatalog=new Map(), listingPlanView=null;
 let overviewPlanView=null, overviewPlanId=null, overviewTwinOptions='';
 let crawlStatus=null,crawlSource={},historicalProperties=[],crawledProperties=[],crawledIsCurrent=false;
@@ -109,10 +111,10 @@ function mergedRows(previous, additions, combine) {
  for(const row of additions) rows.set(row.id,rows.has(row.id)?combine(rows.get(row.id),row):row);
  return [...rows.values()];
 }
-function applyInventorySources(base,report,dataset,locations,coverage,audit,registry,snapshot,communityMap,availability){
+function applyInventorySources(base,report,dataset,locations,coverage,audit,registry,snapshot,communityMap,availability,listingFacts){
  if(!Array.isArray(snapshot?.listings)||!Array.isArray(snapshot?.checks)||!snapshot.date)
   throw new Error('官网房源快照格式不完整');
- const projected=projectPublicInventory(snapshot,communityMap,availability);
+ const projected=projectPublicInventory(snapshot,communityMap,availability,listingFacts);
  initializePropertyData(base,report,dataset);
  const prior=data.properties;
  const priorById=new Map(prior.map(p=>[listingIdentity(p),p]));
@@ -168,9 +170,9 @@ async function refreshCollectedInventory(){
  if(inventoryRefreshRunning)return;
  inventoryRefreshRunning=true;const button=$('#inventory-refresh');if(button){button.disabled=true;button.textContent='正在刷新';}
  try{
-  const names=['properties.json','crawl-status.json','crawled-properties.json','property-geography.json','three-source-coverage.json','listing-inventory.json','inventory-registry.json','public-inventory.json','beijing-community-map.json','plan-previews/availability.json'];
-  const [base,report,dataset,locationData,coverageData,inventoryData,registryData,snapshot,communityMap,availability]=await Promise.all(names.map(async name=>{const r=await fetch('./ops/assets/'+name,{cache:'no-store'});if(!r.ok)throw Error('读取失败');return r.json();}));
-  applyInventorySources(base,report,dataset,locationData,coverageData,inventoryData,registryData,snapshot,communityMap,availability);if(mapWorkspace)mapWorkspace.geography=geography;if(twinWorkspace){twinWorkspace.geography=geography;twinWorkspace.coverage=modelCoverage;}
+  const names=['properties.json','crawl-status.json','crawled-properties.json','property-geography.json','three-source-coverage.json','listing-inventory.json','inventory-registry.json','public-inventory.json','beijing-community-map.json','plan-previews/availability.json','beijing-listing-facts.json'];
+  const [base,report,dataset,locationData,coverageData,inventoryData,registryData,snapshot,communityMap,availability,listingFacts]=await Promise.all(names.map(async name=>{const r=await fetch('./ops/assets/'+name,{cache:'no-store'});if(!r.ok)throw Error('读取失败');return r.json();}));
+  applyInventorySources(base,report,dataset,locationData,coverageData,inventoryData,registryData,snapshot,communityMap,availability,listingFacts);if(mapWorkspace)mapWorkspace.geography=geography;if(twinWorkspace){twinWorkspace.geography=geography;twinWorkspace.coverage=modelCoverage;}
   renderAll();renderInventoryLedger();syncInventoryExplorer();
   toast(`已刷新 ${collectedStats().count} 条已收录房源及分级统计。来源采样时间：${formatObservedAt(currentInventoryHierarchy().observedAt)}。`);
  }catch{toast('台账刷新未完成，已保留当前数据。');}
@@ -202,8 +204,8 @@ const agentRoles=[
 
 async function init(){
  try{
-  const [base,operationData,boundaries,report,dataset,locationData,sourceData,coverageData,inventoryData,registryData,snapshot,communityMap,availability,catalog]=await Promise.all([...['properties.json','ops-source.json','beijing.geojson'].map(async n=>{const r=await fetch('./ops/assets/'+n);if(!r.ok)throw Error(n+' 加载失败');return r.json();}),optionalJson('crawl-status.json'),optionalJson('crawled-properties.json'),optionalJson('property-geography.json'),optionalJson('map-sources.json'),optionalJson('three-source-coverage.json'),optionalJson('listing-inventory.json'),optionalJson('inventory-registry.json'),fetch('./ops/assets/public-inventory.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('公开房源数据加载失败');return r.json();}),optionalJson('beijing-community-map.json'),optionalJson('plan-previews/availability.json'),loadListingPlanIndex().catch(()=>new Map())]);
-  planCatalog=catalog;ops=operationData;geo=boundaries;mapSources=sourceData||{};applyInventorySources(base,report,dataset,locationData,coverageData,inventoryData,registryData,snapshot,communityMap,availability);
+  const [base,operationData,boundaries,report,dataset,locationData,sourceData,coverageData,inventoryData,registryData,snapshot,communityMap,availability,listingFacts,catalog]=await Promise.all([...['properties.json','ops-source.json','beijing.geojson'].map(async n=>{const r=await fetch('./ops/assets/'+n);if(!r.ok)throw Error(n+' 加载失败');return r.json();}),optionalJson('crawl-status.json'),optionalJson('crawled-properties.json'),optionalJson('property-geography.json'),optionalJson('map-sources.json'),optionalJson('three-source-coverage.json'),optionalJson('listing-inventory.json'),optionalJson('inventory-registry.json'),fetch('./ops/assets/public-inventory.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('公开房源数据加载失败');return r.json();}),optionalJson('beijing-community-map.json'),optionalJson('plan-previews/availability.json'),optionalJson('beijing-listing-facts.json'),loadListingPlanIndex().catch(()=>new Map())]);
+  planCatalog=catalog;ops=operationData;geo=boundaries;mapSources=sourceData||{};applyInventorySources(base,report,dataset,locationData,coverageData,inventoryData,registryData,snapshot,communityMap,availability,listingFacts);
   renderAll();
   $('#scene-labels').hidden=true;$('.scene-orientation').hidden=true;
   $('#scene-loading').lastElementChild.textContent='正在加载北京公共地图';
@@ -212,6 +214,10 @@ async function init(){
    onOpenProperty:showProperty,onOpenPlan:openOverviewPlan,onClosePlan:closeOverviewPlan,onOpenModel:openTwin,onOpenOperations:openHousehold,onEvent:openEvent,onActivateMap:()=>showScene('city'),
    onViewInventory:district=>{showPage('properties');$('#inventory-view').value=mapInventoryScope;$('#property-search').value='';$('#bedroom-select').value='';$('#business-select').value='';renderProperties();$('#district-select').value=district||'';state.propertyPage=1;renderPropertiesList();},
    onStatus:status=>{if(state.scene==='city')$('#scene-loading').hidden=['webgl','leaflet','failed'].includes(status.mode);}
+  });
+  mapListingSearch=mountMapListingSearch($('#map-listing-search'),{
+   getEntries:()=>mapWorkspace.entries,
+   onLocate:id=>mapWorkspace.focusProperty(id,{reveal:false})
   });
   householdWorkspace=new HouseholdWorkspace($('#household-workspace'),{
    entryContainer:$('#household-entry'),properties:allProperties(),events:state.events,tickets:state.tickets,
@@ -240,6 +246,7 @@ function inventoryProperties(scope='collected'){
 function mapProperties(){return inventoryProperties(mapInventoryScope);}
 function mapScopeNote(){return mapInventoryScope==='beijing'?'北京目标挂牌 · 位置精确到小区':mapInventoryScope==='references'?'逐套核对的户型参考 · 小区级位置':mapInventoryScope==='model'?'有三维参考的采集房源 · 非房间精确坐标':'全部已采集房源 · 小区 / 地铁参考位置';}
 function setMapScope(scope){
+ mapListingSearch?.close();
  mapInventoryScope=['model','references','beijing'].includes(scope)?scope:'collected';
  $('#map-inventory-scope').value=mapInventoryScope;mapWorkspace?.closeDetail();mapWorkspace?.update(mapProperties(),state.events);
  if(state.scene==='city'){$('#scene-footnote').textContent=mapScopeNote();$('#scene-subtitle').textContent=mapInventoryScope==='model'?'已取得对应户型与照片 · 房源参考位置':'房源分布 · 演示待办 · 分级跟进';}
@@ -276,7 +283,7 @@ function openHousehold(id=MODEL_PROPERTY_ID,options={}){if(!householdWorkspace){
 function showPage(page,scroll=true){
  const labels={overview:['运维总览','按商圈、小区和挂牌查看北京房源及设备。'],household:['家庭运行','从整屋概况到具体设备，查看证据并跟进问题。'],properties:['房源资产','汇总北京已采集房源，连接资料、设备与处理记录。'],devices:['设备监控','保留数据口径，让异常排名真正支持核验与行动。'],agents:['数字员工','灵之百晓生统一承接，四类数字员工协作跟进。'],tickets:['事件工单','发现、诊断、跟进与复验，形成可追溯的处理闭环。']};
  if(!labels[page])return;
- if(page!=='overview')closeOverviewPlan();
+ if(page!=='overview'){closeOverviewPlan();mapListingSearch?.close();}
  state.page=page;document.body.dataset.page=page;document.body.classList.remove('menu-open');$('#menu-toggle')?.setAttribute('aria-expanded','false');syncHeader();
  $$('.page').forEach(p=>p.classList.toggle('active',p.id===page+'-page'));$$('.nav-item[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
  $('#page-title').textContent=labels[page][0];$('#page-description').textContent=labels[page][1];
@@ -305,14 +312,14 @@ async function openTwin(id=MODEL_PROPERTY_ID,profile){
 async function showScene(mode){
  if(!mapWorkspace){toast('房源资料正在加载，请稍后。');return;}
  const returningFromApartment=state.scene==='apartment' && mode==='city';
- if(mode!==state.scene)closeOverviewPlan();
+ if(mode!==state.scene){closeOverviewPlan();mapListingSearch?.close();}
  showPage('overview',false);
  state.scene=mode;document.body.dataset.scene=mode;state.activeDevice=null;$$('button[data-scene]').forEach(b=>b.classList.toggle('selected',b.dataset.scene===mode));$('#rotate-btn').classList.remove('active');$('#top-view-btn').classList.remove('active');$('#scene-detail').hidden=true;
  const property=allProperties().find(p=>p.id===activeTwinPropertyId)||allProperties().find(p=>p.id===MODEL_PROPERTY_ID),referenceReady=canOpenModel(property);
  twinWorkspace?.setVisible(mode==='apartment');$('.geo-panel').hidden=mode!=='city';$('#inventory-return-bar').hidden=mode!=='apartment';
  mapWorkspace.setVisible(mode==='city');viewer?.setActive(false);
  if(returningFromApartment && mapWorkspace.selectedId===activeTwinPropertyId)mapWorkspace.setPlanProfile(activeTwinPropertyId,twinWorkspace.profile);
- $('#geo-filters').hidden=mode!=='city';$('#geo-map-status').hidden=mode!=='city';$('#geo-terrain-btn').hidden=mode!=='city';
+ $('#map-listing-search').hidden=mode!=='city';$('#geo-filters').hidden=mode!=='city';$('#geo-map-status').hidden=mode!=='city';$('#geo-terrain-btn').hidden=mode!=='city';
  $('#scene-labels').hidden=mode!=='apartment'||!referenceReady;$('.scene-orientation').hidden=mode!=='apartment'||!referenceReady;
  $('.render-mode-note')?.toggleAttribute('hidden',mode!=='apartment'||!referenceReady);
  $('#scene-title').textContent=mode==='city'?'北京 · 房源运行态势':property.name+' · '+(referenceReady?'三维设备运维':'设备配置');
@@ -423,7 +430,7 @@ function showProperty(id){
   onPlan:openListingPlan,
   onHousehold:propertyId=>{$('#modal').close();openHousehold(propertyId);},
   onReferences:propertyId=>showReferences(propertyId),
-  onMap:async propertyId=>{$('#modal').close();setMapScope('collected');await showScene('city');mapWorkspace?.focusProperty(propertyId);}
+  onMap:async propertyId=>{$('#modal').close();setMapScope('collected');await showScene('city');mapWorkspace?.focusProperty(propertyId,{reveal:false});}
  });
 }
 function renderAgents(){$('#agent-grid').innerHTML=agentRoles.map(a=>`<article class="agent-card"><div class="agent-symbol">${icon(a.icon)}</div><span class="eyebrow">${a.id}</span><h2>${a.name}</h2><p>${a.task}</p><dl><dt>主要交付成果</dt><dd>${a.result}</dd><dt>真人管理责任</dt><dd>${a.owner}</dd></dl><span class="tag blue">${a.state}</span></article>`).join('');}
@@ -558,6 +565,16 @@ function resetDemo(){showModal('重置演示记录',`<p>重置 4 条演示事件
 
 function followInventoryLink(){
  if(!data || !inventoryExplorer)return;
+ const mapId=location.hash.match(/^#map-listing-(\d+|map-sample-\d+)$/)?.[1];
+ if(mapId){
+  if($('#modal').open)$('#modal').close();
+  const known=(data.properties||[]).some(p=>String(p.id)===mapId);
+  setMapScope(mapId.startsWith('map-sample-')?'collected':'beijing');
+  mapWorkspace.reset();
+  void showScene('city').then(()=>{if(location.hash==='#map-listing-'+mapId && known)mapWorkspace.focusProperty(mapId,{reveal:false});});
+  if(!known)toast('当前北京房源台账没有这一挂牌号。');
+  return;
+ }
  const planId=location.hash.match(/^#plan-(\d+)$/)?.[1];
  if(planId){openListingPlan(planId);return;}
  switch(location.hash){

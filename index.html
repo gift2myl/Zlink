@@ -9,6 +9,8 @@
   <link rel="apple-touch-icon" href="./ops/assets/logo-icon-blue.png?v=20261120-blue">
   <link rel="stylesheet" href="./ops/assets/vendor/maplibre/maplibre-gl.css"><link rel="stylesheet" href="./ops/assets/vendor/leaflet/leaflet.css"><link rel="stylesheet" href="./ops/style.css"><link rel="stylesheet" href="./ops/twin.css"><link rel="stylesheet" href="./ops/monitor-map.css"><link rel="stylesheet" href="./ops/household.css"><link rel="stylesheet" href="./ops/diagnostic-workspace.css"><link rel="stylesheet" href="./ops/reference-gallery.css"><link rel="stylesheet" href="./ops/inventory-explorer.css"><link rel="stylesheet" href="./ops/property-detail.css"><link rel="stylesheet" href="./ops/overview-hierarchy.css">
   <link rel="stylesheet" href="./ops/listing-plan-viewer.css">
+  <link rel="stylesheet" href="./ops/house-pins.css">
+  <link rel="stylesheet" href="./ops/map-listing-search.css">
   <script type="importmap">{"imports":{"three":"./ops/assets/vendor/three.module.js","three/addons/controls/OrbitControls.js":"./ops/assets/vendor/OrbitControls.js"}}</script>
 </head>
 <body class="header-scrolled" data-page="overview" data-scene="city">
@@ -33,6 +35,7 @@
       <div class="command-grid">
         <section class="panel map-panel">
           <div class="panel-heading"><div><h2 id="scene-title">北京 · 房源运行态势</h2><p id="scene-subtitle">房源分布 · 演示待办 · 分级跟进</p></div><div class="map-heading-controls"><select id="map-inventory-scope" aria-label="地图房源数据范围"><option value="collected" selected>全部采集房源</option><option value="beijing">北京目标挂牌</option><option value="model">原三维样板</option><option value="references">20 套户型参考</option></select><div class="segmented" id="scene-tabs"><button class="selected" data-scene="city">城市</button><button data-scene="apartment">房源</button></div></div></div>
+          <div id="map-listing-search"></div>
           <div class="geo-filters" id="geo-filters" aria-label="地图房源筛选">
             <label><span>区域</span><select id="geo-district-filter" aria-label="按区域筛选地图房源"><option value="">全部区域</option></select></label>
             <label><span>商圈 / 片区</span><select id="geo-business-filter" aria-label="按商圈或片区筛选地图房源"><option value="">全部商圈</option></select></label>

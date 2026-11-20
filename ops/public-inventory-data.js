@@ -93,7 +93,7 @@ function referenceRow(p) {
 }
 
 /** Join the official filtered list and the supplied identifier checks on the public detail-page identity. */
-export function projectPublicInventory(snapshot, communityMap = {}, availability = {}) {
+export function projectPublicInventory(snapshot, communityMap = {}, availability = {}, listingFacts = {}) {
   const publicationDate = text(snapshot?.date) || null;
   const listings = new Map();
   for (const row of rows(snapshot?.listings)) {
@@ -112,6 +112,7 @@ export function projectPublicInventory(snapshot, communityMap = {}, availability
   const byId = new Map(verified.map(row => [row.id, row]));
   const allIds = new Set([...listings.keys(), ...byId.keys()]);
   const unavailable = new Map(rows(availability?.unavailable).map(row => [String(row.id),row.url]));
+  const factsById = new Map(rows(listingFacts?.properties).map(row => [String(row.id),row]));
   const mapped = new Map(rows(communityMap.properties).map(row => [String(row.id), row]));
   const properties = [...allIds].map(id => {
     const p = listingProperty(id, listings.get(id), byId.get(id), publicationDate);
@@ -123,6 +124,16 @@ export function projectPublicInventory(snapshot, communityMap = {}, availability
     const bound = geo.publicDetailVerified === true && identity({id,detailUrl:geo.sourceUrl}) === id;
     if (bound) {
       p.publicDetailVerified = true;
+      const facts = factsById.get(id);
+      if (facts && facts.sourceUrl === geo.sourceUrl) {
+        p.officialHouseCode = text(facts.houseCode) || null;
+        p.layout ||= text(facts.layout) || null;
+        p.orientation ||= text(facts.orientation).replace(/^朝/, '') || null;
+        if (p.floor == null && Number.isInteger(facts.floor) && positive(facts.totalFloors)) {
+          p.floor = facts.floor;
+          p.totalFloors = facts.totalFloors;
+        }
+      }
       p.name = text(geo.name) || p.name;
       p.publicFloorplanUrl = officialUrl(geo.publicFloorplanUrl)?.href || p.publicFloorplanUrl;
       p.publicVrUrl ||= checkedVr({vrUrl:geo.publicVrUrl}, id);

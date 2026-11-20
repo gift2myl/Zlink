@@ -138,6 +138,7 @@ export class GeographicMap {
   constructor(container, { entries = [], sources = {}, onProperty, onNearby, onStatus } = {}) {
     this.container = container;
     this.entries = entries;
+    this.listingPins = [];
     this.sources = sources;
     this.onProperty = onProperty;
     this.onNearby = onNearby;
@@ -360,7 +361,7 @@ export class GeographicMap {
     });
     this.assertCanInitialize();
     if (this.map !== map) throw new InitializationPaused('Map was replaced');
-    this.propertyLayer = createPropertyLayer(maplibre, this.entries);
+    this.propertyLayer = createPropertyLayer(maplibre, []);
     map.addLayer(this.propertyLayer);
     map.on('moveend', () => {
       if (this.map === map && !this.rotating) this.refreshMarkers(false);
@@ -402,7 +403,10 @@ export class GeographicMap {
     button.dataset.propertyId = entry.id;
     button.dataset.geoLevel = entry.type || 'property';
     button.dataset.positionKind = entry.positionPrecision || entry.geography?.precision || '';
-    button.innerHTML = '<span class="geo-marker-number">' + escapeHtml(entry.mapIndex) + '</span>' + (entry.priority ? '<span class="geo-marker-priority" aria-hidden="true">' + escapeHtml(entry.priority) + '</span>' : '') + '<span class="geo-marker-caption" aria-hidden="true">' + escapeHtml(entry.name) + '</span>';
+    const listing=entry.property && !entry.type;
+    const number=listing ? String(entry.property.realListingId || entry.id).slice(-4) : entry.mapIndex;
+    const caption=listing ? entry.name + ' · ' + entry.id : entry.name;
+    button.innerHTML = '<span class="geo-marker-number">' + escapeHtml(number) + '</span>' + (entry.priority ? '<span class="geo-marker-priority" aria-hidden="true">' + escapeHtml(entry.priority) + '</span>' : '') + '<span class="geo-marker-caption" aria-hidden="true">' + escapeHtml(caption) + '</span>';
     const precision = entry.type === 'nearby' ? '相邻分组 · 点击放大，或选择房源'
       : entry.type === 'business' ? '按商圈聚合 · 已定位小区参考点'
       : entry.type === 'point' ? '同一参考位置 · 点击选择'
@@ -412,18 +416,20 @@ export class GeographicMap {
     button.setAttribute('aria-label', label + ' · ' + precision + ' · ' + status);
     button.setAttribute('aria-pressed', String(entry.id === this.selectedId));
     button.title = label + ' · ' + precision + ' · ' + status;
-    button.addEventListener('click', event => { event.stopPropagation(); if (entry.type === 'nearby') this.expandNearby(entry); else this.onProperty?.(entry.id); });
+    button.addEventListener('click', event => { event.stopPropagation(); if (entry.type === 'nearby') this.expandNearby(entry); else this.onProperty?.(entry); });
     return button;
   }
 
   visibleGroups() {
-    const pins = this.entries.filter(hasPoint);
-    if (pins.length < 2) return pins;
+    const pins = this.map.getZoom() >= 14 && this.listingPins.length ? this.listingPins : this.entries;
+    const {clientWidth,clientHeight}=this.element;
     // Choose real anchors and merge markers whose 40px hit areas would overlap at this camera angle.
     const batches = [];
     for (const pin of pins) {
+      if (!hasPoint(pin)) continue;
       const px = this.mode === 'webgl' ? this.map.project(pin.position)
         : this.map.latLngToContainerPoint([pin.position[1],pin.position[0]]);
+      if (px.x < -48 || px.y < -48 || px.x > clientWidth+48 || px.y > clientHeight+48) continue;
       const existing = batches.find(g => Math.abs(g.px.x - px.x) < 43 && Math.abs(g.px.y - px.y) < 43);
       if (existing) existing.pins.push(pin);
       else batches.push({px,pins:[pin]});
@@ -472,27 +478,34 @@ export class GeographicMap {
       this.markerRecords.push({ marker, element, entry });
     }
     if (this.mode === 'webgl') this.propertyLayer?.rebuild(display);
-    this.select(this.selectedId);
+    this.select(this.selectedId, this.selectedListingId);
   }
 
-  setEntries(entries) {
+  setEntries(entries, listingPins = []) {
     this.entries = entries;
+    this.listingPins = listingPins;
     this.refreshMarkers();
   }
 
-  select(id) {
+  select(id, listingId = null) {
     this.selectedId = id;
+    this.selectedListingId = listingId;
     for (const record of this.markerRecords) {
       const selected = record.entry.id === id || (record.entry.type === 'nearby' && record.entry.members.some(item => item.id === id));
       record.element.classList.toggle('is-selected', selected);
       record.element.setAttribute('aria-pressed', String(selected));
+      if(record.entry.type) {
+        const caption=record.element.querySelector('.geo-marker-caption');
+        caption.textContent=selected && listingId ? record.entry.name+' · '+listingId : record.entry.name;
+      }
     }
   }
 
   async focusProperty(id) {
     await this.ensureReady();
-    const entry = this.entries.find(item => item.id === id);
-    this.select(id);
+    const entry = this.listingPins.find(item => item.id === id) || this.entries.find(item => item.id === id);
+    // An earlier focus can finish initialization after a different listing was selected.
+    if (this.selectedId !== id) return false;
     if (!this.canInitialize() || !entry || !hasPoint(entry) || !this.map) return false;
     this.setRotate(false);
     if (this.mode === 'webgl') this.map.flyTo({ center: entry.position, zoom: entry.matchType === 'station_proxy' ? 14 : 15, pitch: this.topView ? 0 : 52, duration: this.motionDuration() });
@@ -503,7 +516,7 @@ export class GeographicMap {
   fitAll(animate = true, maximumZoom = 12.5) {
     if (!this.canInitialize() || !this.map) return;
     this.setRotate(false);
-    const points = this.entries.filter(hasPoint).map(entry => entry.position);
+    const points = (this.listingPins.length ? this.listingPins : this.entries).filter(hasPoint).map(entry => entry.position);
     if (!points.length) {
       if (this.mode === 'webgl') this.map.jumpTo({ center: BEIJING, zoom: 10 });
       else this.map.setView([BEIJING[1],BEIJING[0]],10);

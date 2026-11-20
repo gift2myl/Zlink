@@ -514,6 +514,7 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
     const canvas=document.createElement('canvas');
     canvas.setAttribute('aria-label',next==='room'?'室内三维。拖动环视，方向键移动和转向。':next==='3d'?'本套墙线三维参考，拖动旋转、滚轮缩放':'本套户型平面与方案点位');
     ui.layer.replaceChildren(canvas);
+    ui.layer.setAttribute('aria-busy','true');
     shell.dataset.viewMode=next;
     if(ui.roomControls)ui.roomControls.hidden=next!=='room';
     if(ui.mini)ui.mini.hidden=next!=='room';
@@ -542,6 +543,7 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
       canvas.addEventListener('webglcontextlost',resourceLost);
     }
     resize();renderOperations();
+    ui.layer.setAttribute('aria-busy','false');
     return true;
   }
   async function init() {
@@ -612,7 +614,13 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
         <label>方案设备<select data-devices></select></label><span class="lpv-count"></span></div>
         <div class="lpv-info" aria-live="polite"></div><p class="lpv-note"></p>`;
       ui={roomControls:find('.lpv-room-controls'),roomChoice:find('[data-room-select]'),mini:find('.lpv-floor-inset'),stage:find('.lpv-stage'),layer:find('.lpv-canvas'),marks:find('.lpv-marks'),lines:find('.lpv-lines'),legend:find('.lpv-legend'),hint:find('.lpv-hint'),top:find('[data-action=top]'),select:find('[data-devices]'),count:find('.lpv-count'),info:find('.lpv-info'),note:find('.lpv-note')};
-      ui.roomChoice?.addEventListener('change',()=>{const i=Number(ui.roomChoice.value);if(!engine?.goRoom(i))ui.roomChoice.value=String(roomIndex);},{signal});
+      ui.roomChoice?.addEventListener('change',()=>{
+        const index=Number(ui.roomChoice.value);
+        if(mode!=='room' || !plan.anchors[index])return;
+        // A room may be selected while the first WebGL module is loading.
+        if(!engine)selectRoom(index);
+        else if(!engine.goRoom(index))ui.roomChoice.value=String(roomIndex);
+      },{signal});
       const profileSelect=find('[data-profile]');
       if(!['base','plus','upgrade'].includes(profile))profile='base';
       profileSelect.value=profile;renderConfiguration=updateGroups;updateGroups();

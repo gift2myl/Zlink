@@ -14,6 +14,7 @@ import json
 import math
 import re
 import time
+import uuid
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -311,10 +312,12 @@ class OfflineParserContext:
 
 def base_status(http):
     return {
-        "schemaVersion": 1, "engine": http.engine,
+        "schemaVersion": 1, "runId": uuid.uuid4().hex, "engine": http.engine,
         "scope": {"city": "北京", "cityCode": "110000", "filter": "灵之智能"},
         "startedAt": now(), "finishedAt": None, "status": "blocked",
-        "filterVerified": False, "paginationVerified": False,
+        "filterVerified": False, "paginationVerified": False, "paginationComplete": False,
+        "filterEvidence": None, "paginationEvidence": None, "coverage": {},
+        "repeatedPageCount": 0, "duplicatePageCount": 0,
         "pagesFetched": 0, "requestsAttempted": 0, "uniqueCount": 0,
         "isFullInventory": False, "reason": "not_started", "message": "采集尚未开始。",
         "sourceUrl": DEFAULT_URL, "evidence": None,
@@ -391,7 +394,7 @@ def finish(status, new_properties, assets=ASSETS):
     status["uniqueCount"] = len(current)
     status["newlyAddedCount"] = len({record_key(row) for row in current} - prior_keys)
     status["updatedCount"] = len({record_key(row) for row in current} & prior_keys)
-    if current:
+    if current or status.get("isFullInventory") is True:
         merged = merge_cumulative(previous, current)
         dataset = {
             "schemaVersion": 1, "properties": merged,
@@ -399,6 +402,10 @@ def finish(status, new_properties, assets=ASSETS):
                 "observedAt": status["finishedAt"], "filterVerified": status["filterVerified"],
                 "isFullInventory": bool(status["isFullInventory"] and len(merged) == len(current)),
                 "latestRunIsFullInventory": status["isFullInventory"],
+                "latestRunId": status.get("runId"),
+                "latestRunFinishedAt": status["finishedAt"],
+                "paginationComplete": status.get("paginationComplete") is True,
+                "coverageEvidence": status.get("coverage", {}),
                 "sourceUrl": status["sourceUrl"], "coverage": "cumulative_collected_records",
                 "latestRunPropertyKeys": [record_key(row) for row in current],
                 "availabilityPolicy": "Absence from a later capture does not prove delisting; currentAvailability remains unknown unless explicit source evidence exists.",
@@ -524,6 +531,13 @@ def config_issues(config, require_pagination=True):
         issues.append("recordCss is required for HTML")
     if e.get("format") == "json" and "recordPath" not in e:
         issues.append("recordPath is required for JSON")
+    if require_pagination:
+        if p.get("mode") == "next_link" and (e.get("format") != "html" or not p.get("nextCss")):
+            issues.append("HTML next-link pagination requires a verified nextCss")
+        elif p.get("mode") == "query" and not p.get("pageParam"):
+            issues.append("query pagination requires a verified pageParam")
+        elif p.get("mode") not in ("next_link", "query"):
+            issues.append("pagination mode is unsupported")
     return issues
 
 
@@ -582,18 +596,25 @@ def run_collect(http, args):
         return finish(status, [], args.assets)
     status["filterVerified"] = True
     status["paginationVerified"] = True
+    status["filterEvidence"] = config["filter"]["evidence"]
+    status["paginationEvidence"] = config["pagination"]["evidence"]
     records, seen_urls, seen_page_ids = {}, set(), set()
     pagination = config["pagination"]
     url = status["sourceUrl"]
-    expected_total = config.get("coverage", {}).get("expectedTotal")
+    coverage = dict(config.get("coverage", {}))
+    expected_total = coverage.get("expectedTotal")
     if not isinstance(expected_total, int) or isinstance(expected_total, bool) or expected_total < 0:
         expected_total = None
+    coverage["expectedTotal"] = expected_total
+    status["coverage"] = coverage
+    status["citywideVerified"] = coverage.get("citywideVerified") is True and bool(coverage.get("citywideEvidence")) and coverage.get("viewportLimited") is False
     end_verified = False
     for index in range(min(int(pagination.get("maxPages", 500)), 1000)):
         try:
             url = verified_page_url(url, config)
             if url in seen_urls:
-                raise ValueError("Pagination repeats a URL.")
+                status.update(reason="pagination_repeats_url", message="分页指向已处理地址，保留部分结果。", repeatedPageCount=1)
+                break
             seen_urls.add(url)
             if index:
                 time.sleep(max(2.0, min(float(config.get("delaySeconds", 2)), 30)))
@@ -603,53 +624,97 @@ def run_collect(http, args):
                 status.update(reason=reason, message=message)
                 break
             page_records, rejected = parse_records(body, config, url, observed_at=now())
-            status["pages"][-1].update(records=len(page_records), rejectedRecords=rejected)
+            page_keys = [record_key(p) for p in page_records]
+            status["pages"][-1].update(records=len(page_records), rejectedRecords=rejected, recordKeys=page_keys)
             if rejected:
                 records.update({record_key(p): p for p in page_records})
                 status["pagesFetched"] += bool(page_records)
                 status.update(reason="invalid_record", message="已保留本页可用记录；存在缺少必要字段的记录，停止并保持部分采集状态。", rejectedRecords=rejected)
                 break
+            # A later pagination/total metadata error must not discard valid rows.
+            records.update({record_key(p): p for p in page_records})
+            is_json = config["extraction"]["format"] == "json"
+            document = json.loads(body) if is_json else Selector(body.decode("utf-8", errors="replace"))
+            terminal, next_url = False, None
+            if pagination["mode"] == "next_link":
+                next_href = document.css(pagination["nextCss"]).get()
+                terminal = not bool(next_href)
+                next_url = urllib.parse.urljoin(url, next_href) if next_href else None
+            elif pagination["mode"] == "query":
+                if is_json and pagination.get("hasMorePath"):
+                    has_more = value_at(document, pagination["hasMorePath"])
+                    if not isinstance(has_more, bool):
+                        raise ValueError("Verified hasMorePath must return a JSON boolean.")
+                    terminal = not has_more
+                elif not is_json and pagination.get("endCss"):
+                    terminal = bool(document.css(pagination["endCss"]).get())
+                parts = urllib.parse.urlsplit(url)
+                params = dict(urllib.parse.parse_qsl(parts.query))
+                params[pagination["pageParam"]] = str(int(pagination.get("startPage", 1)) + index + 1)
+                next_url = urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, urllib.parse.urlencode(params), ""))
+            observed_total = None
+            if is_json and coverage.get("totalPath"):
+                observed_total = value_at(document, coverage["totalPath"])
+            elif not is_json and coverage.get("totalCss"):
+                observed_total = document.css(coverage["totalCss"]).get()
+            if coverage.get("totalPath") or coverage.get("totalCss"):
+                parsed_total = number(str(observed_total).replace(",", "")) if observed_total is not None and not isinstance(observed_total, bool) else None
+                if not isinstance(parsed_total, int) or parsed_total < 0:
+                    records.update({record_key(p): p for p in page_records})
+                    status.update(reason="source_total_invalid", message="来源总量字段不是精确非负整数，保留已取得记录。")
+                    break
+                status["pages"][-1]["observedTotal"] = parsed_total
+                if expected_total is None:
+                    expected_total = parsed_total
+                    coverage["expectedTotal"] = parsed_total
+                elif expected_total != parsed_total:
+                    records.update({record_key(p): p for p in page_records})
+                    status.update(reason="source_total_changed", message="分页期间来源总量与本轮基准不一致，需重新核对完整性。")
+                    break
             if not page_records:
-                status.update(reason="empty_page_requires_review", message="当前页未提取到记录，需核对页面和选择器，不能直接认定为末页或零库存。")
+                empty_marker = (is_json and bool(pagination.get("hasMorePath")) and terminal) or (
+                    not is_json and bool(pagination.get("emptyCss")) and bool(document.css(pagination["emptyCss"]).get()) and terminal
+                )
+                if empty_marker:
+                    status["pagesFetched"] += 1
+                    end_verified = True
+                else:
+                    status.update(reason="empty_page_requires_review", message="当前页未提取到记录且缺少已核验的空结果标记，不能认定为末页或零库存。")
                 break
             status["pagesFetched"] += 1
             signature = tuple(sorted(record_key(p) for p in page_records))
             if page_records and signature in seen_page_ids:
-                status.update(reason="pagination_repeats_content", message="分页返回重复内容，已停止，不能认定已经翻页。")
+                status.update(reason="pagination_repeats_content", message="分页返回重复内容，已停止，不能认定已经翻页。", duplicatePageCount=1)
                 break
             seen_page_ids.add(signature)
             records.update({record_key(p): p for p in page_records})
-            if expected_total is not None and len(records) == expected_total:
-                end_verified = True
-                status.update(reason="verified_total_reached", message="已核验筛选及分页，唯一房源数与来源的精确总数一致。")
+            if expected_total is not None and len(records) > expected_total:
+                status.update(reason="source_total_exceeded", message="去重房源数超过本轮来源总量，保留记录并要求核对筛选及来源变动。")
                 break
-            if pagination["mode"] == "next_link":
-                next_href = Selector(body.decode("utf-8", errors="replace")).css(pagination["nextCss"]).get()
-                if not next_href:
-                    status.update(reason="end_without_exact_total", message="页面没有下一页链接，但缺少精确总量校验，保留部分采集状态。")
-                    break
-                url = urllib.parse.urljoin(url, next_href)
-            elif pagination["mode"] == "query":
-                parts = urllib.parse.urlsplit(url)
-                params = dict(urllib.parse.parse_qsl(parts.query))
-                key = pagination["pageParam"]
-                params[key] = str(int(pagination.get("startPage", 1)) + index + 1)
-                url = urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, urllib.parse.urlencode(params), ""))
-            else:
-                raise ValueError("Unsupported pagination mode; implement only from confirmed public evidence.")
+            if terminal:
+                end_verified = True
+                break
+            url = next_url
         except Exception as exc:
             status.update(reason="collection_error", message="采集出现异常，已停止并保留已取得记录。", errorType=type(exc).__name__)
             break
     else:
         status.update(reason="page_limit_reached", message="已到达配置页数上限，尚未证明全量。")
     status["unknownIdentityCount"] = sum(real_listing_id(record) is None for record in records.values())
-    coverage = config.get("coverage", {})
-    status["citywideVerified"] = coverage.get("citywideVerified") is True and bool(coverage.get("citywideEvidence")) and coverage.get("viewportLimited") is False
-    status["isFullInventory"] = bool(end_verified and coverage.get("totalEvidence") and not status["unknownIdentityCount"] and status["citywideVerified"])
-    if end_verified and status["unknownIdentityCount"]:
-        status.update(reason="identity_incomplete", message="记录数量达到来源总数，但部分房源身份未核验，仍为部分采集。")
-    elif end_verified and not status["citywideVerified"]:
-        status.update(reason="scope_incomplete", message="记录数达到当前查询总数，但尚未证明覆盖北京全城而非地图视窗或区域子集。")
+    status["paginationComplete"] = end_verified
+    exact_match = expected_total is not None and len(records) == expected_total
+    status["isFullInventory"] = bool(end_verified and exact_match and coverage.get("totalEvidence") and not status["unknownIdentityCount"] and status["citywideVerified"])
+    if end_verified:
+        if expected_total is None or not coverage.get("totalEvidence"):
+            status.update(reason="end_without_exact_total", message="已到达已核验的分页末尾，缺少来源精确总量证据，保留部分采集状态。")
+        elif not exact_match:
+            status.update(reason="source_total_mismatch", message="已到分页末尾，但去重房源数与来源总量不一致，保留部分采集状态。")
+        elif status["unknownIdentityCount"]:
+            status.update(reason="identity_incomplete", message="记录数量达到来源总数，但部分房源身份未核验，仍为部分采集。")
+        elif not status["citywideVerified"]:
+            status.update(reason="scope_incomplete", message="记录数达到当前查询总数，但尚未证明覆盖北京全城而非地图视窗或区域子集。")
+        else:
+            status.update(reason="verified_pagination_and_total", message="已核验全北京筛选、全部分页及房源身份，去重记录数与来源精确总量一致。")
     status["status"] = "complete" if status["isFullInventory"] else "partial" if records else "blocked"
     return finish(status, list(records.values()), args.assets)
 

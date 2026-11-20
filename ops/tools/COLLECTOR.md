@@ -25,7 +25,7 @@ CONFIG=/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.co
 "$PY" "$COLLECTOR" collect --config "$CONFIG"
 ```
 
-当前配置故意保留 `verified: false` 及未知选择器，运行会输出 configuration_unverified，**不发请求**。只有取得正常公开页面或获授权公开清单，确认“灵之智能”筛选参数、房源字段、真实 ID 和分页语义后，才能填写并启用。不得根据默认地图猜测筛选 ID，也不能因收到校验页而改试隐蔽接口、Cookie 或模拟身份。
+当前入口首先检查已有访问停止记录，返回 `prior_source_challenge`，**不发请求**。配置中的 `verified: false` 及未知选择器也仍未解除；没有来源停止记录时，这些未核验配置会返回 `configuration_unverified`。只有取得正常公开页面或获授权公开清单，确认“灵之智能”筛选参数、房源字段、真实 ID 和分页语义后，才能填写并启用。不得根据默认地图猜测筛选 ID，也不能因收到校验页而改试隐蔽接口、Cookie 或模拟身份。
 
 `probe` 仅支持用户原始地图 URL 的一次普通 GET，用于记录状态，不提取、不翻页、不跟随跳转。当前地址已出现访问校验；不要重复探测，需等待可公开访问的数据路径或用户提供清单。
 
@@ -56,7 +56,7 @@ LZ_PY=/workspace/scratch/d26fdd117e22/scrapling_env/bin/python
 "$LZ_PY" ops/tools/build_inventory_registry.py
 ```
 
-生成器只读取本地 `properties.json`、`crawled-properties.json`、字段核验记录和三维资料记录，不调用网络。
+生成器只读取本地 `properties.json`、`crawled-properties.json`、`crawl-status.json`、字段核验记录和三维资料记录，不调用网络。仅写入 `inventory-registry.json`；不会创建、覆盖或解除 `source-access-status.json`。
 
 `assets/source-access-status.json` 保存当前来源停止状态。`probe` 与 `collect` 会先检查它；存在已确认访问校验时返回 `prior_source_challenge`、`networkRequests:0`，不重复请求或探测其他路径。恢复采集需要正常可访问来源及对应证据，不能靠删除停止记录、改身份或改路径处理。
 
@@ -100,3 +100,24 @@ LZ_PY=/workspace/scratch/d26fdd117e22/scrapling_env/bin/python
 字段映射中的 `id` 不因看起来像数字就自动当真实房源 ID。可以由实际详情 URL 确认，或使用经核验的 `extraction.idType:"ziroom_property_id"` 与 `identityEvidence`。身份仍待核验的记录保留，但不能帮助声明全量。
 
 本次离线验证覆盖：真实身份合并、空运行保持文件字节不变、完整运行仍保留历史、HTML 字段映射、实际户型/VR链接发现、挑战页停止、分类与前端口径一致、旧访问时间保持。测试样例只存在临时目录，没有写入正式房源。原始 4 个数据文件 SHA-256 保持一致。实际网络请求为 0。
+
+## 全量分页与当前批次校验（2026-11-20 修正）
+
+本地 10 条记录属于历史第一页样本；新增采集文件当前为空。采集器没有 10 条上限。当前来源精确总量未知，尚未取得有效分页，不能把样本数当作北京全量。
+
+- **先结束分页，再核对总数。** 达到 `coverage.expectedTotal` 后仍读取页面实际出现的下一页。只有已核验的分页终点与精确总量一致，才能完成。
+- HTML `next_link` 使用经核验的 `nextCss`；正常末页没有下一页才结束。GET `query` 可读取经核验的 JSON `hasMorePath` 布尔值或 HTML `endCss`，不因数量相等自动停页。
+- 空页只有具备明确终点及经核验的 JSON `hasMorePath:false` 或 HTML `emptyCss` 才能作为终点。普通空页、错误选择器及校验页不能当作零库存。
+- 可用 `coverage.totalPath`（JSON）或 `totalCss`（HTML）提取实际精确总数；若分页期间总量改变、只显示 `500+`，或者去重数超过来源总数，则保留部分结果，不声明全量。
+- 每次任务保存 `runId`、筛选及分页证据、`paginationComplete`、每页 `recordKeys`、来源总量和全城范围证据。数据文件的 `source.latestRunId / latestRunFinishedAt / latestRunPropertyKeys / coverageEvidence` 与报告绑定。
+- 登记册新增 `currentSnapshot`，与累计历史 `totals.collected` 分开。只有批次、时间、每页正常响应、实际记录键、真实 ID、全城范围和精确总量全部一致，才暴露已核验的 `knownTotal`。
+- 重复页、失败页、身份缺失、未核验筛选或视窗范围均不能完成全量。页数保护上限被触发时保留 partial。
+
+离线回归：
+
+```bash
+"$LZ_PY" -B ops/tools/test_full_collection.py
+"$LZ_PY" -B ops/tools/test_inventory_registry.py
+```
+
+这些测试使用内存 HTTP 和真实 Scrapling Selector，覆盖 25 条合成记录跨 3 页、跨页去重、提前达到总数但仍有下一页、来源总量不一致、校验页停止、保留历史及零库存等情况。测试记录仅在临时目录中，不是新取得的自如房源。

@@ -1,0 +1,682 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-20T06:03:38+00:00",
+  "mode": "offline_evidence_diagnosis",
+  "newNetworkRequests": 0,
+  "inputsModified": false,
+  "inputs": {
+    "crawl": {
+      "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+      "sha256": "b6681a286fdda3d2ee0d335b0324b55172567ebf6759165bf51d1787781a9422",
+      "readOnly": true,
+      "bytes": 1694
+    },
+    "coverage": {
+      "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+      "sha256": "53a0b3ad74dd4591a63127617d0dc6be9c36a9956992472e763b10561b412780",
+      "readOnly": true,
+      "bytes": 32233
+    },
+    "access": {
+      "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/source-access-status.json",
+      "sha256": "aa2375ed44c56bb4b1a3000776cf452fc5488aa6442be27a675924093c32873a",
+      "readOnly": true,
+      "bytes": 1398
+    },
+    "installation": {
+      "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/installation-report.json",
+      "sha256": "6ec2f8c5541f1678946119ea2f13be92ac2240dbe85ca13f6c780431aa541af1",
+      "readOnly": true,
+      "bytes": 1260
+    },
+    "config": {
+      "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.config.json",
+      "sha256": "27d290303bda53662db1482fc9f08477f2ffdae8bd89f37e1feb4697dd1ff9c8",
+      "readOnly": true,
+      "bytes": 632
+    }
+  },
+  "inputErrors": [],
+  "installation": {
+    "installedVersionInCurrentInterpreter": "0.5.1",
+    "parserModulePresent": true,
+    "parserModuleFile": "/workspace/scratch/d26fdd117e22/scrapling_env/lib/python3.12/site-packages/scrapling/parser.py",
+    "parserExecutionTestPerformed": false,
+    "recordedParserAvailable": true,
+    "nativeFetcherImported": false,
+    "nativeFetcherExecutionTestPerformed": false,
+    "recordedNativeFetcherAvailable": false,
+    "recordedMissingDependency": "patchright",
+    "recordedApprovalStatus": "rejected",
+    "recordedApprovalAction": "Install patchright>=1.62.1, browserforge>=1.2.4, msgspec>=0.21.1",
+    "recordedApprovalReason": "从 PyPI 安装 patchright、browserforge 等浏览器/指纹相关依赖，超出普通公开 HTTP Fetcher 的范围，与不安装额外自动浏览器、不启用隐匿身份功能的限制冲突。",
+    "recordedApprovalScope": "本地依赖安装的环境审批记录；不代表官网访问限制的原因或解除结果。",
+    "recordedApprovalSource": {
+      "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/installation-report.json",
+      "jsonPaths": [
+        "$.approval.status",
+        "$.approval.action",
+        "$.approval.reason"
+      ]
+    },
+    "topLevelDependencyModulesDiscoverable": {
+      "curl_cffi": true,
+      "patchright": false,
+      "browserforge": false
+    },
+    "dependencyImportSourceEvidence": [
+      {
+        "file": "/workspace/scratch/d26fdd117e22/scrapling_env/lib/python3.12/site-packages/scrapling/fetchers/requests.py",
+        "sha256": "44adec41c8f6c97cefde2462eefd850c4416fa845a8f53c8426215f65e194de5",
+        "importedModule": "scrapling.engines.static",
+        "matchingSourceLines": [
+          3
+        ],
+        "inspectedStatically": true,
+        "executed": false
+      },
+      {
+        "file": "/workspace/scratch/d26fdd117e22/scrapling_env/lib/python3.12/site-packages/scrapling/engines/static.py",
+        "sha256": "aaba44831c2798700a6caed17954f91803940c38cfbf0c39f16255cecbe27ae1",
+        "importedModule": "scrapling.engines.toolbelt.convertor",
+        "matchingSourceLines": [
+          29
+        ],
+        "inspectedStatically": true,
+        "executed": false
+      },
+      {
+        "file": "/workspace/scratch/d26fdd117e22/scrapling_env/lib/python3.12/site-packages/scrapling/engines/toolbelt/convertor.py",
+        "sha256": "28f94e5ebd087da73fe7be655478529a558d9247a3390497f2a9b7f3577cf47c",
+        "importedModule": "patchright.sync_api",
+        "matchingSourceLines": [
+          7,
+          8
+        ],
+        "inspectedStatically": true,
+        "executed": false
+      },
+      {
+        "file": "/workspace/scratch/d26fdd117e22/scrapling_env/lib/python3.12/site-packages/scrapling/engines/toolbelt/fingerprints.py",
+        "sha256": "e109b312c35cb91c8f52039616ff22a233579d6d2ce76f8e021a61543e9aee7a",
+        "importedModule": "browserforge.headers",
+        "matchingSourceLines": [
+          12
+        ],
+        "inspectedStatically": true,
+        "executed": false
+      }
+    ],
+    "interpretation": "解析器文件与历史可用记录、原生 Fetcher 依赖状态、网站响应是三个独立证据层。模块可发现不等于运行已测试；修复依赖不能证明网站校验已解除。",
+    "sources": [
+      {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/installation-report.json",
+        "jsonPaths": [
+          "$.packages.scrapling",
+          "$.parserAvailable",
+          "$.nativeFetcherAvailable",
+          "$.nativeFetcherImportError"
+        ]
+      }
+    ]
+  },
+  "transport": {
+    "historicalRecordedTransports": [
+      "urllib"
+    ],
+    "behaviorObservedInSavedVerification": {
+      "redirectsFollowed": false,
+      "retried": false,
+      "cookieJarUsed": false,
+      "javascriptExecuted": false,
+      "browserUsed": false,
+      "impersonationEnabled": false
+    },
+    "sources": [
+      {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+        "jsonPaths": [
+          "$.engine"
+        ]
+      },
+      {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+        "jsonPaths": [
+          "$.verification"
+        ]
+      }
+    ]
+  },
+  "sourceCodeEvidence": [
+    {
+      "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/collect_ziroom_lingzhi.py",
+      "symbols": [
+        "PublicHttp.get",
+        "NoRedirect.redirect_request",
+        "native_fetcher_state",
+        "inspect_response"
+      ],
+      "executed": false,
+      "sha256": "66cd73275df8c9011068d5814c23167a4310367423c72babe1380c456bbaada7"
+    }
+  ],
+  "historicalRequests": {
+    "deduplicationKey": [
+      "timestamp_normalized_to_UTC",
+      "response_sha256"
+    ],
+    "candidateEvidenceRecords": 5,
+    "uniqueRequestCount": 2,
+    "requests": [
+      {
+        "timestamp": "2026-11-19T10:23:01Z",
+        "sha256": "fd65cb8794166884870f97ce8025bf122e04ad2e6d22e940e8d779425253dad5",
+        "httpStatus": 200,
+        "bodyBytes": 986,
+        "challengeMarkers": [
+          "EO_Bot_Ssid",
+          "__tst_status"
+        ],
+        "evidencePresence": {
+          "rawResponseBody": false,
+          "contentType": false,
+          "edgeOneLogUuid": false,
+          "finalResponseUrl": false
+        },
+        "sources": [
+          {
+            "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+            "jsonPaths": [
+              "$.pages[0]"
+            ]
+          },
+          {
+            "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+            "jsonPaths": [
+              "$.evidence",
+              "$.finishedAt"
+            ]
+          },
+          {
+            "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+            "jsonPaths": [
+              "$.lastKnownAccess"
+            ]
+          }
+        ],
+        "conflictingFields": []
+      },
+      {
+        "timestamp": "2026-11-20T02:55:06Z",
+        "sha256": "93d2c2effeea7dc3de087b1dec68e1c77b3781d67e6bf89c245d5fed8eed49fc",
+        "httpStatus": 200,
+        "bodyBytes": 988,
+        "challengeMarkers": [
+          "EO_Bot_Ssid",
+          "__tst_status"
+        ],
+        "evidencePresence": {
+          "rawResponseBody": false,
+          "contentType": false,
+          "edgeOneLogUuid": false,
+          "finalResponseUrl": false
+        },
+        "sources": [
+          {
+            "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+            "jsonPaths": [
+              "$.verification"
+            ]
+          },
+          {
+            "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/source-access-status.json",
+            "jsonPaths": [
+              "$.latestAttempt"
+            ]
+          }
+        ],
+        "conflictingFields": []
+      }
+    ],
+    "incompleteEvidenceRecords": []
+  },
+  "missingEvidence": [
+    {
+      "field": "rawResponseBody",
+      "timestamp": "2026-11-19T10:23:01Z",
+      "sha256": "fd65cb8794166884870f97ce8025bf122e04ad2e6d22e940e8d779425253dad5",
+      "message": "原始响应正文或对应保存文件未记录；不能离线复核页面结构。",
+      "sources": [
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+          "jsonPaths": [
+            "$.pages[0]"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+          "jsonPaths": [
+            "$.evidence",
+            "$.finishedAt"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+          "jsonPaths": [
+            "$.lastKnownAccess"
+          ]
+        }
+      ]
+    },
+    {
+      "field": "contentType",
+      "timestamp": "2026-11-19T10:23:01Z",
+      "sha256": "fd65cb8794166884870f97ce8025bf122e04ad2e6d22e940e8d779425253dad5",
+      "message": "Content-Type 未记录；不能核对来源声明的响应类型。",
+      "sources": [
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+          "jsonPaths": [
+            "$.pages[0]"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+          "jsonPaths": [
+            "$.evidence",
+            "$.finishedAt"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+          "jsonPaths": [
+            "$.lastKnownAccess"
+          ]
+        }
+      ]
+    },
+    {
+      "field": "edgeOneLogUuid",
+      "timestamp": "2026-11-19T10:23:01Z",
+      "sha256": "fd65cb8794166884870f97ce8025bf122e04ad2e6d22e940e8d779425253dad5",
+      "message": "EO-LOG-UUID 未记录；无法用该请求标识关联站点侧日志，亦不保证来源曾返回该头。",
+      "sources": [
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+          "jsonPaths": [
+            "$.pages[0]"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+          "jsonPaths": [
+            "$.evidence",
+            "$.finishedAt"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+          "jsonPaths": [
+            "$.lastKnownAccess"
+          ]
+        }
+      ]
+    },
+    {
+      "field": "finalResponseUrl",
+      "timestamp": "2026-11-19T10:23:01Z",
+      "sha256": "fd65cb8794166884870f97ce8025bf122e04ad2e6d22e940e8d779425253dad5",
+      "message": "最终响应 URL 未明确记录；请求 URL 不能替代最终 URL。",
+      "sources": [
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+          "jsonPaths": [
+            "$.pages[0]"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+          "jsonPaths": [
+            "$.evidence",
+            "$.finishedAt"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+          "jsonPaths": [
+            "$.lastKnownAccess"
+          ]
+        }
+      ]
+    },
+    {
+      "field": "rawResponseBody",
+      "timestamp": "2026-11-20T02:55:06Z",
+      "sha256": "93d2c2effeea7dc3de087b1dec68e1c77b3781d67e6bf89c245d5fed8eed49fc",
+      "message": "原始响应正文或对应保存文件未记录；不能离线复核页面结构。",
+      "sources": [
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+          "jsonPaths": [
+            "$.verification"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/source-access-status.json",
+          "jsonPaths": [
+            "$.latestAttempt"
+          ]
+        }
+      ]
+    },
+    {
+      "field": "contentType",
+      "timestamp": "2026-11-20T02:55:06Z",
+      "sha256": "93d2c2effeea7dc3de087b1dec68e1c77b3781d67e6bf89c245d5fed8eed49fc",
+      "message": "Content-Type 未记录；不能核对来源声明的响应类型。",
+      "sources": [
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+          "jsonPaths": [
+            "$.verification"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/source-access-status.json",
+          "jsonPaths": [
+            "$.latestAttempt"
+          ]
+        }
+      ]
+    },
+    {
+      "field": "edgeOneLogUuid",
+      "timestamp": "2026-11-20T02:55:06Z",
+      "sha256": "93d2c2effeea7dc3de087b1dec68e1c77b3781d67e6bf89c245d5fed8eed49fc",
+      "message": "EO-LOG-UUID 未记录；无法用该请求标识关联站点侧日志，亦不保证来源曾返回该头。",
+      "sources": [
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+          "jsonPaths": [
+            "$.verification"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/source-access-status.json",
+          "jsonPaths": [
+            "$.latestAttempt"
+          ]
+        }
+      ]
+    },
+    {
+      "field": "finalResponseUrl",
+      "timestamp": "2026-11-20T02:55:06Z",
+      "sha256": "93d2c2effeea7dc3de087b1dec68e1c77b3781d67e6bf89c245d5fed8eed49fc",
+      "message": "最终响应 URL 未明确记录；请求 URL 不能替代最终 URL。",
+      "sources": [
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+          "jsonPaths": [
+            "$.verification"
+          ]
+        },
+        {
+          "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/source-access-status.json",
+          "jsonPaths": [
+            "$.latestAttempt"
+          ]
+        }
+      ]
+    }
+  ],
+  "configurationIssues": [
+    {
+      "code": "filter_unverified",
+      "message": "灵之智能筛选尚未核验。",
+      "source": {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.config.json",
+        "jsonPaths": [
+          "$.filter.name",
+          "$.filter.verified"
+        ]
+      }
+    },
+    {
+      "code": "filter_evidence_missing",
+      "message": "缺少筛选结果证据；仅打开默认地图不能证明已选中灵之智能。",
+      "source": {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.config.json",
+        "jsonPaths": [
+          "$.filter.evidence"
+        ]
+      }
+    },
+    {
+      "code": "filter_query_mapping_missing",
+      "message": "未配置可核验筛选参数；若筛选不通过 URL 参数传递，应另行保存真实筛选机制证据。",
+      "source": {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.config.json",
+        "jsonPaths": [
+          "$.filter.requiredQuery"
+        ]
+      }
+    },
+    {
+      "code": "pagination_unverified",
+      "message": "分页语义与末页判断尚未核验。",
+      "source": {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.config.json",
+        "jsonPaths": [
+          "$.pagination.verified",
+          "$.pagination.evidence"
+        ]
+      }
+    },
+    {
+      "code": "pagination_locator_missing",
+      "message": "缺少与所选分页模式对应的下一页选择器或页码参数。",
+      "source": {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.config.json",
+        "jsonPaths": [
+          "$.pagination.mode",
+          "$.pagination.nextCss",
+          "$.pagination.pageParam"
+        ]
+      }
+    },
+    {
+      "code": "field_mapping_unverified",
+      "message": "房源身份、商圈、居室等字段尚无已核验提取映射。",
+      "source": {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.config.json",
+        "jsonPaths": [
+          "$.extraction.verified",
+          "$.extraction.fields"
+        ]
+      }
+    },
+    {
+      "code": "record_locator_missing",
+      "message": "缺少房源记录选择器或 JSON 记录路径。",
+      "source": {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.config.json",
+        "jsonPaths": [
+          "$.extraction.format",
+          "$.extraction.recordCss",
+          "$.extraction.recordPath"
+        ]
+      }
+    },
+    {
+      "code": "exact_total_evidence_missing",
+      "message": "缺少同一筛选范围的精确总量及证据。",
+      "source": {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.config.json",
+        "jsonPaths": [
+          "$.coverage.expectedTotal",
+          "$.coverage.totalEvidence"
+        ]
+      }
+    },
+    {
+      "code": "citywide_coverage_unverified",
+      "message": "尚未证明覆盖北京全城且不受当前地图视窗或区域子集限制。",
+      "source": {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.config.json",
+        "jsonPaths": [
+          "$.coverage.citywideVerified",
+          "$.coverage.citywideEvidence",
+          "$.coverage.viewportLimited"
+        ]
+      }
+    }
+  ],
+  "conclusions": {
+    "effectiveListingResponseEstablished": false,
+    "ipBanEstablished": false,
+    "specificRuleOrTriggerEstablished": false,
+    "zeroInventoryEstablished": false,
+    "statement": "现有记录未建立有效房源列表响应证据；历史 HTTP 200 和校验标记不能证明封 IP、具体触发规则或北京库存为 0。原始正文与响应头不全，无法进一步离线复核。",
+    "sources": [
+      {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/crawl-status.json",
+        "jsonPaths": [
+          "$.pagesFetched",
+          "$.uniqueCount",
+          "$.reason"
+        ]
+      },
+      {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/three-source-coverage.json",
+        "jsonPaths": [
+          "$.verification.validListingPages",
+          "$.verification.newVerifiedListings",
+          "$.verification.reason"
+        ]
+      }
+    ]
+  },
+  "gate": {
+    "canCollectFromExistingEvidence": false,
+    "sourceStopActive": true,
+    "explicitNetworkCollectionAllowedInSourceRecord": false,
+    "configurationReady": false,
+    "inputsValid": true,
+    "willCollect": false,
+    "stopRecordModified": false,
+    "newNetworkRequests": 0,
+    "doesNotGrantAuthorizationOrClearStop": true,
+    "reasonCodes": [
+      "existing_source_stop",
+      "no_explicit_source_access_allowance",
+      "configuration_incomplete"
+    ],
+    "sources": [
+      {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/assets/source-access-status.json",
+        "jsonPaths": [
+          "$.status",
+          "$.networkCollectionAllowed"
+        ]
+      },
+      {
+        "file": "/workspace/scratch/d26fdd117e22/zlink_release/ops/tools/ziroom-lingzhi.config.json",
+        "jsonPaths": [
+          "$.filter",
+          "$.pagination",
+          "$.extraction",
+          "$.coverage"
+        ]
+      }
+    ]
+  },
+  "selfCheck": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "object",
+        "passed": true
+      },
+      {
+        "name": "malformed_json",
+        "passed": true
+      },
+      {
+        "name": "wrong_root_type",
+        "passed": true
+      },
+      {
+        "name": "invalid_utf8",
+        "passed": true
+      },
+      {
+        "name": "timezone_normalization",
+        "passed": true
+      }
+    ],
+    "networkRequests": 0
+  },
+  "auditValidation": {
+    "reviewedAtBeijing": "2026-11-20T14:03:38+08:00",
+    "offlineRegressionTests": 20,
+    "offlineRegressionTestsPassed": true,
+    "diagnosticSelfChecks": 5,
+    "inputSnapshotsUnchanged": {
+      "ops/assets/crawl-status.json": true,
+      "ops/assets/source-access-status.json": true,
+      "ops/assets/three-source-coverage.json": true,
+      "ops/assets/properties.json": true,
+      "ops/assets/crawled-properties.json": true,
+      "ops/tools/ziroom-lingzhi.config.json": true
+    },
+    "newSiteNetworkRequests": 0,
+    "scope": "合成响应、mock 传输和既有证据的离线核对；不证明官网访问已恢复。"
+  },
+  "repairsApplied": [
+    {
+      "issue": "整段响应中的验证码关键词被直接认定为校验页",
+      "change": "弱信号单独标为待复核；HTTP 状态、登录结构与当前验证提示分别诊断。"
+    },
+    {
+      "issue": "响应头被丢弃，缺少定位信息",
+      "change": "保留有限的 Content-Type、Retry-After、EO-LOG-UUID 等诊断字段；Location 仅保留固定公共路径。"
+    },
+    {
+      "issue": "离线解析仍初始化 HTTP 与 Fetcher",
+      "change": "离线 JSON、HTML 解析改用纯解析上下文，不导入原生 Fetcher。"
+    },
+    {
+      "issue": "不同失败统一归为网络错误",
+      "change": "区分传输错误、响应超限、解析错误与配置错误。"
+    },
+    {
+      "issue": "请求返回后解析失败被计成零次请求",
+      "change": "在实际请求调用前记录尝试次数，成功和失败均不漏计、不重复计。"
+    }
+  ],
+  "investigationNextSteps": [
+    "优先从既有响应提取请求 ID；没有请求 ID 时，使用准确时间、Host、路径、已知 User-Agent 由自如站点管理方定位日志。",
+    "由自如站点管理方核对 SecurityAction、SecurityMatchingRules、SecurityRuleID 和 ChallengeState，区分认证、拒绝访问、限流及其他规则。",
+    "确认适用于业务的授权读取方式；如属误伤，由站点管理方按授权范围设置有限例外。",
+    "用真实成功样本核验北京 110000、灵之智能筛选、房源唯一 ID、商圈与居室字段、分页、精确总量和城市覆盖范围。"
+  ],
+  "officialDocumentation": [
+    {
+      "topic": "EdgeOne action semantics",
+      "url": "https://edgeone.ai/document/55941"
+    },
+    {
+      "topic": "L7 request and security logs",
+      "url": "https://edgeone.ai/document/61300"
+    },
+    {
+      "topic": "Default response headers and EO-LOG-UUID",
+      "url": "https://cloud.tencent.com/document/product/1552/87655"
+    },
+    {
+      "topic": "Site-admin exception rules",
+      "url": "https://edgeone.ai/document/55942"
+    }
+  ]
+}

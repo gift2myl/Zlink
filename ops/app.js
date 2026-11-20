@@ -113,7 +113,7 @@ function syncInventoryExplorer(){
 }
 function openInventoryLevel(options={}){
  if(!data||!inventoryExplorer){toast('房源台账正在加载，请稍后。');return;}
- showPage('overview',false);inventoryExplorer.open(options);$('#overview-inventory').scrollIntoView({behavior:motionBehavior(),block:'start'});
+ showPage('overview',false);$('#historical-overview').open=true;inventoryExplorer.open(options);$('#overview-inventory').scrollIntoView({behavior:motionBehavior(),block:'start'});
 }
 async function refreshCollectedInventory(){
  if(inventoryRefreshRunning)return;
@@ -135,8 +135,8 @@ function renderInventorySummary(){
  const totals=currentInventoryHierarchy().totals;
  const metrics=[['properties',totals.properties,'已采集收录的全部房源 · 按记录去重'],['businesses',totals.businesses,`已确认商圈 · ${totals.pendingBusinessRecords} 条房源待核验`],['communities',totals.communities,'按行政区与小区名称去重']];
  for(const [key,number,note] of metrics){$('#metric-'+key).textContent=number;$('#metric-'+key+'-note').textContent=note;}
- const sourceUrl=safeUrl(data.source.url),status=verification.status==='blocked'?'最近补采受阻':'已收录采集结果';
- $('#inventory-source-status').innerHTML=`<span><strong>北京 · 灵之智能筛选结果</strong><span class="tag ${verification.status==='blocked'?'amber':'neutral'}">${esc(status)}</span></span><span>累计收录 ${stats.count} 条 · 最近补采新增 ${fetched===null?'—':fetched} 条 · 非北京全量</span><button class="text-btn" id="inventory-refresh" ${inventoryRefreshRunning?'disabled':''}>${inventoryRefreshRunning?'正在刷新':'刷新已收录数据'}</button><button class="text-btn" id="inventory-audit">统计口径</button>${sourceUrl?`<a class="text-btn" href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">自如地图</a>`:''}`;
+ const sourceUrl=safeUrl(data.source.url),status=verification.status==='blocked'?'原地图补采受阻':'已收录地图样本';
+ $('#inventory-source-status').innerHTML=`<span><strong>历史地图样本</strong><span class="tag ${verification.status==='blocked'?'amber':'neutral'}">${esc(status)}</span></span><span>累计收录 ${stats.count} 条 · 最近补采新增 ${fetched===null?'—':fetched} 条 · 非北京全量</span><button class="text-btn" id="inventory-refresh" ${inventoryRefreshRunning?'disabled':''}>${inventoryRefreshRunning?'正在刷新':'刷新已收录数据'}</button><button class="text-btn" id="inventory-audit">统计口径</button>${sourceUrl?`<a class="text-btn" href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">自如地图</a>`:''}`;
  $('#inventory-refresh').onclick=refreshCollectedInventory;
  $('#inventory-audit').onclick=showInventoryAudit;
  $('#bedroom-summary').innerHTML=[['1','1 居'],['2','2 居'],['3+','3 居及以上'],['shared','合租单间'],['unknown','待分类']].map(([key,label])=>`<button type="button" class="bedroom-stat" data-bedroom-group="${key}" aria-label="查看${label}采集房源"><span>${label}</span><strong>${stats.bedrooms[key]}</strong><small>${key==='shared'?'按出租卧室计':'条房源记录'}</small></button>`).join('');
@@ -161,7 +161,7 @@ async function init(){
   mapWorkspace=new PropertyMapWorkspace($('#scene-container'),{
    properties:mapProperties(),events:state.events,geography,sources:mapSources,
    onOpenProperty:showProperty,onOpenModel:id=>openTwin(id),onOpenOperations:openHousehold,onEvent:openEvent,onActivateMap:()=>showScene('city'),
-   onViewInventory:district=>{showPage('properties');$('#inventory-view').value=mapInventoryScope;$('#property-search').value='';$('#bedroom-select').value='';$('#business-select').value='';renderProperties();$('#district-select').value=district||'';state.propertyPage=1;renderPropertiesList();},
+   onViewInventory:district=>{showHistoricalAssets();$('#inventory-view').value=mapInventoryScope;$('#property-search').value='';$('#bedroom-select').value='';$('#business-select').value='';renderProperties();$('#district-select').value=district||'';state.propertyPage=1;renderPropertiesList();},
    onStatus:status=>{if(state.scene==='city')$('#scene-loading').hidden=['webgl','leaflet','failed'].includes(status.mode);}
   });
   householdWorkspace=new HouseholdWorkspace($('#household-workspace'),{
@@ -186,7 +186,7 @@ function inventoryProperties(scope='collected'){
  const rows=data?.properties||[];return scope==='model'?rows.filter(canOpenModel):rows;
 }
 function mapProperties(){return inventoryProperties(mapInventoryScope);}
-function mapScopeNote(){return mapInventoryScope==='model'?'有三维参考的采集房源 · 非房间精确坐标':'全部已采集房源 · 小区 / 地铁参考位置';}
+function mapScopeNote(){return mapInventoryScope==='model'?'有三维参考的采集房源 · 非房间精确坐标':'历史地图样本 · 小区 / 地铁参考位置';}
 function setMapScope(scope){
  mapInventoryScope=scope==='model'?'model':'collected';
  $('#map-inventory-scope').value=mapInventoryScope;mapWorkspace?.closeDetail();mapWorkspace?.update(mapProperties(),state.events);
@@ -206,7 +206,7 @@ function showInventoryAudit(){
  const labels={'1':'1 居','2':'2 居','3+':'3 居及以上',shared:'合租单间',unknown:'待分类'};
  showModal('运维中房源 · 统计口径',`<span class="tag blue">自如北京地图 · 更多 → 灵之智能</span><p>运维中房源为累计已采集并收录的全部房源，包括此前采样和后续新增记录。身份、出租方式、商圈或三维资料待补的记录继续计入。真实房源 ID 优先去重，缺失 ID 时按已保存的本地记录索引去重。</p><div class="source-block"><h3>累计收录 ${stats.count} 条 · 最近补采新增 ${mapAddedCount()??'—'} 条</h3><p>最近原地图访问记录：${esc(formatObservedAt(verification.checkedAt))}。新增为 0 不清空累计收录；当前清单不代表全北京库存。${stats.businesses} 个商圈已确认，${stats.businessUnknown} 条房源商圈待核验；记录覆盖 ${stats.districts} 个行政区，其中 ${stats.confirmedDistricts} 个已确认、${stats.pendingDistricts} 个归属待核验。</p><p>居室按实际出租对象分类。合租卧室单列为“合租单间”，不将所属户型的两居计为一整套两居。本地 CSV 独立展示，不计入公开采集数量。</p></div><div style="overflow:auto"><table><thead><tr><th>已收录房源</th><th>房源身份</th><th>房型</th><th>资料补充</th></tr></thead><tbody>${stats.records.map(row=>`<tr><td>${esc(row.name)}${row.roomLabel?' · '+esc(row.roomLabel):''}</td><td>${esc(listingIdentity(row)||'本地记录 '+row.id)}</td><td>${labels[housingGroup(row)]}</td><td>${esc(inventoryMissing(audit.get(row.id)))}</td></tr>`).join('')}</tbody></table></div><div class="view-menu"><button class="button" id="download-inventory-audit">下载已采集台账</button><button class="button" id="view-collected-records">查看全部房源</button></div>`);
  $('#download-inventory-audit').onclick=()=>downloadFile('北京灵之智能已采集房源.json',JSON.stringify({scope:'全部已采集收录房源',source:data.source,lastMapAttempt:verification,summary:{count:stats.count,businesses:stats.businesses,communities:stats.communities,districts:stats.districts,confirmedDistricts:stats.confirmedDistricts,bedrooms:stats.bedrooms},properties:stats.records},null,2),'application/json;charset=utf-8');
- $('#view-collected-records').onclick=()=>{$('#modal').close();showPage('properties');$('#inventory-view').value='collected';$('#bedroom-select').value='';$('#business-select').value='';$('#district-select').value='';$('#property-search').value='';state.propertyPage=1;renderProperties();};
+ $('#view-collected-records').onclick=()=>{$('#modal').close();showHistoricalAssets();$('#inventory-view').value='collected';$('#bedroom-select').value='';$('#business-select').value='';$('#district-select').value='';$('#property-search').value='';state.propertyPage=1;renderProperties();};
 }
 function renderModelCoverage(){
  const element=$('#model-coverage');if(!element)return;
@@ -221,8 +221,14 @@ function showModelCoverage(){
 }
 function syncHousehold(){householdWorkspace?.update({properties:allProperties(),events:state.events,tickets:state.tickets});}
 function openHousehold(id=MODEL_PROPERTY_ID,options={}){if(!householdWorkspace){toast('家庭运行资料正在加载，请稍后。');return;}showPage('household');householdWorkspace.open(id,options);}
+function showHistoricalAssets(){
+ showPage('properties',false);
+ const archive=$('#historical-assets');
+ archive.open=true;
+ archive.scrollIntoView({behavior:motionBehavior(),block:'start'});
+}
 function showPage(page,scroll=true){
- const labels={overview:['家庭智能运维管家','一个入口，两个能力：\n让「用得怎么样」看得见，让「怎么办」问得到。'],household:['家庭运行','从整屋概况到具体设备，查看证据并跟进问题。'],properties:['房源资产','汇总自如北京地图已采集房源，连接资料、设备与处理记录。'],devices:['设备监控','保留数据口径，让异常排名真正支持核验与行动。'],agents:['数字员工','灵之百晓生统一承接，四类数字员工协作跟进。'],tickets:['事件工单','发现、诊断、跟进与复验，形成可追溯的处理闭环。']};
+ const labels={overview:['家庭智能运维管家','查北京房源、核对户型与 VR，进入家庭运行看板跟进设备异常。'],household:['家庭运行','从整屋概况到具体设备，查看证据并跟进问题。'],properties:['房源资产','查询自如官网挂牌、送核编号及对应的户型图和 VR。'],devices:['设备监控','保留数据口径，让异常排名真正支持核验与行动。'],agents:['数字员工','灵之百晓生统一承接，四类数字员工协作跟进。'],tickets:['事件工单','发现、诊断、跟进与复验，形成可追溯的处理闭环。']};
  if(!labels[page])return;
  state.page=page;document.body.dataset.page=page;document.body.classList.remove('menu-open');$('#menu-toggle')?.setAttribute('aria-expanded','false');syncHeader();
  $$('.page').forEach(p=>p.classList.toggle('active',p.id===page+'-page'));$$('.nav-item[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
@@ -429,7 +435,7 @@ function showCrawlStatus(){
 function showSources(){
  if(!data){toast('资料仍在加载，请稍后查看。');return;}
  const verification=mapLastAttempt(),stats=collectedStats(),source=safeUrl(data.source.url);
- showModal('数据来源与重建范围',`<div class="source-block"><h3>① 自如北京地图 · 已采集房源</h3><p>主来源为自如北京地图，筛选“更多 → 灵之智能 → 确定”。运维中房源计入全部已采集收录记录，当前累计 ${stats.count} 条；包含资料待补记录，按真实房源 ID 或本地记录索引去重。本地 CSV 不计入公开采集数量。</p><p>最近原地图访问记录为 ${esc(formatObservedAt(verification.checkedAt))}，新增 ${mapAddedCount()??'—'} 条，累计收录保留。房源按实际出租对象分类，合租单间独立列示；现有清单不是北京全量，也不表示真实设备已接入。</p>${source?`<a href="${esc(source)}" target="_blank" rel="noopener noreferrer">打开自如北京地图（需重新选择灵之智能）</a>`:''} · <a href="./ops/assets/properties.json" target="_blank" rel="noopener noreferrer">已收录原始记录</a></div><div class="source-block"><h3>② 三维参考资料</h3><p>仅望京路3号院（810151211）具备 1 张户型图、10 张照片，支持对应房源的近似重建；其余 9 条历史记录尚缺独立房源身份、户型图及照片。部分尺寸和遮挡结构为推断，设备位置与运行状态为演示。</p><a href="./ops/assets/three-source-coverage.json" target="_blank" rel="noopener noreferrer">逐套建模资料</a> · <a href="https://github.com/img2threejs/img2threejs" target="_blank" rel="noopener noreferrer">img2threejs 方法参考</a></div><div class="source-block"><h3>③ 家庭运行与问题承接</h3><p>连接、执行、联动、安防、耗材和使用六个维度；仅参考样板使用 7 台演示设备的数据。日、周、月指标来自固定演示窗口，模拟复验只更新当前演示状态，不改写历史统计。其他房源的真实遥测均未接入。</p><p>灵之百晓生是本地规则问答演示，使用当前房源、维度、演示事件与浏览器中的工单记录；未连接大模型，未向真实设备发送命令或实际派单。</p></div><div class="source-block"><h3>④ 公共地图与商圈</h3><p>OpenStreetMap 底图、MapLibre 与 Three.js 业务图层；支持 WebGL2 时可叠加 Mapzen / AWS 地形，其他环境显示二维兼容地图。地形不代表楼栋或室内结构。</p><p>历史参考中有 7 条小区参考位置、3 条地铁代理位置，均不是房间精确坐标。太阳宫已计入确认商圈，其余 9 条为待核验候选，单独列示。</p><div class="view-menu"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a><a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener noreferrer">Mapzen / AWS</a><a href="./ops/assets/property-geography.json" target="_blank" rel="noopener noreferrer">位置核验依据</a></div></div><div class="source-block"><h3>⑤ 原运维报表与演示</h3><p>设备报表来自用户提供截图，采样日期未知，可读 7 个型号、8 台设备记录，不能推算全局在线率，也不与北京房源建立未经核验的映射。4 条事件与工单草稿仅保存在当前浏览器。</p></div>`);
+ showModal('数据来源与重建范围',`<div class="source-block"><h3>自如官网挂牌与编号核验</h3><p>挂牌台账来自北京官网“灵之智能”筛选的公开分页，按挂牌号去重。送核编号独立查询，以详情页显示的编号核实，户型图和 VR 取自同套详情。卡片标签、挂牌状态与设备实装各有独立依据。</p><a href="./ops/assets/verified-listings-20261120.xlsx" download="北京房源编号核验_20261120.xlsx">下载编号核验表（Excel）</a></div><div class="source-block"><h3>① 历史地图样本</h3><p>历史样本来自自如北京地图，筛选“更多 → 灵之智能 → 确定”。地图与演示台账涵盖历史样本，累计 ${stats.count} 条；包含资料待补记录，按真实房源 ID 或本地记录索引去重。本地 CSV 不计入公开采集数量。</p><p>最近原地图访问记录为 ${esc(formatObservedAt(verification.checkedAt))}，新增 ${mapAddedCount()??'—'} 条，累计收录保留。房源按实际出租对象分类，合租单间独立列示；现有清单不是北京全量，也不表示真实设备已接入。</p>${source?`<a href="${esc(source)}" target="_blank" rel="noopener noreferrer">打开自如北京地图（需重新选择灵之智能）</a>`:''} · <a href="./ops/assets/properties.json" target="_blank" rel="noopener noreferrer">已收录原始记录</a></div><div class="source-block"><h3>② 三维参考资料</h3><p>历史样本中，望京路3号院（810151211）具备 1 张户型图、10 张照片，支持对应房源的近似重建；其余 9 条历史记录尚缺独立房源身份、户型图及照片。部分尺寸和遮挡结构为推断，设备位置与运行状态为演示。</p><a href="./ops/assets/three-source-coverage.json" target="_blank" rel="noopener noreferrer">逐套建模资料</a> · <a href="https://github.com/img2threejs/img2threejs" target="_blank" rel="noopener noreferrer">img2threejs 方法参考</a></div><div class="source-block"><h3>③ 家庭运行与问题承接</h3><p>连接、执行、联动、安防、耗材和使用六个维度；仅参考样板使用 7 台演示设备的数据。日、周、月指标来自固定演示窗口，模拟复验只更新当前演示状态，不改写历史统计。其他房源的真实遥测均未接入。</p><p>灵之百晓生是本地规则问答演示，使用当前房源、维度、演示事件与浏览器中的工单记录；未连接大模型，未向真实设备发送命令或实际派单。</p></div><div class="source-block"><h3>④ 公共地图与商圈</h3><p>OpenStreetMap 底图、MapLibre 与 Three.js 业务图层；支持 WebGL2 时可叠加 Mapzen / AWS 地形，其他环境显示二维兼容地图。地形不代表楼栋或室内结构。</p><p>历史参考中有 7 条小区参考位置、3 条地铁代理位置，均不是房间精确坐标。太阳宫已计入确认商圈，其余 9 条为待核验候选，单独列示。</p><div class="view-menu"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a><a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener noreferrer">Mapzen / AWS</a><a href="./ops/assets/property-geography.json" target="_blank" rel="noopener noreferrer">位置核验依据</a></div></div><div class="source-block"><h3>⑤ 原运维报表与演示</h3><p>设备报表来自用户提供截图，采样日期未知，可读 7 个型号、8 台设备记录，不能推算全局在线率，也不与北京房源建立未经核验的映射。4 条事件与工单草稿仅保存在当前浏览器。</p></div>`);
 }
 let referenceGallery=null;
 function showReferences(propertyId){
@@ -454,9 +460,13 @@ $('#brand-home').onclick=e=>{e.preventDefault();showPage('overview',false);windo
 $('.footer-brand').onclick=$('#brand-home').onclick;
 $('#menu-toggle').onclick=()=>{if(window.matchMedia('(max-width:640px)').matches){const open=document.body.classList.toggle('menu-open');$('#menu-toggle').setAttribute('aria-expanded',String(open));}else{$('#app').scrollIntoView({behavior:motionBehavior(),block:'start'});}};
 syncHeader();
+window.addEventListener('hashchange',()=>{
+ if(['#public-inventory','#tagged-inventory','#check-inventory','#verified-inventory','#unmatched-inventory'].includes(location.hash)
+    && !['properties','overview'].includes(document.body.dataset.page)) showPage('overview',false);
+});
 $$('.nav-item[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));$$('[data-go]').forEach(b=>b.onclick=()=>showPage(b.dataset.go));
 $$('[data-inventory-view]').forEach(button=>button.onclick=()=>openInventoryLevel({view:button.dataset.inventoryView,businessKey:'',communityKey:'',bedroomGroup:''}));
-$('#return-to-inventory').onclick=()=>{$('#overview-inventory').scrollIntoView({behavior:motionBehavior(),block:'start'});};
+$('#return-to-inventory').onclick=()=>{$('#historical-overview').open=true;$('#overview-inventory').scrollIntoView({behavior:motionBehavior(),block:'start'});};
 $$('[data-event-filter]').forEach(b=>b.onclick=()=>{state.eventFilter=b.dataset.eventFilter;$$('[data-event-filter]').forEach(v=>v.classList.toggle('selected',v===b));renderEvents();});
 $$('button[data-scene]').forEach(b=>b.onclick=()=>showScene(b.dataset.scene));
 $('#show-apartment-btn').onclick=()=>openTwin(MODEL_PROPERTY_ID);$('#tour-btn').onclick=async()=>{await openTwin(MODEL_PROPERTY_ID);twinWorkspace?.setScenario('gateway-offline');openEvent('EVT-DEMO-001');};

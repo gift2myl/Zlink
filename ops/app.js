@@ -1,3 +1,4 @@
+import { mountCollectionLeads } from './collection-leads.js';
 import { SceneViewer } from './scene-viewer.js';
 import { PropertyMapWorkspace } from './property-map-workspace.js';
 import { HouseholdWorkspace } from './household-workspace.js';
@@ -140,6 +141,7 @@ async function init(){
   householdWorkspace.setVisible(false);
   twinWorkspace=new TwinWorkspace({controls:$('#twin-controls'),panel:$('#twin-panel'),empty:$('#twin-empty'),detail:$('#scene-detail'),properties:allProperties(),geography,coverage:modelCoverage,onProperty:openTwin,onChange:syncTwinScene,onFocus:id=>{if(canOpenModel(twinWorkspace.property))viewer?.focusDevice(id);},onCatalog:showConfigurationCatalog,onSource:showProperty,onExport:payload=>downloadFile('灵之房源设备配置-'+payload.property.id+'.json',JSON.stringify(payload,null,2),'application/json;charset=utf-8')});
   renderInventoryLedger();
+  mountCollectionLeads($('#collection-leads'),{showModal,downloadFile});
   renderSceneLegend();
   setMapScope('collected');
   if(!state.activities.length)state.activities=[{title:'健康监控员 · 待核验事件',body:'4 条演示事件已按影响与优先级排列。',kind:'network',time:'演示初始化'},{title:'经验蒸馏师 · 资料已准备',body:'“同户多设备离线”技能草案等待专家核验。',kind:'book',time:'演示初始化'}];

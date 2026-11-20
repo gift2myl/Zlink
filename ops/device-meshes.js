@@ -15,17 +15,23 @@ function inferForm(d){
 function poseFor(d,index){
   const room=d.roomId||'living',base=ROOM_ANCHORS[room]||ROOM_ANCHORS.living;
   const form=inferForm(d);let p=[base[0],1.20,base[1]],y=0;
-  if(form==='gateway')p=[-1.68,1.14,.70];
+  // Existing dining surface (tabletop y=.775); a planning marker, not a
+  // commissioned installation position. Keep the body clear of the fridge.
+  if(form==='gateway')p=[-1.05,.805,-.30];
   else if(form==='door-lock'){p=[1.28,1.07,-.43];y=-Math.PI/2;}
   else if(form==='control-panel'||form==='wall-switch'||form==='socket'||form==='environment-sensor'){
     if(room==='bedroom'){p=[1.22,form==='socket'?.42:1.34,2.05];y=-Math.PI/2;}
     else if(room==='kitchen'){p=[2.42,1.25,-4.50];y=-Math.PI/2;}
-    else{p=[-2.10,1.32,.64];y=Math.PI/2;}
+    // The former z=.64 position was behind the fridge. This west-wall section
+    // is within the living room and clear of its furniture.
+    else{p=[-2.145,1.32,-.78];y=Math.PI/2;}
     if(form==='wall-switch')p[2]+=.26;
   }else if(form==='ceiling-light')p=[base[0],2.61,base[1]];
   else if(form==='surface-spotlight'||form==='recessed-spotlight')p=[base[0],2.56,base[1]];
   else if(form==='smoke-sensor')p=room==='living'?[-1.57,2.60,-.58]:[base[0]-.24,2.60,base[1]];
-  else if(form==='gas-sensor'){p=[2.42,2.07,-4.98];y=-Math.PI/2;}
+  // Kitchen west wall: east-side x=2.42 intersects the upper cabinets.
+  // Height and gas-type suitability still require the actual installation plan.
+  else if(form==='gas-sensor'){p=[.90,2.07,-4.60];y=Math.PI/2;}
   else if(form==='curtain-motor')p=room==='bedroom'?[1.04,2.30,6.08]:[base[0]+1.12,2.30,base[1]+.95];
   else if(form==='curtain-track'||form==='light-strip')p=room==='bedroom'?[-.45,2.58,6.08]:[base[0],2.58,base[1]+.95];
   else if(form==='wall-ac'){p=[1.18,2.27,5.55];y=-Math.PI/2;}

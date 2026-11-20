@@ -12,8 +12,8 @@ function element(tag, className, text) {
 function referenceRoom(asset) {
   if (asset.kind === 'floorplan') return '户型图';
   const heading = String(asset.content || '').split(/[：:；;]/)[0];
-  if (/卧室/.test(heading)) return '卧室';
-  if (/餐厅|起居厅|客厅/.test(heading)) return '餐厅 / 起居厅';
+  if (/卧室|主卧|次卧/.test(heading)) return '卧室';
+  if (/餐厅|起居|客厅/.test(heading)) return '餐厅 / 起居厅';
   if (/厨房/.test(heading)) return '厨房';
   if (/卫生间|洗漱/.test(heading)) return '卫生间';
   if (/玄关/.test(heading)) return '玄关';
@@ -39,7 +39,12 @@ export function mountReferenceGallery(container, {record, onViewModel} = {}) {
   const listen = (node, event, handler) => node.addEventListener(event, handler, {signal: abort.signal});
   const seen = new Set();
   const assets = (Array.isArray(record?.assets) ? record.assets : []).filter(asset => {
-    if (!asset || typeof asset.file !== 'string' || !REFERENCE_PATH.test(asset.file) || seen.has(asset.file)) return false;
+    if (!asset || typeof asset.file !== 'string' || seen.has(asset.file)) return false;
+    const id=String(record?.realListingId||record?.id||'');
+    const reviewed=/^\d+$/.test(id) && asset.sourceUrl===record.confirmedDetailUrl && (
+      asset.file==='assets/plan-references/images/'+id+'.jpg' ||
+      new RegExp('^assets/plan-references/photos/'+id+'[-_][a-zA-Z0-9_-]+\\.jpe?g$').test(asset.file));
+    if(!REFERENCE_PATH.test(asset.file) && !reviewed)return false;
     seen.add(asset.file);
     return true;
   }).map(asset => ({...asset, room: referenceRoom(asset)}));
@@ -55,6 +60,8 @@ export function mountReferenceGallery(container, {record, onViewModel} = {}) {
   const floorplans = assets.filter(asset => asset.kind === 'floorplan').length;
   const summary = assets.length ? `${floorplans} 张户型图 · ${assets.length - floorplans} 张实景照片` : '对应素材待补充';
   heading.append(element('p', 'refg-summary', summary));
+  const audit = record?.roomEvidence;
+  if (audit) heading.append(element('p', 'refg-summary', `房源编码 ${audit.houseCode} · ${audit.layout} · ${audit.areaLabel} ${audit.area}㎡ · ${audit.rooms.length} 个可进入空间`));
   header.append(heading);
   const source = confirmedSource(record);
   if (source) {

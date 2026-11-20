@@ -124,6 +124,11 @@ function modelFor(device,form){
   return {group,indicator,indicatorMaterial,materials:mats};
 }
 
+// Reuse the catalogue appearance without the reference apartment's fixed coordinates.
+export function createConfiguredDeviceMesh(device) {
+  return modelFor(device,inferForm(device)).group;
+}
+
 export function createDeviceLayer(devices=[],roomStates=[]) {
   const group=new THREE.Group();group.name='configured-smart-devices';
   const records=[],areas=[];

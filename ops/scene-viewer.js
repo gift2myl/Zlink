@@ -83,7 +83,7 @@ export class SceneViewer {
   toggleTop(){this.topView=!this.topView;const target=this.controls.target;const distance=this.mode==='city'?190:22;if(this.topView)this.camera.position.copy(target).add(new THREE.Vector3(0,distance,.001));else this.reset();this.controls.update();return this.topView;}
   setRotate(active){this.controls.autoRotate=active;return active;}
   focusDistrict(id){const p=this.city.focusPositions[id];if(!p)return;this.controls.target.copy(p);this.camera.position.copy(p).add(new THREE.Vector3(48,70,65));this.controls.update();for(const l of this.labelEntries)l.el.classList.toggle('selected',l.data.districtId===id);}
-  focusDevice(id){if(!this.apartment)return;const d=this.apartment.devices.find(d=>d.id===id);if(!d)return;this.selectedDeviceId=id;const p=d.position.clone();this.controls.target.copy(p);this.camera.position.copy(p).add(new THREE.Vector3(5.3,4.1,6));this.controls.update();this.applyTwinLabelStates();this.needsRender=true;}
+  focusDevice(id){if(!this.apartment)return false;const d=this.apartment.devices.find(d=>d.id===id);if(!d)return false;this.selectedDeviceId=id;const p=d.position.clone();this.controls.target.copy(p);this.camera.position.copy(p).add(new THREE.Vector3(5.3,4.1,6));this.controls.update();this.applyTwinLabelStates();this.needsRender=true;return true;}
   toggleWalls(){this.cutaway=!this.cutaway;if(this.apartment)this.apartment.group.traverse(o=>{if(o.userData?.cutawayUpper)o.visible=!this.cutaway;});this.needsRender=true;return this.cutaway;}
   setDeviceState(id,status){
     if(this.twinSummary?.devices.some(d=>d.id===id)){

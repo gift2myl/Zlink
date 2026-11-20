@@ -67,12 +67,12 @@ function devicePlan(property, profile) {
 export class PropertyMapWorkspace {
   constructor(container, {
     properties = [], events = [], geography = {}, sources = {},
-    onOpenProperty, onOpenModel, onOpenPlan, onClosePlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap
+    onOpenProperty, onOpenModel, onOpenRoom, onOpenPlan, onClosePlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap
   } = {}) {
     this.container = container;
     this.geography = geography || {};
     this.sources = sources || {};
-    this.callbacks = { onOpenProperty, onOpenModel, onOpenPlan, onClosePlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap };
+    this.callbacks = { onOpenProperty, onOpenModel, onOpenRoom, onOpenPlan, onClosePlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap };
     this.active = true;
     this.communityKey = '';
     this.selectedId = null;
@@ -208,6 +208,8 @@ export class PropertyMapWorkspace {
         this.openMarker(this.groups.find(group=>group.id===button.dataset.geoMapGroup));
       } else if(button.hasAttribute('data-geo-card-close')) {
         this.dismissCard();
+      } else if(button.hasAttribute('data-geo-card-room')) {
+        if(this.selectedId)this.callbacks.onOpenRoom?.(this.selectedId,this.planProfile);
       } else if(button.hasAttribute('data-geo-card-detail')) {
         this.revealDetail();
       } else if(button.hasAttribute('data-geo-card-siblings')) {
@@ -229,6 +231,7 @@ export class PropertyMapWorkspace {
       if (button.dataset.geoAction === 'property') this.callbacks.onOpenProperty?.(entry.id);
       if (button.dataset.geoAction === 'operations') this.callbacks.onOpenOperations?.(entry.id);
       if (button.dataset.geoAction === 'plan') this.callbacks.onOpenPlan?.(entry.id, this.planProfile);
+      if (button.dataset.geoAction === 'room') this.callbacks.onOpenRoom?.(entry.id,this.planProfile);
       if (button.dataset.geoAction === 'model') this.callbacks.onOpenModel?.(entry.id,this.planProfile);
       if (button.dataset.geoAction === 'inventory') this.callbacks.onViewInventory?.(entry.district);
       if (button.dataset.geoAction === 'event') {
@@ -430,7 +433,7 @@ export class PropertyMapWorkspace {
     const id=entry.property.realListingId || entry.id;
     this.setMapCard(entry.name,`<p><strong>${entry.property.realListingId?'挂牌号':'记录号'} ${esc(id)}</strong> · ${esc(positionLabel(entry))}</p>
       <p>${esc(propertyFacts(entry.property))}</p><div class="geo-listing-actions">
-      <button type="button" data-geo-card-detail>设备详情</button>
+      ${entry.property.reviewedRoomDemo?'<button type="button" data-geo-card-room>进入房间三维</button>':''}<button type="button" data-geo-card-detail>设备详情</button>
       ${this.filteredEntries.length>1?`<button type="button" data-geo-card-siblings>本小区 ${this.filteredEntries.length} 套</button>`:''}
       <button type="button" data-geo-card-city>返回北京地图</button></div>`,focus);
   }
@@ -459,7 +462,7 @@ export class PropertyMapWorkspace {
   }
 
   canOpenModel(entry) {
-    return entry.id === MODEL_PROPERTY_ID && entry.property.imported !== true && entry.property.modelReady === true;
+    return entry.property.imported !== true && entry.property.modelReady === true && (entry.id === MODEL_PROPERTY_ID || entry.property.reviewedRoomDemo===true);
   }
 
   async focusProperty(value, {reveal=true}={}) {
@@ -515,6 +518,7 @@ export class PropertyMapWorkspace {
     element.innerHTML = `<button type="button" class="icon-btn close-scene-detail" data-geo-action="close" aria-label="关闭房源地图详情">×</button>
       <div class="geo-detail-heading"><h3>${esc(entry.name)}</h3><p>${entry.property.realListingId ? '挂牌号' : '记录号'} ${esc(entry.id)}${(entry.property.officialHouseCode || entry.property.businessId) ? ' · ' + esc(entry.property.officialHouseCode || entry.property.businessId) : ''}</p><p>${esc(entry.district)} · ${esc(entry.businessLabel)} · ${esc(propertyFacts(entry.property))}</p></div>
       <div class="geo-detail-actions">
+        ${entry.property.reviewedRoomDemo?'<button class="button primary" type="button" data-geo-action="room">进入房间三维</button>':''}
         ${this.callbacks.onOpenPlan ? `<button type="button" class="button primary" data-geo-action="plan" aria-controls="overview-plan-pane" aria-expanded="${document.getElementById('overview-plan-pane')?.hidden === false}">${entry.property.publicFloorplanUrl ? '查看户型与设备点位' : '查看本套配置方案'}</button>` : ''}
         <button type="button" class="button" data-geo-action="operations">查看家庭运行</button>
         <button type="button" class="button" data-geo-action="property">查看房源详情</button>

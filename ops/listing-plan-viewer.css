@@ -35,3 +35,23 @@
 .lpv .lpv-flat img{display:block;max-width:100%;width:100%;object-fit:contain;max-height:520px}
 @media(max-width:620px){.lpv .lpv-stage{height:360px}.lpv .lpv-config{display:grid;grid-template-columns:minmax(85px,.7fr) minmax(0,1.3fr)}.lpv .lpv-count{grid-column:1/-1}.lpv .lpv-heading{gap:2px}.lpv .lpv-toolbar{gap:5px}.lpv .lpv-toolbar button{padding:6px 8px}.lpv .lpv-point{width:26px;height:26px}}
 @media(prefers-reduced-motion:reduce){.lpv *{scroll-behavior:auto}}
+.lpv [hidden]{display:none!important}
+.lpv .lpv-room-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0}
+.lpv-room-controls label,.lpv-room-controls>div{display:flex;align-items:center;gap:7px}
+.lpv-room-controls label{font-size:14px;color:var(--lp-ink)}
+.lpv-room-controls select,.lpv-room-controls button{font:inherit;font-size:14px;color:var(--lp-ink);background:white;border:1px solid #bdcdd6;border-radius:5px;min-height:37px;padding:5px 10px}
+.lpv .lpv-floor-inset,#scene-container .lpv canvas.lpv-floor-inset{position:absolute;right:10px;top:10px;width:111px;height:86px;background:#fffffff0;border:1px solid #a1b6bd;border-radius:5px;box-shadow:0 2px 9px #1e35441c;pointer-events:none;z-index:2}
+.lpv .lpv-model-pins{position:absolute;inset:0;pointer-events:none}
+.lpv .lpv-device-pin{position:absolute;pointer-events:auto;transform:translate(-50%,-100%);background:#183240eb;color:#fff;border:1px solid #ffffffbb;border-radius:10px;font-family:inherit;font-weight:500;font-size:11px;line-height:1.4;padding:2px 7px;white-space:nowrap;cursor:pointer;box-shadow:0 1px 4px #0003;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.lpv .lpv-device-pin::before{content:'';width:7px;height:7px;display:inline-block;margin:0 4px 1px 0;border-radius:50%;background:var(--state,#92a1aa)}
+.lpv .lpv-device-pin[aria-pressed=true]{outline:2px solid #e3a352;z-index:2}
+.lpv .lpv-point:is([data-state=offline],[data-state=alarm]){border-color:#e94450}
+.lpv[data-view-mode=room] .lpv-navigation :is([data-action=top],[data-action=in],[data-action=out]){display:none}
+.lpv.lpv-native{padding:8px 12px}
+.lpv.lpv-native :is(.lpv-heading,.lpv-config,.lpv-info,.lpv-count,.lpv-legend){display:none}
+.lpv-native .lpv-toolbar{margin:2px 0 6px}
+.lpv-native .lpv-key{margin:4px 0}
+.lpv-native .lpv-note{margin:0;line-height:1.35;font-size:12px}
+@media(max-width:600px){.lpv .lpv-floor-inset,#scene-container .lpv canvas.lpv-floor-inset{right:6px;top:6px;width:80px;height:63px}.lpv .lpv-device-pin{font-size:10px}.lpv-room-controls button{min-width:43px}.lpv.lpv-native{padding:6px}}
+
+#scene-container .lpv canvas.lpv-floor-inset[hidden]{display:none!important}

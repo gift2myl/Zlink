@@ -23,7 +23,7 @@ export class TwinWorkspace {
     this.rebuild();
   }
   get property(){return this.properties.find(p=>p.id===this.propertyId)||this.properties[0];}
-  get referenceReady(){return this.property?.id===REFERENCE_ID&&this.property?.modelReady===true;}
+  get referenceReady(){return this.property?.modelReady===true && (this.property.id===REFERENCE_ID || this.property.reviewedRoomDemo===true);}
   updateProperties(properties){this.properties=properties;this.rebuild();}
   open(id,profile=this.profile){
     if(!this.properties.some(p=>p.id===String(id)))return;
@@ -58,7 +58,7 @@ export class TwinWorkspace {
   }
   renderControls(){
     const p=this.property,config=this.configuration;
-    this.controls.innerHTML=`<div class="twin-controls-head"><div><p class="eyebrow">HOME DIGITAL TWIN</p><h3>从房间到设备，看清影响范围。</h3></div><button class="button" data-twin-catalog>配置依据</button></div><div class="twin-choices"><label><span>已采集房源</span><select aria-label="切换三维运维房源" id="twin-property-select">${this.properties.map(row=>`<option value="${esc(row.id)}" ${row.id===this.propertyId?'selected':''}>${esc(row.name)}${row.roomLabel?' · '+esc(row.roomLabel):' · '+esc(row.bedrooms)+'居'}${row.id===REFERENCE_ID?' · 有户型参考':''}</option>`).join('')}</select></label><label><span>心舍 3.0.1 配置推演</span><select aria-label="智能设备配置方案" id="twin-profile-select">${Object.entries(profiles).map(([key,label])=>`<option value="${key}" ${this.profile===key?'selected':''}>${label}</option>`).join('')}</select></label><label class="twin-track-choice"><input type="checkbox" id="twin-track-preview" ${this.singleTracks?'checked':''} ${this.profile==='base'?'disabled':''}><span>预览每屋单轨窗帘<small>用户规划 · 窗长待确认</small></span></label></div><div class="twin-scenarios"><span>异常可视化演示</span><div role="group" aria-label="三维异常演示情景">${scenarios.map(([key,label])=>`<button type="button" data-twin-scenario="${key}" aria-pressed="${key===this.scenario}" class="${key===this.scenario?'selected':''}">${label}</button>`).join('')}</div><label class="twin-label-toggle"><input type="checkbox" id="twin-label-toggle" ${this.showLabels?'checked':''}>设备标记</label></div><p class="twin-version-note"><span class="tag">配置推演</span>当前房源标签：${esc(p.product||'产品版本待核验')}。${esc(config.applicability?.reason||'方案型号与数量需逐套核对实装清单。')}<span>资料依据：配置文档第 6–9 页。</span></p>`;
+    this.controls.innerHTML=`<div class="twin-controls-head"><div><p class="eyebrow">HOME DIGITAL TWIN</p><h3>从房间到设备，看清影响范围。</h3></div><button class="button" data-twin-catalog>配置依据</button></div><div class="twin-choices"><label><span>已采集房源</span><select aria-label="切换三维运维房源" id="twin-property-select">${this.properties.map(row=>`<option value="${esc(row.id)}" ${row.id===this.propertyId?'selected':''}>${esc(row.name)}${row.roomLabel?' · '+esc(row.roomLabel):' · '+esc(row.bedrooms)+'居'}${row.reviewedRoomDemo?' · 房间三维':row.id===REFERENCE_ID?' · 原运维样板':''}</option>`).join('')}</select></label><label><span>心舍 3.0.1 配置推演</span><select aria-label="智能设备配置方案" id="twin-profile-select">${Object.entries(profiles).map(([key,label])=>`<option value="${key}" ${this.profile===key?'selected':''}>${label}</option>`).join('')}</select></label><label class="twin-track-choice"><input type="checkbox" id="twin-track-preview" ${this.singleTracks?'checked':''} ${this.profile==='base'?'disabled':''}><span>预览每屋单轨窗帘<small>用户规划 · 窗长待确认</small></span></label></div><div class="twin-scenarios"><span>异常可视化演示</span><div role="group" aria-label="三维异常演示情景">${scenarios.map(([key,label])=>`<button type="button" data-twin-scenario="${key}" aria-pressed="${key===this.scenario}" class="${key===this.scenario?'selected':''}">${label}</button>`).join('')}</div><label class="twin-label-toggle"><input type="checkbox" id="twin-label-toggle" ${this.showLabels?'checked':''}>设备标记</label></div><p class="twin-version-note"><span class="tag">配置推演</span>当前房源标签：${esc(p.product||'产品版本待核验')}。${esc(config.applicability?.reason||'方案型号与数量需逐套核对实装清单。')}<span>资料依据：配置文档第 6–9 页。</span></p>`;
     this.controls.querySelector('#twin-property-select').onchange=e=>this.onProperty?.(e.target.value);
     this.controls.querySelector('#twin-profile-select').onchange=e=>this.setProfile(e.target.value);
     this.controls.querySelector('#twin-track-preview').onchange=e=>{this.singleTracks=e.target.checked;this.resetDeviceView();this.change();};
@@ -133,9 +133,9 @@ export class TwinWorkspace {
   selectDevice(id,focus=true,announcement=''){
     const device=(this.result.devices||[]).find(d=>d.id===id);if(!device)return;
     if(!this.matchesDevice(device)){this.deviceFilter='all';this.roomFilter='';this.renderPanel();}
-    this.selectedId=id;if(focus)this.onFocus?.(id);
+    this.selectedId=id;const located=focus && this.onFocus?.(id)===true;
     this.panel.querySelectorAll('[data-twin-device]').forEach(row=>{const selected=row.dataset.twinDevice===id;row.classList.toggle('selected',selected);row.setAttribute('aria-pressed',String(selected));});
-    this.focusMessage=announcement||`${this.referenceReady?'已定位':'已选择'} ${device.roomName} · ${device.name} · ${device.stateLabel||stateName[device.state]||'状态未接入'}`;
+    this.focusMessage=announcement||`${located?'已定位':'已选择'} ${device.roomName} · ${device.name} · ${device.stateLabel||stateName[device.state]||'状态未接入'}`;
     const status=this.panel.querySelector('.twin-focus-status');if(status)status.textContent=this.focusMessage;
     const item=itemFor(device),pages=device.configurationSource?.pages||item.sourcePages||[6,7];
     this.detail.innerHTML=`<button class="icon-btn close-scene-detail" aria-label="关闭设备详情">×</button><span class="twin-detail-room">${esc(device.roomName)}</span><h3>${esc(device.name)}</h3><span class="tag ${['alarm','fault','offline'].includes(device.state)?'amber':''}">${esc(device.stateLabel||stateName[device.state]||'状态未接入')}</span><dl><div><dt>型号 / 规格</dt><dd>${esc(device.model||'具体型号待核验')}</dd></div><div><dt>安装状态</dt><dd>按方案规划，实装未核验</dd></div><div><dt>规则出处</dt><dd>配置文档第 ${pages.join('、')} 页</dd></div></dl><button class="button" data-device-rule>查看型号与配置规则</button>`;
@@ -150,7 +150,17 @@ export class TwinWorkspace {
     this.detail.querySelector('[data-device-rule]').onclick=()=>this.onCatalog?.(device);
   }
   exportData(){
-    return {schemaVersion:1,property:{id:this.property.id,name:this.property.name,bedrooms:this.property.bedrooms,areaScope:this.property.areaScope||null,roomLabel:this.property.roomLabel||null,product:this.property.product,sourceUrl:this.property.sourceUrl},referenceStatus:this.referenceReady?'official_reference_approximation':this.property.publicFloorplanUrl?'official_floorplan_available':'missing_corresponding_floorplan',configuration:this.configuration,scenario:this.scenario,telemetryConnected:false,deviceStates:(this.result.devices||[]).map(({mesh,position,...device})=>device),source:CONFIG_SOURCE};
+    const evidence=this.coverage?.properties?.find(row=>row.id===this.propertyId)?.roomEvidence;
+    const p=this.property;
+    return {
+      schemaVersion:1,property:{id:p.id,name:p.name,houseCode:p.officialHouseCode||null,district:p.district||null,
+        businessArea:p.businessArea||null,layout:p.layout||null,bedrooms:p.bedrooms,area:p.area??null,
+        areaScope:p.areaScope||null,roomLabel:p.roomLabel||null,product:p.product,sourceUrl:p.sourceUrl},
+      ...(evidence?{roomEvidence:evidence}:{}),
+      referenceStatus:this.referenceReady?'official_reference_approximation':p.publicFloorplanUrl?'official_floorplan_available':'missing_corresponding_floorplan',
+      configuration:this.configuration,scenario:this.scenario,telemetryConnected:false,
+      deviceStates:(this.result.devices||[]).map(({mesh,position,...device})=>device),source:CONFIG_SOURCE
+    };
   }
 }
 

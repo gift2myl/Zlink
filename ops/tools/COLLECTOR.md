@@ -2,6 +2,10 @@
 
 ## 当前可运行范围
 
+2026-11-20 用户重新指定官网首页 `https://www.ziroom.com/` 为采集入口，`ziroom-lingzhi.config.json` 的 `entryUrl` 与 `startUrl` 已同步。尚未从正常首页核验到北京“灵之智能”筛选后的列表地址，`listingDiscovery.verified` 及筛选、分页、字段映射保持未核验。首页地址不等于已筛选列表；历史记录继续保留各自实际来源。
+
+已有访问证据除地图外，还包括同域 `www.ziroom.com/z/z2-q1308385113142296577-a1308384876582944769/?p=x63&isOpen=1` 的访问校验记录（`listing-inventory.json`）。更换首页入口没有解除既有来源校验，也没有增加真实房源。此次首页的公开文本读取未返回可解析内容；这不是一次成功的 Scrapling 列表抓取。
+
 隔离环境：`/workspace/scratch/d26fdd117e22/scrapling_env`。安装 Scrapling 0.5.1 和 curl_cffi 0.17.0。Scrapling Selector 可解析公开 HTML/JSON 中显式指定的房源字段。
 
 原生 `scrapling.fetchers.Fetcher` 导入需要 patchright 等额外依赖。补装 patchright/browserforge 的操作被自动审批拒绝，原因是超出“普通公开 HTTP，不安装自动浏览器或启用隐匿身份功能”的范围。未重试、未执行 `scrapling install`、未下载或调用自动浏览器。当前备用传输为标准库 `urllib.request`，状态中如实标记 `engine.transport: "urllib"`、`fetcherAvailable: false`，不称为原生 Fetcher 可用。

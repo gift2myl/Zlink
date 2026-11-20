@@ -1,7 +1,14 @@
 {
   "schemaVersion": 1,
   "cityCode": "110000",
-  "startUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+  "entryUrl": "https://www.ziroom.com/",
+  "startUrl": "https://www.ziroom.com/",
+  "entryKind": "official_homepage",
+  "listingDiscovery": {
+    "verified": false,
+    "filteredListingUrl": null,
+    "evidence": null
+  },
   "filter": {
     "name": "灵之智能",
     "verified": false,

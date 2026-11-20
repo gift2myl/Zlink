@@ -63,6 +63,7 @@ main#app{width:min(var(--content-width),88%);margin:0 auto;padding:48px 0 28px;m
 .page-heading>div:first-child{min-width:0}
 .page-heading h1{font-size:clamp(42px,3.7vw,58px);line-height:1.2;font-weight:300;letter-spacing:-.05em;white-space:pre-line}
 .page-heading p{font-size:16px;line-height:1.8;margin-top:19px;max-width:600px}
+#page-description{white-space:pre-line}
 .heading-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;padding-bottom:4px;max-width:480px}
 .city-chip{display:inline-flex;gap:7px;align-items:center;color:var(--muted);font-size:14px;margin-right:5px}
 .button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:46px;padding:10px 19px;border:1px solid #3a3a3a;border-radius:4px;background:#fff;color:#1b1b1b;font-size:16px;line-height:1.4;font-weight:400;text-align:center;white-space:nowrap;transition:background .2s,color .2s,border-color .2s}

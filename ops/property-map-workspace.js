@@ -196,7 +196,7 @@ export class PropertyMapWorkspace {
         <span class="geo-property-region" style="display:block">${esc(propertyFacts(entry.property))}</span>
         <span class="geo-property-status"><span class="tag neutral">${precision}</span><span class="tag ${entry.hasPending ? 'amber' : 'neutral'}">${entry.hasPending ? '演示有待办' : '状态未接入'}</span></span>
         </span></button>`;
-    }).join('') : `<p class="geo-list-empty">${this.entries.length ? '当前筛选没有房源记录，请调整区域、商圈或状态。' : '当前范围暂无可统计房源。可查看采集状态，或切换历史参考样本查看已有资料。'}</p>`;
+    }).join('') : `<p class="geo-list-empty">${this.entries.length ? '当前筛选没有房源记录，请调整区域、商圈或状态。' : '当前范围暂无已收录房源。可查看采集状态，或切换为全部采集房源。'}</p>`;
   }
 
   renderCoverage() {
@@ -205,7 +205,7 @@ export class PropertyMapWorkspace {
     const community = this.entries.filter(entry => entry.matchType === 'community').length;
     const proxy = this.entries.filter(entry => entry.matchType === 'station_proxy').length;
     const unmatched = this.entries.length - community - proxy;
-    element.innerHTML = `已知 ${this.entries.length} 条 · 小区参考 ${community} · 地铁参考 ${proxy} · 待定位 ${unmatched}<br>当前筛选 ${this.filteredEntries.length} 条 · 非北京全量 · 真实设备状态未接入`;
+    element.innerHTML = `已采集 ${this.entries.length} 条 · 小区参考 ${community} · 地铁参考 ${proxy} · 待定位 ${unmatched}<br>当前筛选 ${this.filteredEntries.length} 条 · 非北京全量 · 真实设备状态未接入`;
   }
 
   renderBreadcrumb() {

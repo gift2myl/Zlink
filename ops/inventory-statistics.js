@@ -1,20 +1,26 @@
-const value = field => field?.verified === true ? field.value : null;
-const text = input => typeof input === 'string' ? input.trim() : '';
+const text = value => typeof value === 'string' || typeof value === 'number' ? String(value).trim() : '';
+const verifiedValue = field => field?.verified === true ? field.value : null;
 
-/** Only explicit, verified source fields enter the requested Beijing inventory. */
-export function verifiedInventoryRecords(report) {
-  if (report?.schemaVersion !== 1 || !Array.isArray(report.properties)) return [];
-  const unique = new Map();
-  for (const row of report.properties) {
-    const fields = row?.fields || {};
-    const id = text(row?.realListingId);
-    const feature = value(fields.lingzhi);
-    if (row?.status !== 'eligible' || !id || value(fields.listingId) !== id) continue;
-    if (value(fields.city) !== '北京' || value(fields.rentalMode) !== '整租') continue;
-    if (feature !== true && feature !== '灵之智能') continue;
-    if (!unique.has(id)) unique.set(id, row);
+export function listingIdentity(property) {
+  if (text(property?.realListingId)) return text(property.realListingId);
+  if (property?.idType === 'ziroom_property_id' && /^\d+$/.test(text(property.id))) return text(property.id);
+  try {
+    const url = new URL(property?.sourceUrl);
+    if (/(^|\.)ziroom\.com$/.test(url.hostname)) return url.pathname.match(/^\/x\/(\d+)\.html$/)?.[1] || null;
+  } catch {}
+  return null;
+}
+
+/** Accumulate successful listing records. Missing qualification fields do not remove a record. */
+export function mergeCollectedProperties(...batches) {
+  const rows = new Map();
+  for (const batch of batches) for (const property of Array.isArray(batch) ? batch : []) {
+    if (!property || property.imported || property.sourceKind === 'imported' || !text(property.id) || !text(property.name)) continue;
+    const realId = listingIdentity(property);
+    const key = realId ? `ziroom:${realId}` : `record:${text(property.sourceBatchId || 'saved-map-list')}:${text(property.id)}`;
+    rows.set(key, property);
   }
-  return [...unique.values()];
+  return [...rows.values()];
 }
 
 export function bedroomGroup(input) {
@@ -22,21 +28,35 @@ export function bedroomGroup(input) {
   return input >= 3 ? '3+' : String(input);
 }
 
-export function inventoryStatistics(report) {
-  const records = verifiedInventoryRecords(report);
-  const businesses = new Set(), communities = new Set(), districts = new Set();
-  const bedrooms = { '1': 0, '2': 0, '3+': 0, unknown: 0 };
-  let businessUnknown = 0, communityUnknown = 0, districtUnknown = 0;
+export function housingGroup(property) {
+  if (property?.areaScope === 'listed_bedroom' || text(property?.roomLabel) || /合租/.test(text(property?.product))) return 'shared';
+  return bedroomGroup(property?.bedrooms);
+}
+
+export function inventoryStatistics(properties, report = {}, geography = {}) {
+  const records = mergeCollectedProperties(properties);
+  const audit = new Map((report?.properties || []).map(row => [text(row.id), row]));
+  const locations = new Map((geography?.properties || []).map(row => [text(row.id), row]));
+  const businesses = new Set(), communities = new Set(), districts = new Set(), confirmedDistricts = new Set();
+  const bedrooms = { '1': 0, '2': 0, '3+': 0, shared: 0, unknown: 0 };
+  let businessUnknown = 0, communityUnknown = 0, districtUnknown = 0, districtPendingRecords = 0;
   for (const row of records) {
-    const fields = row.fields;
-    const district = text(value(fields.district));
-    const business = text(value(fields.businessArea));
-    const community = text(value(fields.community));
-    if (district) districts.add(district); else districtUnknown++;
-    if (business && district) businesses.add(`${district}|${business}`); else businessUnknown++;
-    if (community && district) communities.add(`${district}|${community}`); else communityUnknown++;
-    bedrooms[bedroomGroup(value(fields.bedrooms))]++;
+    const fields = audit.get(text(row.id))?.fields || {};
+    const district = text(row.district || verifiedValue(fields.district));
+    const geoBusiness = locations.get(text(row.id))?.businessDistrict;
+    const business = text(verifiedValue(fields.businessArea) || (['confirmed', 'confirmed_existing_detail_read'].includes(geoBusiness?.status) ? geoBusiness.name : ''));
+    const community = text(row.name || verifiedValue(fields.community));
+    if (district) {
+      districts.add(district);
+      if (fields.district?.verified === true || row.districtConfidence === 'confirmed') confirmedDistricts.add(district);
+      else districtPendingRecords++;
+    } else districtUnknown++;
+    if (business) businesses.add(business); else businessUnknown++;
+    if (community) communities.add(`${district}|${community}`); else communityUnknown++;
+    bedrooms[housingGroup(row)]++;
   }
   return { records, count: records.length, businesses: businesses.size, communities: communities.size,
-    districts: districts.size, bedrooms, businessUnknown, communityUnknown, districtUnknown };
+    districts: districts.size, confirmedDistricts: confirmedDistricts.size,
+    pendingDistricts: [...districts].filter(name => !confirmedDistricts.has(name)).length,
+    bedrooms, businessUnknown, communityUnknown, districtUnknown, districtPendingRecords };
 }

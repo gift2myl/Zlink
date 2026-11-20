@@ -132,7 +132,7 @@ export class PropertyMapWorkspace {
       if (!entry) return;
       if (button.dataset.geoAction === 'property') this.callbacks.onOpenProperty?.(entry.id);
       if (button.dataset.geoAction === 'operations') this.callbacks.onOpenOperations?.(entry.id);
-      if (button.dataset.geoAction === 'model' && this.canOpenModel(entry)) this.callbacks.onOpenModel?.(entry.id);
+      if (button.dataset.geoAction === 'model') this.callbacks.onOpenModel?.(entry.id);
       if (button.dataset.geoAction === 'inventory') this.callbacks.onViewInventory?.(entry.district);
       if (button.dataset.geoAction === 'event') {
         const item = this.pendingEvents(entry.id).find(item => string(item.id) === button.dataset.geoEventId);
@@ -278,7 +278,7 @@ export class PropertyMapWorkspace {
       <div style="display:grid;gap:8px">
         <button type="button" class="button" data-geo-action="operations">查看家庭运行</button>
         <button type="button" class="button" data-geo-action="property">查看房源详情</button>
-        ${this.canOpenModel(entry) ? '<button type="button" class="button" data-geo-action="model">进入三维样板</button>' : ''}
+        <button type="button" class="button" data-geo-action="model">${this.canOpenModel(entry) ? '进入三维运维' : '查看设备配置'}</button>
         ${pending.map(event => `<button type="button" class="button" data-geo-action="event" data-geo-event-id="${esc(event.id)}">演示事件 · ${esc(event.title || '查看待办')}</button>`).join('')}
         ${this.callbacks.onViewInventory ? '<button type="button" class="button" data-geo-action="inventory">查看该区台账</button>' : ''}
       </div>`;

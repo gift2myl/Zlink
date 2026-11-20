@@ -32,6 +32,7 @@ SCALAR_FIELDS = {
     "id", "name", "district", "area", "bedrooms", "floor", "totalFloors",
     "orientation", "station", "distance", "product", "sourceUrl", "listingLabel",
     "roomLabel", "areaScope", "bedroomsScope", "longitude", "latitude", "coordinateSystem",
+    "businessArea", "realListingId", "sourceBatchId",
 }
 NUMERIC_FIELDS = {"area", "bedrooms", "floor", "totalFloors", "distance"}
 CHALLENGE_MARKERS = (
@@ -162,37 +163,94 @@ def base_status(http):
     }
 
 
+def real_listing_id(record):
+    """Use confirmed identity or an observed public detail URL, never a map index."""
+    explicit = str(record.get("realListingId") or "").strip()
+    if explicit and re.fullmatch(r"[0-9]+", explicit):
+        return explicit
+    identifier = str(record.get("id") or "").strip()
+    if record.get("idType") == "ziroom_property_id" and identifier.isdecimal():
+        return identifier
+    try:
+        parsed = urllib.parse.urlsplit(str(record.get("sourceUrl") or ""))
+        if parsed.hostname in ALLOWED_HOSTS:
+            match = re.fullmatch(r"/x/([0-9]+)\.html", parsed.path)
+            if match:
+                return match.group(1)
+    except ValueError:
+        pass
+    return None
+
+
+def record_key(record):
+    listing_id = real_listing_id(record)
+    if listing_id:
+        return "ziroom:" + listing_id
+    return "record:" + str(record.get("sourceBatchId") or "saved-map-list") + ":" + str(record.get("id"))
+
+
+def merge_cumulative(previous, incoming):
+    """Retain successful observations even after a complete later run."""
+    merged = {}
+    incoming_keys = {record_key(row) for row in incoming}
+    for row in previous:
+        if not row or not row.get("id") or not row.get("name") or row.get("imported") or row.get("sourceKind") == "imported":
+            continue
+        saved = dict(row)
+        saved.setdefault("firstSeen", row.get("observedAt"))
+        saved.setdefault("lastSeen", row.get("observedAt"))
+        saved["seenInLatestRun"] = record_key(row) in incoming_keys
+        # Absence from a page is not proof that a property was delisted.
+        saved.setdefault("currentAvailability", "unknown")
+        merged[record_key(row)] = saved
+    for row in incoming:
+        if not row or not row.get("id") or not row.get("name") or row.get("imported") or row.get("sourceKind") == "imported":
+            continue
+        key = record_key(row)
+        old = merged.get(key, {})
+        # A missing optional field in a newer capture does not erase old evidence.
+        saved = {**old, **{k: v for k, v in row.items() if v is not None}}
+        saved["firstSeen"] = old.get("firstSeen") or row.get("firstSeen") or row.get("observedAt")
+        saved["lastSeen"] = row.get("lastSeen") or row.get("observedAt") or old.get("lastSeen")
+        saved["seenInLatestRun"] = True
+        saved.setdefault("currentAvailability", "unknown")
+        merged[key] = saved
+    return list(merged.values())
+
+
 def finish(status, new_properties, assets=ASSETS):
-    """Zero results preserve an existing data file and never alter properties.json."""
+    """Persist cumulative observations; zero new rows never clear saved data."""
     assets = Path(assets)
     dataset_path = assets / "crawled-properties.json"
     existing = read_json(dataset_path) if dataset_path.exists() else None
     status["finishedAt"] = now()
-    status["uniqueCount"] = len({str(p["id"]) for p in new_properties})
-    if new_properties:
-        previous = {str(p["id"]): p for p in (existing or {}).get("properties", [])}
-        if status["isFullInventory"]:
-            merged = {str(p["id"]): p for p in new_properties}
-            if existing:
-                stamp = datetime.now(TZ).strftime("%Y%m%dT%H%M%S%f")
-                atomic_json(ROOT / "tools" / "runs" / stamp / "previous-crawled-properties.json", existing)
-        else:
-            merged = dict(previous)
-            merged.update({str(p["id"]): p for p in new_properties})
+    current = merge_cumulative([], new_properties)
+    previous = (existing or {}).get("properties", [])
+    original_path = assets / "properties.json"
+    original_records = read_json(original_path).get("properties", []) if original_path.exists() else []
+    prior_keys = {record_key(row) for row in merge_cumulative(original_records, previous)}
+    status["uniqueCount"] = len(current)
+    status["newlyAddedCount"] = len({record_key(row) for row in current} - prior_keys)
+    status["updatedCount"] = len({record_key(row) for row in current} & prior_keys)
+    if current:
+        merged = merge_cumulative(previous, current)
         dataset = {
-            "schemaVersion": 1, "properties": list(merged.values()),
+            "schemaVersion": 1, "properties": merged,
             "source": {
                 "observedAt": status["finishedAt"], "filterVerified": status["filterVerified"],
-                "isFullInventory": status["isFullInventory"], "sourceUrl": status["sourceUrl"],
-                "coverage": "verified_full_run" if status["isFullInventory"] else "partial_with_retained_history",
+                "isFullInventory": bool(status["isFullInventory"] and len(merged) == len(current)),
+                "latestRunIsFullInventory": status["isFullInventory"],
+                "sourceUrl": status["sourceUrl"], "coverage": "cumulative_collected_records",
+                "latestRunPropertyKeys": [record_key(row) for row in current],
+                "availabilityPolicy": "Absence from a later capture does not prove delisting; currentAvailability remains unknown unless explicit source evidence exists.",
             },
         }
         atomic_json(dataset_path, dataset)
-        status["datasetCount"] = len(dataset["properties"])
-        status["retainedHistory"] = not status["isFullInventory"] and bool(previous)
+        status["datasetCount"] = len(merged)
+        status["retainedHistory"] = bool(previous)
     elif existing is not None:
-        status["datasetCount"] = len(existing.get("properties", []))
-        status["retainedHistory"] = bool(existing.get("properties"))
+        status["datasetCount"] = len(merge_cumulative([], previous))
+        status["retainedHistory"] = bool(previous)
     else:
         atomic_json(dataset_path, {
             "schemaVersion": 1, "properties": [],
@@ -200,11 +258,13 @@ def finish(status, new_properties, assets=ASSETS):
         })
         status["datasetCount"] = 0
         status["retainedHistory"] = False
+    saved_records = read_json(dataset_path).get("properties", [])
+    status["cumulativeCollectedCount"] = len(merge_cumulative(original_records, saved_records))
     status["existingDemoSamplesPreserved"] = True
     atomic_json(assets / "crawl-status.json", status)
     stamp = datetime.now(TZ).strftime("%Y%m%dT%H%M%S%f")
-    atomic_json(ROOT / "tools" / "runs" / stamp / "manifest.json", status)
-    print(json.dumps({k: status[k] for k in ("status", "reason", "pagesFetched", "uniqueCount", "filterVerified", "isFullInventory", "datasetCount")}, ensure_ascii=False))
+    atomic_json(assets.parent / "tools" / "runs" / stamp / "manifest.json", status)
+    print(json.dumps({k: status[k] for k in ("status", "reason", "pagesFetched", "uniqueCount", "newlyAddedCount", "filterVerified", "isFullInventory", "datasetCount")}, ensure_ascii=False))
     return 0 if status["status"] == "complete" else 2 if status["status"] == "blocked" else 3
 
 
@@ -230,7 +290,7 @@ def number(value):
         return None
 
 
-def normalize_record(raw, source_url, filter_verified):
+def normalize_record(raw, source_url, filter_verified, observed_at=None):
     """Allowlisted property fields only: never export raw rows or contact columns."""
     raw = {k: v for k, v in raw.items() if k in SCALAR_FIELDS}
     if not raw.get("id") or not raw.get("name"):
@@ -244,21 +304,21 @@ def normalize_record(raw, source_url, filter_verified):
     if not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", result["id"]):
         return None
     try:
-        result["sourceUrl"] = safe_url(raw.get("sourceUrl") or source_url)
+        result["sourceUrl"] = safe_url(urllib.parse.urljoin(source_url, raw.get("sourceUrl") or source_url))
     except ValueError:
         result["sourceUrl"] = safe_url(source_url)
     lng, lat = number(raw.get("longitude")), number(raw.get("latitude"))
     result["coordinate"] = [lng, lat] if lng is not None and lat is not None and 115 <= lng <= 118 and 39 <= lat <= 42 else None
     result.update({
         "modelReady": False, "idType": "source_property_id",
-        "sourceUrlType": "public_capture", "observedAt": now(),
+        "sourceUrlType": "public_capture", "observedAt": observed_at,
         "lingzhiFilterReturned": filter_verified is True,
         "lingzhiLabelVisible": "灵之智能" in result["product"] if result.get("product") else None,
     })
     return result
 
 
-def parse_records(body, config, source_url):
+def parse_records(body, config, source_url, observed_at=None):
     extraction = config["extraction"]
     mapping = extraction["fields"]
     if not {"id", "name"}.issubset(mapping):
@@ -275,7 +335,16 @@ def parse_records(body, config, source_url):
         raw_records = [{key: row.css(css).get() for key, css in mapping.items()} for row in rows]
     else:
         raise ValueError("Only explicitly mapped public HTML and JSON exports are supported.")
-    normalized = [normalize_record(row, source_url, config["filter"]["verified"]) for row in raw_records]
+    normalized = [normalize_record(row, source_url, config["filter"]["verified"], observed_at) for row in raw_records]
+    for row in normalized:
+        if row is None:
+            continue
+        if extraction.get("idType") == "ziroom_property_id" and extraction.get("identityEvidence") and str(row["id"]).isdecimal():
+            row["idType"] = "ziroom_property_id"
+            row["realListingId"] = str(row["id"])
+        elif real_listing_id(row):
+            row["realListingId"] = real_listing_id(row)
+            row["idType"] = "ziroom_property_id"
     return [row for row in normalized if row], len(raw_records) - sum(row is not None for row in normalized)
 
 
@@ -359,21 +428,23 @@ def run_collect(http, args):
             if reason:
                 status.update(reason=reason, message=message)
                 break
-            page_records, rejected = parse_records(body, config, url)
+            page_records, rejected = parse_records(body, config, url, observed_at=now())
             status["pages"][-1].update(records=len(page_records), rejectedRecords=rejected)
             if rejected:
-                status.update(reason="invalid_record", message="存在缺少真实ID或必要字段的记录，已停止以免误报完整性。")
+                records.update({record_key(p): p for p in page_records})
+                status["pagesFetched"] += bool(page_records)
+                status.update(reason="invalid_record", message="已保留本页可用记录；存在缺少必要字段的记录，停止并保持部分采集状态。", rejectedRecords=rejected)
                 break
             if not page_records:
                 status.update(reason="empty_page_requires_review", message="当前页未提取到记录，需核对页面和选择器，不能直接认定为末页或零库存。")
                 break
             status["pagesFetched"] += 1
-            signature = tuple(sorted(p["id"] for p in page_records))
+            signature = tuple(sorted(record_key(p) for p in page_records))
             if page_records and signature in seen_page_ids:
                 status.update(reason="pagination_repeats_content", message="分页返回重复内容，已停止，不能认定已经翻页。")
                 break
             seen_page_ids.add(signature)
-            records.update({p["id"]: p for p in page_records})
+            records.update({record_key(p): p for p in page_records})
             if expected_total is not None and len(records) == expected_total:
                 end_verified = True
                 status.update(reason="verified_total_reached", message="已核验筛选及分页，唯一房源数与来源的精确总数一致。")
@@ -397,7 +468,14 @@ def run_collect(http, args):
             break
     else:
         status.update(reason="page_limit_reached", message="已到达配置页数上限，尚未证明全量。")
-    status["isFullInventory"] = bool(end_verified and config.get("coverage", {}).get("totalEvidence"))
+    status["unknownIdentityCount"] = sum(real_listing_id(record) is None for record in records.values())
+    coverage = config.get("coverage", {})
+    status["citywideVerified"] = coverage.get("citywideVerified") is True and bool(coverage.get("citywideEvidence")) and coverage.get("viewportLimited") is False
+    status["isFullInventory"] = bool(end_verified and coverage.get("totalEvidence") and not status["unknownIdentityCount"] and status["citywideVerified"])
+    if end_verified and status["unknownIdentityCount"]:
+        status.update(reason="identity_incomplete", message="记录数量达到来源总数，但部分房源身份未核验，仍为部分采集。")
+    elif end_verified and not status["citywideVerified"]:
+        status.update(reason="scope_incomplete", message="记录数达到当前查询总数，但尚未证明覆盖北京全城而非地图视窗或区域子集。")
     status["status"] = "complete" if status["isFullInventory"] else "partial" if records else "blocked"
     return finish(status, list(records.values()), args.assets)
 
@@ -408,18 +486,110 @@ def run_adapt(http, args):
     status = base_status(http)
     status["sourceUrl"] = safe_url(config.get("startUrl", DEFAULT_URL))
     issues = config_issues(config, require_pagination=False)
-    if config.get("extraction", {}).get("format") != "json":
-        issues.append("adapt-json requires a verified JSON field mapping")
+    expected_format = "html" if args.mode == "adapt-html" else "json"
+    if config.get("extraction", {}).get("format") != expected_format:
+        issues.append(args.mode + " requires a verified " + expected_format.upper() + " field mapping")
     if issues:
         status.update(reason="configuration_unverified", message="公开清单的城市、筛选或字段映射尚未验证，未导入数据或发送网络请求。", configurationIssues=issues)
         return finish(status, [], args.assets)
     status["filterVerified"] = config["filter"]["verified"] is True
     body = Path(args.input).read_bytes()
-    records, rejected = parse_records(body, config, status["sourceUrl"])
+    evidence, reason, message = inspect_response(200, body, status["sourceUrl"], {})
+    if reason:
+        status.update(reason=reason, message=message, evidence=evidence)
+        return finish(status, [], args.assets)
+    captured_at = config.get("capture", {}).get("observedAt")
+    records, rejected = parse_records(body, config, status["sourceUrl"], observed_at=captured_at)
     status.update(status="partial" if records else "blocked", reason="authorized_export_adapted",
                   message="已适配用户提供的公开清单，未发送网络请求；不自动认定全量。",
                   rejectedRecords=rejected, inputSha256=hashlib.sha256(body).hexdigest())
-    return finish(status, list({r["id"]: r for r in records}.values()), args.assets)
+    return finish(status, merge_cumulative([], records), args.assets)
+
+
+
+def safe_reference_url(value, source_url):
+    """Keep only observed public references; this function performs no request."""
+    value = str(value or "").strip()
+    if not value or value.startswith(("data:", "javascript:", "blob:")):
+        return None
+    try:
+        u = urllib.parse.urlsplit(urllib.parse.urljoin(source_url, value))
+        host = u.hostname or ""
+        if u.scheme not in ("https", "http") or not host or u.username or u.password:
+            return None
+        if host in {"localhost", "127.0.0.1", "::1"} or host.endswith((".local", ".internal")):
+            return None
+        if re.search(r"^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)", host):
+            return None
+        if any(re.search(r"token|cookie|session|auth|password|secret|mobile|phone|email", key, re.I) for key, _ in urllib.parse.parse_qsl(u.query)):
+            return None
+        return urllib.parse.urlunsplit((u.scheme, u.netloc, u.path, u.query, ""))
+    except ValueError:
+        return None
+
+
+def inspect_offline_html(body, source_url, observed_at=None):
+    """Discover actual hyperlinks with Scrapling; never synthesize endpoints/assets."""
+    source_url = safe_url(source_url)
+    evidence, reason, message = inspect_response(200, body, source_url, {})
+    result = {
+        "schemaVersion": 1, "sourceUrl": source_url, "observedAt": observed_at,
+        "processedAt": now(), "engine": "Scrapling Selector", "networkRequests": 0,
+        "isFullInventory": False, "filterVerified": False, "evidence": evidence,
+        "status": "blocked" if reason else "parsed_offline", "reason": reason,
+        "message": message, "listingLinks": [], "references": [],
+    }
+    if reason:
+        return result
+    selector = Selector(body.decode("utf-8", errors="replace"))
+    page_id = real_listing_id({"sourceUrl": source_url})
+    result["realListingId"] = page_id
+    links, references = {}, {}
+    for node in selector.css("a[href], iframe[src], img[src], img[data-src], img[data-original]"):
+        attributes = dict(node.attrib)
+        label = " ".join(str(attributes.get(k) or "") for k in ("alt", "title", "aria-label"))
+        if node.css("a").get() or "href" in attributes:
+            label += " " + node.get_all_text()
+        label = re.sub(r"\s+", " ", label).strip()[:180]
+        attr = next((k for k in ("href", "data-original", "data-src", "src") if attributes.get(k)), None)
+        url = safe_reference_url(attributes.get(attr), source_url) if attr else None
+        if not url:
+            continue
+        candidate_id = real_listing_id({"sourceUrl": url})
+        if candidate_id:
+            links[candidate_id] = {"realListingId": candidate_id, "url": url, "label": label, "sourceUrl": source_url, "observedAt": observed_at}
+        lowered = (label + " " + url).lower()
+        kind = "floorplan" if re.search(r"户型|平面图|floorplan|floor.plan", lowered) else "vr" if re.search(r"全景|vr看房|(?:^|[^a-z])vr(?:[^a-z]|$)|panorama|3dtour", lowered) else None
+        if not kind:
+            continue
+        # A list/map capture can expose a reference, but cannot attach it to a house.
+        references[(kind, url)] = {
+            "kind": kind, "url": url, "realListingId": page_id,
+            "association": "observed_on_detail_page" if page_id else "unassigned_list_reference",
+            "sourceUrl": source_url, "observedAt": observed_at,
+            "evidence": {"attribute": attr, "label": label},
+            "downloaded": False, "visuallyVerified": False,
+            "usableForReconstruction": False,
+        }
+    result["listingLinks"] = list(links.values())
+    result["references"] = list(references.values())
+    result["notes"] = ["只保存原页面实际出现的链接，未请求或下载图片、VR。", "参考素材需核验房源归属及实际内容后才可进入三维重建。", "网页出现VR链接不等于获得可导出的三维几何或工程尺寸。"]
+    return result
+
+
+def run_inspect_html(http, args):
+    result = inspect_offline_html(Path(args.input).read_bytes(), args.source_url, args.observed_at)
+    atomic_json(args.output, result)
+    print(json.dumps({"status": result["status"], "listingLinks": len(result["listingLinks"]), "references": len(result["references"]), "networkRequests": 0, "output": str(args.output)}, ensure_ascii=False))
+    return 2 if result["status"] == "blocked" else 0
+
+
+def known_source_block(assets):
+    path = Path(assets) / "source-access-status.json"
+    if not path.exists():
+        return None
+    status = read_json(path)
+    return status if status.get("networkCollectionAllowed") is False and status.get("status") == "blocked" else None
 
 
 def main():
@@ -431,12 +601,23 @@ def main():
     probe.add_argument("--url", default=DEFAULT_URL)
     collect = sub.add_parser("collect", help="Run only with independently verified filters, fields and pagination.")
     collect.add_argument("--config", type=Path, required=True)
-    adapt = sub.add_parser("adapt-json", help="Adapt a user-authorized public listing export without a network request.")
-    adapt.add_argument("--input", type=Path, required=True)
-    adapt.add_argument("--config", type=Path, required=True)
+    for command in ("adapt-json", "adapt-html"):
+        adapt = sub.add_parser(command, help="Adapt an authorized public listing export without a network request.")
+        adapt.add_argument("--input", type=Path, required=True)
+        adapt.add_argument("--config", type=Path, required=True)
+    inspect = sub.add_parser("inspect-html", help="Discover actual listing, floorplan and VR links in a saved official page; never fetch them.")
+    inspect.add_argument("--input", type=Path, required=True)
+    inspect.add_argument("--source-url", required=True)
+    inspect.add_argument("--observed-at", default=None)
+    inspect.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if args.mode in ("probe", "collect"):
+        block = known_source_block(args.assets)
+        if block:
+            print(json.dumps({"status": "blocked", "reason": "prior_source_challenge", "networkRequests": 0, "lastNetworkAttempt": block.get("latestAttempt", {}).get("checkedAt"), "message": "保留既有来源校验记录；未重试、未改变身份、未探测其他路径。"}, ensure_ascii=False))
+            return 2
     http = PublicHttp(args.transport)
-    return {"probe": run_probe, "collect": run_collect, "adapt-json": run_adapt}[args.mode](http, args)
+    return {"probe": run_probe, "collect": run_collect, "adapt-json": run_adapt, "adapt-html": run_adapt, "inspect-html": run_inspect_html}[args.mode](http, args)
 
 
 if __name__ == "__main__":

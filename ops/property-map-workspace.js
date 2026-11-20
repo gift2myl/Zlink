@@ -1,5 +1,6 @@
 import { GeographicMap } from './geo-map-viewer.js';
 import { mapGroupKeys, mapGroups, combineMapPoints } from './map-hierarchy.js';
+import { buildDeviceConfiguration, CONFIG_PROFILES } from './device-configuration.js';
 
 const MODEL_PROPERTY_ID = '810151211';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
@@ -45,19 +46,36 @@ function propertyFacts(property) {
   return [area, layout, floor].filter(Boolean).join(' · ');
 }
 
+function devicePlan(property, profile) {
+  const config = buildDeviceConfiguration(property, {profile});
+  const rows = new Map();
+  for (const device of config.devices) {
+    const row = rows.get(device.catalogId) || {name:device.name, rooms:new Set(), quantity:0};
+    row.rooms.add(device.roomName);
+    row.quantity += device.quantity;
+    rows.set(device.catalogId, row);
+  }
+  const label = CONFIG_PROFILES.find(option => option.id === profile)?.label || '基础智能';
+  const items = [...rows.values()].map(row => `<tr><th scope="row">${esc(row.name)}</th><td>${esc([...row.rooms].join('、'))}</td><td>${row.quantity}</td></tr>`).join('');
+  return `<h4>设备配置</h4><p>${esc(label)} · 规划 ${config.summary.plannedDeviceCount} 件 · 实装待核验</p>${items
+    ? `<table><thead><tr><th scope="col">设备</th><th scope="col">规划房间</th><th scope="col">数量</th></tr></thead><tbody>${items}</tbody></table>`
+    : '<p>设备数量待补充本套房源资料后核定。</p>'}`;
+}
+
 /** UI adapter for known listing records, separately verified geography and demo events. */
 export class PropertyMapWorkspace {
   constructor(container, {
     properties = [], events = [], geography = {}, sources = {},
-    onOpenProperty, onOpenModel, onOpenPlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap
+    onOpenProperty, onOpenModel, onOpenPlan, onClosePlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap
   } = {}) {
     this.container = container;
     this.geography = geography || {};
     this.sources = sources || {};
-    this.callbacks = { onOpenProperty, onOpenModel, onOpenPlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap };
+    this.callbacks = { onOpenProperty, onOpenModel, onOpenPlan, onClosePlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap };
     this.active = true;
     this.communityKey = '';
     this.selectedId = null;
+    this.planProfile = 'base';
     this.indices = new Map();
     this.nextIndex = 1;
     this.filters = { district: '', business: '', status: 'all' };
@@ -189,8 +207,8 @@ export class PropertyMapWorkspace {
       if (!entry) return;
       if (button.dataset.geoAction === 'property') this.callbacks.onOpenProperty?.(entry.id);
       if (button.dataset.geoAction === 'operations') this.callbacks.onOpenOperations?.(entry.id);
-      if (button.dataset.geoAction === 'plan') this.callbacks.onOpenPlan?.(entry.id);
-      if (button.dataset.geoAction === 'model') this.callbacks.onOpenModel?.(entry.id);
+      if (button.dataset.geoAction === 'plan') this.callbacks.onOpenPlan?.(entry.id, this.planProfile);
+      if (button.dataset.geoAction === 'model') this.callbacks.onOpenModel?.(entry.id,this.planProfile);
       if (button.dataset.geoAction === 'inventory') this.callbacks.onViewInventory?.(entry.district);
       if (button.dataset.geoAction === 'event') {
         const item = this.pendingEvents(entry.id).find(item => string(item.id) === button.dataset.geoEventId);
@@ -366,6 +384,18 @@ export class PropertyMapWorkspace {
     const box = this.elements['scene-detail'];
     box.hidden = false;
     box.innerHTML = `<button type="button" class="icon-btn close-scene-detail" data-geo-action="close" aria-label="关闭选择">×</button><h3>${esc(heading)}</h3><div class="geo-point-options">${options.map(e => `<button type="button" class="button" data-geo-option="${esc(e.id)}">${esc(e.type ? e.name + ' · ' + e.district : e.property.realListingId || e.id)}</button>`).join('')}</div>`;
+    this.revealDetail();
+  }
+
+  revealDetail() {
+    const box = this.elements['scene-detail'];
+    if (!this.active || !box || box.hidden) return;
+    box.tabIndex = -1;
+    box.focus({preventScroll:true});
+    const top = box.getBoundingClientRect().top;
+    if (top < 0 || top > window.innerHeight - 140) {
+      box.scrollIntoView({block:'start', behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+    }
   }
 
   selectedPin(id) {
@@ -384,10 +414,15 @@ export class PropertyMapWorkspace {
     if (this.filters.district && this.filters.district !== entry.district) this.filters.district = '';
     if (!this.matchesStatus(entry)) this.filters.status = 'all';
     this.filters.business = entry.businessKey; this.communityKey = entry.communityKey;
+    if (this.selectedId !== id) {
+      this.callbacks.onClosePlan?.();
+      this.planProfile = 'base';
+    }
     this.selectedId = id; this.deferredFocusId = null;
     this.renderFilters(); this.applyFilters(false);
     this.viewer.select(this.selectedPin(id)?.id || null);
     this.renderDetail(entry);
+    this.revealDetail();
     this.viewer.setRotate(false);
     this.syncControls();
     if (!entry.position) return false;
@@ -420,29 +455,38 @@ export class PropertyMapWorkspace {
       businessUrl && `<a href="${esc(businessUrl)}" target="_blank" rel="noopener noreferrer">商圈依据</a>`,
       sourceUrl && `<a href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">房源来源</a>`].filter(Boolean);
     element.hidden = false;
-    element.style.maxHeight = 'calc(100% - 80px)';
-    element.style.overflowY = 'auto';
     element.innerHTML = `<button type="button" class="icon-btn close-scene-detail" data-geo-action="close" aria-label="关闭房源地图详情">×</button>
-      <h3>${esc(entry.name)}</h3><p>${entry.property.realListingId ? '挂牌号' : '记录号'} ${esc(entry.id)}${entry.property.businessId ? ' · ' + esc(entry.property.businessId) : ''}</p><p>${esc(entry.district)} · ${esc(propertyFacts(entry.property))}</p>
-      <p><strong>定位</strong> · ${esc(precision)}<br><strong>商圈</strong> · ${esc(entry.businessLabel)}</p>
-      <details><summary style="font-size:13px;cursor:pointer">地址与匹配来源</summary>
-        <p>${geographicRecord?.osm?.displayName ? 'OSM 地址：' + esc(geographicRecord.osm.displayName) + '<br>' : ''}${esc(geographicRecord?.positionBasis || geographicRecord?.matchBasis || '仅有房源列表信息，等待地址核验。')}</p>
-        ${geographicRecord?.businessDistrict?.basis ? `<p>${esc(geographicRecord.businessDistrict.basis)}</p>` : ''}
-        ${links.length ? `<p style="display:flex;flex-wrap:wrap;gap:10px;color:#fff">${links.join('')}</p>` : ''}
-        ${geographicRecord?.reviewedAt ? `<p>定位核验记录：${esc(string(geographicRecord.reviewedAt).slice(0, 10))}</p>` : ''}
-      </details>
-      <p>${pending.length ? `演示待办 ${pending.length} 条；` : '无未闭环演示待办；'}真实设备状态未接入。</p>
-      <div style="display:grid;gap:8px">
-        ${this.callbacks.onOpenPlan ? '<button type="button" class="button" data-geo-action="plan">查看户型 / 3D</button>' : ''}
+      <div class="geo-detail-heading"><h3>${esc(entry.name)}</h3><p>${entry.property.realListingId ? '挂牌号' : '记录号'} ${esc(entry.id)}${entry.property.businessId ? ' · ' + esc(entry.property.businessId) : ''}</p><p>${esc(entry.district)} · ${esc(entry.businessLabel)} · ${esc(propertyFacts(entry.property))}</p></div>
+      <div class="geo-detail-actions">
+        ${this.callbacks.onOpenPlan ? `<button type="button" class="button primary" data-geo-action="plan" aria-controls="overview-plan-pane" aria-expanded="${document.getElementById('overview-plan-pane')?.hidden === false}">${entry.property.publicFloorplanUrl ? '查看户型与设备点位' : '查看本套配置方案'}</button>` : ''}
         <button type="button" class="button" data-geo-action="operations">查看家庭运行</button>
         <button type="button" class="button" data-geo-action="property">查看房源详情</button>
-        <button type="button" class="button" data-geo-action="model">${this.canOpenModel(entry) ? '进入三维运维' : '查看设备配置'}</button>
+        <button type="button" class="button" data-geo-action="model">${this.canOpenModel(entry) ? '进入三维运维' : '设备配置推演'}</button>
         ${pending.map(event => `<button type="button" class="button" data-geo-action="event" data-geo-event-id="${esc(event.id)}">演示事件 · ${esc(event.title || '查看待办')}</button>`).join('')}
         ${this.callbacks.onViewInventory ? '<button type="button" class="button" data-geo-action="inventory">查看该区台账</button>' : ''}
-      </div>`;
+      </div>
+      <div class="geo-device-plan">${devicePlan(entry.property, this.planProfile)}</div>
+      <p>${pending.length ? `演示待办 ${pending.length} 条` : '无未闭环演示待办'} · 真实设备状态未接入</p>
+      <details class="geo-detail-evidence"><summary>地址与匹配来源</summary>
+        <p>${esc(precision)}</p>
+        <p>${geographicRecord?.osm?.displayName ? 'OSM 地址：' + esc(geographicRecord.osm.displayName) + '<br>' : ''}${esc(geographicRecord?.positionBasis || geographicRecord?.matchBasis || '仅有房源列表信息，等待地址核验。')}</p>
+        ${geographicRecord?.businessDistrict?.basis ? `<p>${esc(geographicRecord.businessDistrict.basis)}</p>` : ''}
+        ${links.length ? `<p class="geo-detail-links">${links.join('')}</p>` : ''}
+        ${geographicRecord?.reviewedAt ? `<p>定位核验记录：${esc(string(geographicRecord.reviewedAt).slice(0, 10))}</p>` : ''}
+      </details>`;
+  }
+
+  setPlanProfile(id, profile) {
+    const entry = this.entries.find(row => row.id === id);
+    if (!this.active || !entry || id !== this.selectedId || !CONFIG_PROFILES.some(option => option.id === profile)) return;
+    this.planProfile = profile;
+    const summary = this.elements['scene-detail']?.querySelector('.geo-device-plan');
+    if (summary) summary.innerHTML = devicePlan(entry.property, profile);
   }
 
   closeDetail() {
+    this.callbacks.onClosePlan?.();
+    this.planProfile = 'base';
     this.selectedId = null;
     this.deferredFocusId = null;
     this.viewer?.select(null);

@@ -158,3 +158,78 @@ body[data-scene="city"] #scene-breadcrumb .text-btn{white-space:normal;text-alig
 .geo-precision-symbol[data-position-kind="city_registered_community_estimate"],body[data-scene="city"] .geo-map-marker[data-position-kind="city_registered_community_estimate"]::before{border-style:dotted;border-width:3px}
 body[data-scene="city"] .geo-map-marker[data-geo-level="nearby"]::before{border-radius:9px;border-width:2px;inset:2px}
 body[data-scene="city"] .geo-map-marker[data-geo-level="nearby"]::after{content:"+";position:absolute;top:-3px;right:-3px;bottom:auto;left:auto;border-radius:100%;width:15px;height:15px;line-height:15px;font-size:12px;font-weight:700;background:#d7efff;color:#18364d;z-index:2;animation:none}
+
+/* Keep the map and navigation together. Selections expand below the canvas. */
+body[data-page="overview"] main#app{padding-top:22px}
+body[data-page="overview"] .page-heading{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;margin-bottom:18px}
+body[data-page="overview"] .page-heading :is(.eyebrow,#page-description){display:none}
+body[data-page="overview"] .page-heading h1{font-size:clamp(25px,2.7vw,38px);line-height:1.25}
+body[data-page="overview"] .heading-actions{padding:0;gap:8px;max-width:none}
+body[data-page="overview"] .heading-actions .city-chip{width:auto}
+#overview-page>.command-grid{align-items:start;margin-bottom:24px}
+#overview-page .command-grid>.map-panel{min-width:0;height:auto}
+#overview-page .map-panel>#scene-container{flex:none;height:clamp(435px,59vh,700px);min-height:0}
+#overview-page .command-grid>.geo-panel{height:auto}
+@media(min-width:1101px){
+  #overview-page .command-grid>.geo-panel{align-self:stretch;contain:size;max-height:calc(59vh + 430px)}
+}
+body[data-scene="apartment"] #overview-page>.command-grid{grid-template-columns:minmax(0,1fr)}
+#overview-page .map-panel>.apartment-actions{position:static;max-width:none;margin:0;padding:10px clamp(12px,2vw,24px);background:#1c1d1f}
+#overview-page #twin-empty{overflow-y:auto;justify-content:safe center}
+#overview-page #twin-empty>*{flex-shrink:0}
+#overview-page>.twin-panel{height:auto;margin-bottom:24px}
+#overview-page>.twin-panel .twin-panel-scroll{max-height:560px}
+#overview-page>.twin-controls{margin-top:15px}
+#overview-page #geo-monitor-summary{margin:14px clamp(14px,2vw,24px)}
+#overview-page .map-panel>#scene-detail{
+  position:relative;inset:auto;width:auto;max-width:none;flex:none;z-index:auto;
+  margin:12px clamp(12px,2vw,24px);padding:clamp(16px,2vw,24px);
+  overflow-wrap:anywhere;backdrop-filter:none;box-shadow:none;
+}
+#overview-page #scene-detail h3{font-size:19px;padding-right:32px}
+#overview-page #scene-detail p{margin:5px 0 10px}
+#overview-page #scene-detail dl{display:flex;flex-wrap:wrap;gap:8px 30px}
+#overview-page #scene-detail .button{width:auto}
+.geo-detail-heading{padding-right:24px}
+.geo-detail-actions,.geo-detail-links{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.geo-device-plan{margin:16px 0}
+.geo-device-plan table,table.geo-device-plan{width:100%;border-collapse:collapse;font-size:14px}
+#scene-detail .geo-device-plan :is(th,td){padding:8px 10px;text-align:left;vertical-align:top;border-bottom:1px solid #31495e;background:#0d2032;color:#e0ebf4}
+#scene-detail .geo-device-plan thead th{background:#173348;color:#c5dded;font-weight:500}
+#scene-detail .geo-device-plan th[scope="row"]{color:#f0f7fc;font-weight:500}
+#scene-detail .geo-device-plan :is(th,td):last-child{text-align:right;font-variant-numeric:tabular-nums}
+.geo-detail-evidence{margin:12px 0;color:inherit;font-size:13px}
+.geo-detail-evidence summary{cursor:pointer}
+.geo-detail-links a{color:#97d8ff;text-decoration:underline}
+#overview-plan-pane{background:#fff;color:#223749;scroll-margin-top:150px;min-width:0}
+.overview-plan-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px clamp(12px,2vw,22px);border-bottom:1px solid #d7e2e7}
+.overview-plan-heading h2{font-size:18px}
+.overview-plan-heading .button{color:#223749;background:white;border-color:#c7d5df;min-height:36px}
+#overview-page .map-panel:fullscreen{height:100dvh;width:100vw;overflow-y:auto;overscroll-behavior:contain;border-radius:0}
+#overview-page .map-panel:fullscreen>*{flex-shrink:0}
+#overview-page .map-panel:fullscreen>#scene-container{height:auto;min-height:45vh;flex:1 0 45vh}
+
+@media(max-width:760px){
+  #overview-page .command-grid>.map-panel>#scene-container{height:clamp(335px,49svh,480px)}
+  #overview-page #scene-legend{min-width:0;flex:1 1 100%}
+}
+@media(max-width:640px){
+  body[data-page="overview"] main#app{padding-top:calc(var(--header-height) + 12px)}
+  body[data-page="overview"] .page-heading{display:block;margin-bottom:13px}
+  body[data-page="overview"] .heading-actions{margin-top:9px}
+  body[data-page="overview"] .heading-actions .button{flex:none;min-height:34px;padding:4px 9px;font-size:12px}
+  body[data-scene="city"] #overview-page .map-panel>.panel-heading{gap:8px;padding:13px 13px 10px}
+  body[data-scene="city"] #overview-page .map-panel>.panel-heading h2{font-size:19px}
+  body[data-scene="city"] #overview-page .map-panel>.panel-heading p{margin-top:2px;font-size:12px}
+  body[data-scene="city"] #overview-page .geo-filters{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:0 13px 6px}
+  body[data-scene="city"] #overview-page .geo-filters label{display:flex;gap:3px;font-size:11px}
+  body[data-scene="city"] #overview-page .geo-status-field{grid-column:auto}
+  #overview-page .geo-filters select{min-height:36px;font-size:12px;padding:5px 18px 5px;background-position:right 2px center;background-size:13px}
+  #overview-page .map-panel .scene-toolbar{padding:0 12px 7px;min-height:38px}
+  #overview-page .map-heading-controls{flex-wrap:nowrap}
+  #overview-page #map-inventory-scope{width:min(160px,52%)}
+  #overview-page .geo-monitor-metric{padding:9px 11px}
+  #overview-page .geo-monitor-metric>strong{font-size:22px;margin-top:2px}
+  #overview-plan-pane{scroll-margin-top:85px}
+  #overview-page #scene-detail .geo-detail-actions .button{flex:1 1 auto}
+}

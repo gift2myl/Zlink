@@ -87,6 +87,7 @@ let data,ops,geo,viewer,mapWorkspace,geography,mapSources,householdWorkspace,mod
 let activeTwinPropertyId=MODEL_PROPERTY_ID;
 let inventoryExplorer=null,propertyDetailController=null,inventoryRefreshRunning=false;
 let mapInventoryScope='collected', planCatalog=new Map(), listingPlanView=null;
+let overviewPlanView=null, overviewPlanId=null, overviewTwinOptions='';
 let crawlStatus=null,crawlSource={},historicalProperties=[],crawledProperties=[],crawledIsCurrent=false;
 function initializePropertyData(base,report,dataset){
  const source=base?.source&&typeof base.source==='object'?base.source:{};
@@ -208,7 +209,7 @@ async function init(){
   $('#scene-loading').lastElementChild.textContent='正在加载北京公共地图';
   mapWorkspace=new PropertyMapWorkspace($('#scene-container'),{
    properties:mapProperties(),events:state.events,geography,sources:mapSources,
-   onOpenProperty:showProperty,onOpenPlan:openListingPlan,onOpenModel:id=>openTwin(id),onOpenOperations:openHousehold,onEvent:openEvent,onActivateMap:()=>showScene('city'),
+   onOpenProperty:showProperty,onOpenPlan:openOverviewPlan,onClosePlan:closeOverviewPlan,onOpenModel:openTwin,onOpenOperations:openHousehold,onEvent:openEvent,onActivateMap:()=>showScene('city'),
    onViewInventory:district=>{showPage('properties');$('#inventory-view').value=mapInventoryScope;$('#property-search').value='';$('#bedroom-select').value='';$('#business-select').value='';renderProperties();$('#district-select').value=district||'';state.propertyPage=1;renderPropertiesList();},
    onStatus:status=>{if(state.scene==='city')$('#scene-loading').hidden=['webgl','leaflet','failed'].includes(status.mode);}
   });
@@ -218,7 +219,7 @@ async function init(){
    onModel:async(id,deviceId)=>{await openTwin(id);if(deviceId&&state.page==='overview'&&state.scene==='apartment')showDevice(deviceId);}
   });
   householdWorkspace.setVisible(false);
-  twinWorkspace=new TwinWorkspace({controls:$('#twin-controls'),panel:$('#twin-panel'),empty:$('#twin-empty'),detail:$('#scene-detail'),properties:allProperties(),geography,coverage:modelCoverage,onProperty:openTwin,onChange:syncTwinScene,onFocus:id=>{if(canOpenModel(twinWorkspace.property))viewer?.focusDevice(id);},onCatalog:showConfigurationCatalog,onSource:showProperty,onPlan:openListingPlan,onExport:payload=>downloadFile('灵之房源设备配置-'+payload.property.id+'.json',JSON.stringify(payload,null,2),'application/json;charset=utf-8')});
+  twinWorkspace=new TwinWorkspace({controls:$('#twin-controls'),panel:$('#twin-panel'),empty:$('#twin-empty'),detail:$('#scene-detail'),properties:allProperties(),geography,coverage:modelCoverage,onProperty:openTwin,onChange:syncTwinScene,onFocus:id=>{if(canOpenModel(twinWorkspace.property))viewer?.focusDevice(id);},onCatalog:showConfigurationCatalog,onSource:showProperty,onPlan:openOverviewPlan,onExport:payload=>downloadFile('灵之房源设备配置-'+payload.property.id+'.json',JSON.stringify(payload,null,2),'application/json;charset=utf-8')});
   renderInventoryLedger();
   mountCollectionLeads($('#collection-leads'),{showModal,downloadFile});
   renderSceneLegend();
@@ -273,8 +274,9 @@ function showModelCoverage(){
 function syncHousehold(){householdWorkspace?.update({properties:allProperties(),events:state.events,tickets:state.tickets});}
 function openHousehold(id=MODEL_PROPERTY_ID,options={}){if(!householdWorkspace){toast('家庭运行资料正在加载，请稍后。');return;}showPage('household');householdWorkspace.open(id,options);}
 function showPage(page,scroll=true){
- const labels={overview:['家庭智能运维管家','一个入口，两个能力：\n让「用得怎么样」看得见，让「怎么办」问得到。'],household:['家庭运行','从整屋概况到具体设备，查看证据并跟进问题。'],properties:['房源资产','汇总北京已采集房源，连接资料、设备与处理记录。'],devices:['设备监控','保留数据口径，让异常排名真正支持核验与行动。'],agents:['数字员工','灵之百晓生统一承接，四类数字员工协作跟进。'],tickets:['事件工单','发现、诊断、跟进与复验，形成可追溯的处理闭环。']};
+ const labels={overview:['运维总览','按商圈、小区和挂牌查看北京房源及设备。'],household:['家庭运行','从整屋概况到具体设备，查看证据并跟进问题。'],properties:['房源资产','汇总北京已采集房源，连接资料、设备与处理记录。'],devices:['设备监控','保留数据口径，让异常排名真正支持核验与行动。'],agents:['数字员工','灵之百晓生统一承接，四类数字员工协作跟进。'],tickets:['事件工单','发现、诊断、跟进与复验，形成可追溯的处理闭环。']};
  if(!labels[page])return;
+ if(page!=='overview')closeOverviewPlan();
  state.page=page;document.body.dataset.page=page;document.body.classList.remove('menu-open');$('#menu-toggle')?.setAttribute('aria-expanded','false');syncHeader();
  $$('.page').forEach(p=>p.classList.toggle('active',p.id===page+'-page'));$$('.nav-item[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
  $('#page-title').textContent=labels[page][0];$('#page-description').textContent=labels[page][1];
@@ -285,23 +287,31 @@ function showPage(page,scroll=true){
 function showConfigurationCatalog(device){showModal(device?device.name+' · 型号与配置':'心舍 3.0.1 · 设备配置依据',configurationCatalogHtml(device));}
 function syncTwinScene(){
  if(!twinWorkspace)return;
+ if(overviewPlanView && state.scene==='apartment' && overviewPlanId===twinWorkspace.propertyId){
+  const options=twinWorkspace.configurationOptions(),signature=JSON.stringify(options);
+  if(signature!==overviewTwinOptions){overviewPlanView.setConfigurationOptions(options);overviewTwinOptions=signature;}
+ }
  if(state.scene==='apartment'&&canOpenModel(twinWorkspace.property)&&viewer?.apartment){
   const result=viewer.setDeviceConfiguration(twinWorkspace.configuration.devices,{scenario:twinWorkspace.scenario,propertyId:twinWorkspace.propertyId,profile:twinWorkspace.profile});
   viewer.setDeviceLabelsVisible(twinWorkspace.showLabels);twinWorkspace.setResult(result);
  }
  renderSceneLegend();
 }
-async function openTwin(id=MODEL_PROPERTY_ID){
+async function openTwin(id=MODEL_PROPERTY_ID,profile){
  const property=allProperties().find(p=>p.id===String(id));if(!property)return;
- activeTwinPropertyId=property.id;twinWorkspace?.open(property.id);await showScene('apartment');
+ closeOverviewPlan();
+ activeTwinPropertyId=property.id;twinWorkspace?.open(property.id,profile);await showScene('apartment');
 }
 async function showScene(mode){
  if(!mapWorkspace){toast('房源资料正在加载，请稍后。');return;}
+ const returningFromApartment=state.scene==='apartment' && mode==='city';
+ if(mode!==state.scene)closeOverviewPlan();
  showPage('overview',false);
  state.scene=mode;document.body.dataset.scene=mode;state.activeDevice=null;$$('button[data-scene]').forEach(b=>b.classList.toggle('selected',b.dataset.scene===mode));$('#rotate-btn').classList.remove('active');$('#top-view-btn').classList.remove('active');$('#scene-detail').hidden=true;
  const property=allProperties().find(p=>p.id===activeTwinPropertyId)||allProperties().find(p=>p.id===MODEL_PROPERTY_ID),referenceReady=canOpenModel(property);
  twinWorkspace?.setVisible(mode==='apartment');$('.geo-panel').hidden=mode!=='city';$('#inventory-return-bar').hidden=mode!=='apartment';
  mapWorkspace.setVisible(mode==='city');viewer?.setActive(false);
+ if(returningFromApartment && mapWorkspace.selectedId===activeTwinPropertyId)mapWorkspace.setPlanProfile(activeTwinPropertyId,twinWorkspace.profile);
  $('#geo-filters').hidden=mode!=='city';$('#geo-map-status').hidden=mode!=='city';$('#geo-terrain-btn').hidden=mode!=='city';
  $('#scene-labels').hidden=mode!=='apartment'||!referenceReady;$('.scene-orientation').hidden=mode!=='apartment'||!referenceReady;
  $('.render-mode-note')?.toggleAttribute('hidden',mode!=='apartment'||!referenceReady);
@@ -313,7 +323,7 @@ async function showScene(mode){
  renderSceneLegend();
  $('#apartment-actions').hidden=mode!=='apartment';
  $('#reference-btn').disabled=!referenceReady;$('#cutaway-btn').disabled=!referenceReady;
- (mode==='apartment'?$('#twin-controls'):$('.map-panel')).scrollIntoView({behavior:motionBehavior(),block:'start'});
+ $('.map-panel').scrollIntoView({behavior:motionBehavior(),block:'start'});
  if(mode==='city'){
   $('#scene-loading').hidden=['webgl','leaflet','failed'].includes(mapWorkspace.mode);
   $('#top-view-btn').disabled=mapWorkspace.mode!=='webgl';$('#rotate-btn').disabled=mapWorkspace.mode!=='webgl';
@@ -471,6 +481,30 @@ function verifyEvent(id){
  addActivity('监控与调度 · 逐项复验通过',e.property+'：本轮模拟复验条件已通过，保留证据及技能版本供专家复核。','check');
  toast('逐项模拟复验通过，演示事件已闭环。');
 }
+function closeOverviewPlan(){
+ if(!overviewPlanView)return;
+ overviewPlanView.destroy();overviewPlanView=null;overviewPlanId=null;overviewTwinOptions='';
+ $('#overview-plan-pane').hidden=true;
+ $('#scene-detail [data-geo-action="plan"]')?.setAttribute('aria-expanded','false');
+}
+function openOverviewPlan(id,profile='base'){
+ const property=allProperties().find(p=>p.id===String(id));
+ if(!property || state.page!=='overview')return;
+ if(state.scene==='city' && mapWorkspace?.selectedId!==property.id)return;
+ if(state.scene==='apartment' && activeTwinPropertyId!==property.id)return;
+ const pane=$('#overview-plan-pane');
+ if(overviewPlanId!==property.id){
+  closeOverviewPlan();
+  pane.hidden=false;
+  overviewPlanId=property.id;
+  const configurationOptions=state.scene==='apartment'?twinWorkspace.configurationOptions():{};
+  overviewTwinOptions=JSON.stringify(configurationOptions);
+  overviewPlanView=mountListingPlanViewer($('#overview-plan-root'),{property,plan:planCatalog.get(property.id)||null,profile,configurationOptions});
+ }
+ $('#scene-detail [data-geo-action="plan"]')?.setAttribute('aria-expanded','true');
+ $('#overview-plan-close').focus({preventScroll:true});
+ pane.scrollIntoView({behavior:motionBehavior(),block:'start'});
+}
 function openListingPlan(id,profile='base'){
  const property=allProperties().find(p=>p.id===String(id));
  if(!property)return;
@@ -545,15 +579,32 @@ function followInventoryLink(){
 window.addEventListener('hashchange',followInventoryLink);
 function motionBehavior(){return window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';}
 function syncHeader(){document.body.classList.add('header-scrolled');}
-$('#brand-home').onclick=e=>{e.preventDefault();showPage('overview',false);window.scrollTo({top:0,behavior:motionBehavior()});};
+function showNavPage(page){
+ if(page==='overview' && mapWorkspace && state.scene!=='city')return showScene('city');
+ showPage(page);
+}
+$('#brand-home').onclick=e=>{e.preventDefault();if(state.scene==='city')showPage('overview',false);else showScene('city');window.scrollTo({top:0,behavior:motionBehavior()});};
 $('.footer-brand').onclick=$('#brand-home').onclick;
 $('#menu-toggle').onclick=()=>{if(window.matchMedia('(max-width:640px)').matches){const open=document.body.classList.toggle('menu-open');$('#menu-toggle').setAttribute('aria-expanded',String(open));}else{$('#app').scrollIntoView({behavior:motionBehavior(),block:'start'});}};
 syncHeader();
-$$('.nav-item[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));$$('[data-go]').forEach(b=>b.onclick=()=>showPage(b.dataset.go));
+$$('.nav-item[data-page]').forEach(b=>b.onclick=()=>showNavPage(b.dataset.page));$$('[data-go]').forEach(b=>b.onclick=()=>showNavPage(b.dataset.go));
 $$('[data-inventory-view]').forEach(button=>button.onclick=()=>openInventoryLevel({view:button.dataset.inventoryView,businessKey:'',communityKey:'',bedroomGroup:''}));
 $('#return-to-inventory').onclick=()=>{$('#overview-inventory').scrollIntoView({behavior:motionBehavior(),block:'start'});};
 $$('[data-event-filter]').forEach(b=>b.onclick=()=>{state.eventFilter=b.dataset.eventFilter;$$('[data-event-filter]').forEach(v=>v.classList.toggle('selected',v===b));renderEvents();});
-$$('button[data-scene]').forEach(b=>b.onclick=()=>showScene(b.dataset.scene));
+$$('button[data-scene]').forEach(button=>button.onclick=()=>{
+ if(button.dataset.scene==='apartment' && state.scene==='city' && mapWorkspace?.selectedId)return openTwin(mapWorkspace.selectedId,mapWorkspace.planProfile);
+ return showScene(button.dataset.scene);
+});
+$('#overview-plan-close').onclick=()=>{
+ closeOverviewPlan();
+ const opener=state.scene==='city'?$('#scene-detail [data-geo-action="plan"]'):$('#twin-empty [data-open-plan]');
+ opener?.focus();
+};
+$('#overview-plan-root').addEventListener('change',event=>{
+ if(!event.target.matches('select[data-profile]'))return;
+ if(state.scene==='city')mapWorkspace?.setPlanProfile(overviewPlanId,event.target.value);
+ else if(twinWorkspace?.propertyId===overviewPlanId)twinWorkspace.setProfile(event.target.value);
+});
 $('#show-apartment-btn').onclick=()=>openTwin(MODEL_PROPERTY_ID);$('#tour-btn').onclick=async()=>{await openTwin(MODEL_PROPERTY_ID);twinWorkspace?.setScenario('gateway-offline');openEvent('EVT-DEMO-001');};
  $('#agent-home-entry').onclick=()=>openHousehold();$('#agent-ask-entry').onclick=()=>openHousehold(MODEL_PROPERTY_ID,{ask:true});$('#apartment-running-btn').onclick=()=>openHousehold(activeTwinPropertyId);
  $('#map-inventory-scope').addEventListener('change',event=>setMapScope(event.target.value));

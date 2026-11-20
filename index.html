@@ -27,9 +27,37 @@
     <div class="nav-bottom"><button class="nav-item" id="nav-data"><span data-icon="layers"></span><span>来源</span></button><span class="version">DEMO 2.0</span></div>
   </aside>
   <main id="app">
-    <section class="page-heading"><div><div class="eyebrow">Z-LINK OPERATIONS</div><h1 id="page-title">家庭智能运维管家</h1><p id="page-description">一个入口，两个能力：
+    <section class="page-heading"><div><div class="eyebrow">Z-LINK OPERATIONS</div><h1 id="page-title">运维总览</h1><p id="page-description">一个入口，两个能力：
 让「用得怎么样」看得见，让「怎么办」问得到。</p></div><div class="heading-actions"><span class="city-chip" data-icon="pin">北京</span><button class="button" id="show-apartment-btn" data-icon="cube">三维设备运维</button><button class="button primary" id="tour-btn" data-icon="play">演示异常闭环</button></div></section>
     <section id="overview-page" class="page active">
+      <div class="command-grid">
+        <section class="panel map-panel">
+          <div class="panel-heading"><div><h2 id="scene-title">北京 · 房源运行态势</h2><p id="scene-subtitle">房源分布 · 演示待办 · 分级跟进</p></div><div class="map-heading-controls"><select id="map-inventory-scope" aria-label="地图房源数据范围"><option value="collected" selected>全部采集房源</option><option value="beijing">北京目标挂牌</option><option value="model">原三维样板</option><option value="references">20 套户型参考</option></select><div class="segmented" id="scene-tabs"><button class="selected" data-scene="city">城市</button><button data-scene="apartment">房源</button></div></div></div>
+          <div class="geo-filters" id="geo-filters" aria-label="地图房源筛选">
+            <label><span>区域</span><select id="geo-district-filter" aria-label="按区域筛选地图房源"><option value="">全部区域</option></select></label>
+            <label><span>商圈 / 片区</span><select id="geo-business-filter" aria-label="按商圈或片区筛选地图房源"><option value="">全部商圈</option></select></label>
+            <label class="geo-status-field"><span>运维状态</span><select id="geo-status-filter" aria-label="按运维状态筛选地图房源"><option value="all">全部状态</option><option value="pending">全部演示待办</option><option value="p1">P1 优先处理 · 演示</option><option value="p2">P2 关注跟进 · 演示</option><option value="unconnected">暂无演示待办</option></select></label>
+          </div>
+          <div class="scene-toolbar"><div class="scene-breadcrumb" id="scene-breadcrumb"><span>北京</span><span class="crumb-divider">/</span><strong>全部区域</strong></div><div class="scene-tools"><button id="geo-terrain-btn" class="button geo-terrain-button" aria-pressed="false" title="切换地形显示">地形</button><button id="top-view-btn" class="icon-btn" title="切换俯视视角" aria-label="切换俯视视角" data-icon="layers"></button><button id="rotate-btn" class="icon-btn" title="自动旋转" aria-label="自动旋转" data-icon="rotate"></button><button id="reset-camera" class="icon-btn" title="重置视角" aria-label="重置视角" data-icon="reset"></button><button id="fullscreen-btn" class="icon-btn" title="全屏三维场景" aria-label="全屏三维场景" data-icon="expand"></button></div></div>
+          <div id="scene-container"><div id="geo-map-status" class="geo-map-status" role="status" aria-live="polite">正在加载公共地图 · 地形状态待确认</div><div id="scene-loading"><span class="loader"></span><span>构建三维场景</span></div><div id="scene-labels"></div><div id="twin-empty" class="twin-empty" hidden></div><div class="scene-orientation"><span>北 N</span><svg viewBox="0 0 36 36"><path d="M18 2 28 30 18 24 8 30Z"/></svg></div></div>
+          <div class="scene-bottom"><div id="scene-legend"><span><i class="legend-dot collected"></i>小区参考</span><span><i class="legend-dot proxy"></i>地铁参考</span><span><i class="legend-dot critical"></i>P1 演示</span><span><i class="legend-dot warning"></i>P2 演示</span></div><span id="scene-footnote">小区 / 地铁参考点 · 非房间精确坐标</span></div>
+          <div class="apartment-actions" id="apartment-actions" hidden><button type="button" class="button" id="apartment-running-btn">家庭运行</button><button class="button" id="reference-btn" data-icon="image">参考图对照</button><button class="button" id="cutaway-btn" data-icon="layers">切换墙体</button><span>拖动旋转 · 滚轮缩放 · 点击设备</span></div>
+          <div class="scene-detail" id="scene-detail" tabindex="-1" hidden></div>
+          <section id="overview-plan-pane" aria-labelledby="overview-plan-title" hidden>
+            <div class="overview-plan-heading"><h2 id="overview-plan-title">户型与设备</h2><button type="button" class="button" id="overview-plan-close">收起户型</button></div>
+            <div id="overview-plan-root"></div>
+          </section>
+          <div id="geo-monitor-summary" class="geo-monitor-summary" aria-label="当前地图运维摘要" aria-live="polite"></div>
+        </section>
+        <aside class="panel geo-panel" aria-labelledby="geo-panel-title">
+          <div class="panel-heading"><div><h2 id="geo-panel-title">房源监控清单</h2><p id="geo-coverage-summary" aria-live="polite">正在读取全部已采集房源。</p></div></div>
+          <div id="geo-property-list" class="geo-property-list" aria-label="地图房源清单"><p class="geo-list-empty">房源位置核验中</p></div>
+          <div class="geo-panel-note">蓝色表示已收录；红 / 橙表示演示待办。真实设备状态尚未接入。</div>
+        </aside>
+      </div>
+      <div id="inventory-return-bar" class="inventory-return-bar" hidden><button type="button" class="button" id="return-to-inventory">返回当前分级台账</button><span>保留所选商圈、小区与居室筛选</span></div>
+      <section id="twin-controls" class="twin-controls" aria-label="三维设备配置与异常演示" hidden></section>
+      <aside id="twin-panel" class="panel twin-panel" aria-label="整屋智能状态与配置设备" hidden></aside>
       <p id="inventory-source-status" class="inventory-source-status" aria-live="polite"><span class="inventory-scope">北京 · 灵之智能筛选结果</span><span class="inventory-source-detail">累计已采集房源 · 最近新增独立展示</span></p>
       <div class="metrics inventory-metrics inventory-dimensions" aria-label="按房源、商圈或小区查看已采集数据">
         <button type="button" class="metric" data-inventory-view="properties" aria-controls="overview-inventory"><span class="metric-name">运维中房源<span data-icon="building"></span></span><strong id="metric-properties">—</strong><span class="metric-foot"><span id="metric-properties-note">已采集收录的全部房源 · 按记录去重</span></span><span class="metric-action">查看全部房源</span></button>
@@ -39,30 +67,6 @@
       <section id="bedroom-summary" class="bedroom-summary" aria-label="居室分类" aria-live="polite"><div class="bedroom-stat"><span>1居</span><strong>—</strong></div><div class="bedroom-stat"><span>2居</span><strong>—</strong></div><div class="bedroom-stat"><span>3居及以上</span><strong>—</strong></div><div class="bedroom-stat"><span>合租单间</span><strong>—</strong></div><div class="bedroom-stat"><span>待分类</span><strong>—</strong></div></section>
       <section id="overview-inventory" aria-label="房源、商圈与小区分级台账"></section>
       <section id="household-entry" class="house-entry" aria-label="家庭运行入口"></section>
-      <div class="section-intro"><div><p class="eyebrow">OPERATIONS MAP</p><h2>看清分布，聚焦待办。</h2></div><p>从城市分布定位房源，<br>从待办优先级进入处理。</p></div>
-      <div id="inventory-return-bar" class="inventory-return-bar" hidden><button type="button" class="button" id="return-to-inventory">返回当前分级台账</button><span>保留所选商圈、小区与居室筛选</span></div>
-      <section id="twin-controls" class="twin-controls" aria-label="三维设备配置与异常演示" hidden></section>
-      <div class="command-grid">
-        <section class="panel map-panel">
-          <div class="panel-heading"><div><h2 id="scene-title">北京 · 房源运行态势</h2><p id="scene-subtitle">房源分布 · 演示待办 · 分级跟进</p></div><div class="map-heading-controls"><select id="map-inventory-scope" aria-label="地图房源数据范围"><option value="collected" selected>全部采集房源</option><option value="beijing">北京目标挂牌</option><option value="model">原三维样板</option><option value="references">20 套户型参考</option></select><div class="segmented" id="scene-tabs"><button class="selected" data-scene="city">城市</button><button data-scene="apartment">房源</button></div></div></div>
-          <div id="geo-monitor-summary" class="geo-monitor-summary" aria-label="当前地图运维摘要" aria-live="polite"></div>
-          <div class="geo-filters" id="geo-filters" aria-label="地图房源筛选">
-            <label><span>区域</span><select id="geo-district-filter" aria-label="按区域筛选地图房源"><option value="">全部区域</option></select></label>
-            <label><span>商圈 / 片区</span><select id="geo-business-filter" aria-label="按商圈或片区筛选地图房源"><option value="">全部商圈</option></select></label>
-            <label class="geo-status-field"><span>运维状态</span><select id="geo-status-filter" aria-label="按运维状态筛选地图房源"><option value="all">全部状态</option><option value="pending">全部演示待办</option><option value="p1">P1 优先处理 · 演示</option><option value="p2">P2 关注跟进 · 演示</option><option value="unconnected">暂无演示待办</option></select></label>
-          </div>
-          <div class="scene-toolbar"><div class="scene-breadcrumb" id="scene-breadcrumb"><span>北京</span><span class="crumb-divider">/</span><strong>全部区域</strong></div><div class="scene-tools"><button id="geo-terrain-btn" class="button geo-terrain-button" aria-pressed="false" title="切换地形显示">地形</button><button id="top-view-btn" class="icon-btn" title="切换俯视视角" aria-label="切换俯视视角" data-icon="layers"></button><button id="rotate-btn" class="icon-btn" title="自动旋转" aria-label="自动旋转" data-icon="rotate"></button><button id="reset-camera" class="icon-btn" title="重置视角" aria-label="重置视角" data-icon="reset"></button><button id="fullscreen-btn" class="icon-btn" title="全屏三维场景" aria-label="全屏三维场景" data-icon="expand"></button></div></div>
-          <div id="scene-container"><div id="geo-map-status" class="geo-map-status" role="status" aria-live="polite">正在加载公共地图 · 地形状态待确认</div><div id="scene-loading"><span class="loader"></span><span>构建三维场景</span></div><div id="scene-labels"></div><div id="twin-empty" class="twin-empty" hidden></div><div class="scene-detail" id="scene-detail" hidden></div><div class="scene-orientation"><span>北 N</span><svg viewBox="0 0 36 36"><path d="M18 2 28 30 18 24 8 30Z"/></svg></div></div>
-          <div class="scene-bottom"><div id="scene-legend"><span><i class="legend-dot collected"></i>小区参考</span><span><i class="legend-dot proxy"></i>地铁参考</span><span><i class="legend-dot critical"></i>P1 演示</span><span><i class="legend-dot warning"></i>P2 演示</span></div><span id="scene-footnote">小区 / 地铁参考点 · 非房间精确坐标</span></div>
-          <div class="apartment-actions" id="apartment-actions" hidden><button type="button" class="button" id="apartment-running-btn">家庭运行</button><button class="button" id="reference-btn" data-icon="image">参考图对照</button><button class="button" id="cutaway-btn" data-icon="layers">切换墙体</button><span>拖动旋转 · 滚轮缩放 · 点击设备</span></div>
-        </section>
-        <aside id="twin-panel" class="panel twin-panel" aria-label="整屋智能状态与配置设备" hidden></aside>
-        <aside class="panel geo-panel" aria-labelledby="geo-panel-title">
-          <div class="panel-heading"><div><h2 id="geo-panel-title">房源监控清单</h2><p id="geo-coverage-summary" aria-live="polite">正在读取全部已采集房源。</p></div></div>
-          <div id="geo-property-list" class="geo-property-list" aria-label="地图房源清单"><p class="geo-list-empty">房源位置核验中</p></div>
-          <div class="geo-panel-note">蓝色表示已收录；红 / 橙表示演示待办。真实设备状态尚未接入。</div>
-        </aside>
-      </div>
       <div class="lower-grid">
         <aside class="panel event-panel"><div class="panel-heading"><div><h2>异常待办 <span class="number-badge" id="event-count">4</span></h2><p>按影响与优先级跟进</p></div><span class="tag amber">演示</span></div><div class="event-filters"><button class="selected" data-event-filter="all">全部</button><button data-event-filter="P1">P1 优先</button><button data-event-filter="P2">P2 关注</button></div><div id="event-list"></div><div class="event-panel-bottom"><span data-icon="shield"></span>操作只作用于本 Demo</div></aside>
         <section class="panel model-panel"><div class="panel-heading"><div><h2>重点设备型号</h2><p>用户运维快照 · 采样日期未知</p></div><button class="text-btn" data-go="devices">查看全部</button></div><div class="model-table" id="model-summary"></div></section>

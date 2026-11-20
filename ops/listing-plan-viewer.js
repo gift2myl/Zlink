@@ -122,7 +122,7 @@ function markerType(device) {
   return 'other';
 }
 
-function deviceGroups(property,plan,profile) {
+function deviceGroups(property,plan,profile,configurationOptions) {
   const anchors=new Map();
   for(const a of plan.anchors || []){
     if(!numeric(a.x)||!numeric(a.y)||a.x<0||a.x>plan.width||a.y<0||a.y>plan.height)continue;
@@ -131,7 +131,7 @@ function deviceGroups(property,plan,profile) {
     if(anchors.has(key)){anchors.set(key,null);continue;}
     anchors.set(key,a);
   }
-  const config=buildDeviceConfiguration(property,{profile});
+  const config=buildDeviceConfiguration(property,{...configurationOptions,profile});
   const groups=new Map();
   for (const item of config.devices) {
     const key=item.roomId+'--'+item.catalogId;
@@ -315,14 +315,14 @@ async function create3d(canvas,plan,bounds,raster,onMove) {
   };
 }
 
-export function mountListingPlanViewer(container,{property,plan:givenPlan,profile='base'}={}) {
+export function mountListingPlanViewer(container,{property,plan:givenPlan,profile='base',configurationOptions={}}={}) {
   if(!container || !property) throw new TypeError('需要查看器容器和房源记录');
   live.get(container)?.destroy();
   const controller=new AbortController(),{signal}=controller;
   const id=String(property.realListingId || property.id || '');
   let engine=null,observer=null,epoch=0,mode='3d',failed3d=false;
   let config,groups=[],selected=-1,plan,raster,original,bounds,ui,automatic=false,imageOnly=false;
-  let activeCanvas=null,resourceLost=null;
+  let activeCanvas=null,resourceLost=null,renderConfiguration=null;
   const shell=document.createElement('section');
   shell.className='lpv';shell.setAttribute('aria-label','本套房源户型与配置点位');
   container.replaceChildren(shell);
@@ -353,16 +353,22 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
     ui={select:find('[data-devices]'),info:find('.lpv-info'),marks:document.createElement('div')};
     const fill=()=>{
       profile=choice.value;
-      ({groups,config}=deviceGroups(property,{anchors:[]},profile));
+      ({groups,config}=deviceGroups(property,{anchors:[]},profile,configurationOptions));
       ui.select.innerHTML=groups.map(({item,quantity},i)=>`<option value="${i}">${escape(item.roomName)} · ${escape(item.name)} × ${quantity}</option>`).join('');
       ui.select.disabled=!groups.length;
       find('.lpv-count').textContent=`规划 ${config.summary.plannedDeviceCount} 件 · 位置待核验`;
       showSelection(0);
     };
+    renderConfiguration=fill;
     choice.addEventListener('change',fill,{signal});
     ui.select.addEventListener('change',()=>showSelection(Number(ui.select.value)),{signal});
     fill();
-    find('[data-retry]')?.addEventListener('click',()=>mountListingPlanViewer(container,{property,plan:givenPlan,profile}),{once:true,signal});
+    find('[data-retry]')?.addEventListener('click',()=>{
+      const retryView=mountListingPlanViewer(container,{property,plan:givenPlan,profile,configurationOptions});
+      api.ready=retryView.ready;
+      api.destroy=()=>retryView.destroy();
+      api.setConfigurationOptions=options=>retryView.setConfigurationOptions(options);
+    },{once:true,signal});
   }
   function showSelection(index) {
     selected=index;
@@ -377,7 +383,7 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
     for(const btn of ui.marks.children)btn.setAttribute('aria-pressed',String(Number(btn.dataset.group)===selected));
   }
   function updateGroups() {
-    ({config,groups}=deviceGroups(property,plan,profile));
+    ({config,groups}=deviceGroups(property,plan,profile,configurationOptions));
     const presentTypes=new Set(groups.filter(g=>g.anchor).map(g=>g.type));
     ui.legend.innerHTML=Object.entries(types).filter(([key])=>presentTypes.has(key)).map(([,v])=>
       `<span><i style="background:${v[2]}"></i>${v[0]}</span>`).join('');
@@ -518,7 +524,7 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
       ui={stage:find('.lpv-stage'),layer:find('.lpv-canvas'),marks:find('.lpv-marks'),lines:find('.lpv-lines'),legend:find('.lpv-legend'),hint:find('.lpv-hint'),top:find('[data-action=top]'),select:find('[data-devices]'),count:find('.lpv-count'),info:find('.lpv-info'),note:find('.lpv-note')};
       const profileSelect=find('[data-profile]');
       if(!['base','plus','upgrade'].includes(profile))profile='base';
-      profileSelect.value=profile;updateGroups();
+      profileSelect.value=profile;renderConfiguration=updateGroups;updateGroups();
       profileSelect.addEventListener('change',()=>{profile=profileSelect.value;updateGroups();},{signal});
       ui.select.addEventListener('change',()=>showSelection(Number(ui.select.value)),{signal});
       shell.addEventListener('click',event=>{
@@ -535,6 +541,12 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
       await setMode(imageOnly?'2d':'3d');
     } catch { if(!signal.aborted)fallback('本套户型资料暂时未能载入，可打开对应官网资料重试。',true); }
   }
-  const api={ready:null,destroy};
+  function setConfigurationOptions(options){
+    if(signal.aborted || !CONFIG_PROFILES.some(p=>p.id===options?.profile))return;
+    configurationOptions=options;profile=options.profile;
+    const choice=find('[data-profile]');
+    if(choice){choice.value=profile;renderConfiguration?.();}
+  }
+  const api={ready:null,destroy,setConfigurationOptions};
   live.set(container,api);api.ready=init();return api;
 }

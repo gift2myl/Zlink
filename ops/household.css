@@ -1,0 +1,29 @@
+/* Compact technical skills beside the existing household running detail. */
+.hh-skill-card{margin:0;border-top:1px solid #dedede;background:#f6f9fd;color:#263342}
+.hh-skill-card>summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 26px;cursor:pointer;list-style:none}
+.hh-skill-card>summary::-webkit-details-marker{display:none}
+.hh-skill-heading{display:grid;gap:4px;min-width:0}
+.hh-skill-kicker{font-size:13px;color:#42678f;letter-spacing:.04em}
+.hh-skill-heading strong{font-size:17px;line-height:1.5;font-weight:500}
+.hh-skill-toggle{flex:none;font-size:14px;color:#385f8a;white-space:nowrap}
+.hh-skill-toggle:after{content:'＋';display:inline-block;margin-left:7px}
+.hh-skill-card[open] .hh-skill-toggle:after{content:'−'}
+.hh-skill-body{padding:0 26px 24px;font-size:14px;line-height:1.85}
+.hh-skill-body>p{margin:0 0 14px;color:#4d5c6d}
+.hh-skill-body h4{margin:16px 0 7px;font-size:14px;font-weight:600;color:#263342}
+.hh-skill-evidence{display:flex;flex-wrap:wrap;gap:7px;list-style:none;padding:0;margin:0}
+.hh-skill-evidence li{padding:3px 9px;border:1px solid #d9e3ef;border-radius:4px;background:#fff;color:#475c72;font-size:14px}
+.hh-skill-checks{list-style:none;padding:0;margin:10px 0 0;counter-reset:skill-step;display:grid;gap:12px}
+.hh-skill-checks li{position:relative;padding-left:29px;counter-increment:skill-step}
+.hh-skill-checks li:before{content:counter(skill-step);position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:50%;background:#dfeaf8;color:#264e7c;text-align:center;font-size:12px;line-height:20px}
+.hh-skill-checks strong{display:block;font-size:15px;font-weight:500}
+.hh-skill-checks p{margin:2px 0 0;color:#586878}
+.hh-skill-verify{margin:0;padding-left:20px;color:#475968}
+.hh-skill-handoff{margin:14px 0 0!important;color:#566575;font-size:14px}
+.hh-skill-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:17px}
+.hh-skill-actions .hh-button{font-size:14px}
+.hh-skill-actions small{font-size:13px;color:#5d6c7d}
+.hh-skill-answer-label{display:block;margin:0 0 11px;padding:7px 10px;border-left:2px solid #3a73b5;background:#f2f7fd;color:#3d5f86;font-size:13px;line-height:1.7}
+.hh-answer-block p{white-space:pre-line}
+.hh-skill-card>summary:focus-visible{outline:2px solid #447fc3;outline-offset:-4px}
+@media(max-width:650px){.hh-skill-card>summary{padding:19px 20px;align-items:flex-start;gap:10px}.hh-skill-heading strong{font-size:16px}.hh-skill-body{padding:0 20px 20px}.hh-skill-toggle{font-size:13px}.hh-skill-actions .hh-button{width:100%}}

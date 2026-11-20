@@ -2,6 +2,7 @@ import {
   HOUSEHOLD_SAMPLE_ID, HOUSEHOLD_PERIODS, HOUSEHOLD_DIMENSIONS,
   householdProperties, householdEventDimensions, buildHouseholdModel, answerHouseholdQuestion
 } from './household-model.js';
+import { getDiagnosticSkill } from './diagnostic-skill-catalog.js';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
 const text = value => typeof value === 'string' || typeof value === 'number' ? String(value) : '';
@@ -30,6 +31,7 @@ export class HouseholdWorkspace {
     this.conversations = new Map();
     this.drafts = new Map();
     this.expandedEvidence = new Set();
+    this.expandedSkills = new Set();
     this.changeNotes = new Map();
     this.sequence = 0;
     this.uid = `hh-${++instanceSequence}`;
@@ -101,6 +103,11 @@ export class HouseholdWorkspace {
       this.ask(this.elements.question.value, { clearInput: true });
     });
     this.container.addEventListener('toggle', event => {
+      if (event.target.matches?.('[data-hh-skill]')) {
+        const key = event.target.dataset.hhSkill;
+        if (event.target.open) this.expandedSkills.add(key); else this.expandedSkills.delete(key);
+        return;
+      }
       if (!event.target.matches?.('[data-hh-evidence]')) return;
       const key = event.target.dataset.hhEvidence;
       if (event.target.open) this.expandedEvidence.add(key); else this.expandedEvidence.delete(key);
@@ -248,6 +255,13 @@ export class HouseholdWorkspace {
     return '演示联动参与设备 · 每一步结果须单独核验';
   }
 
+  skillHtml(model, dimension) {
+    const skill = getDiagnosticSkill(dimension.id);
+    const key = `${model.propertyId}|${dimension.id}`;
+    const event = dimension.relatedEvents.find(item => text(item.id) === this.selectedEventId) || dimension.pendingEvents[0] || dimension.relatedEvents[0];
+    return `<details class="hh-skill-card" data-hh-skill="${esc(key)}"${this.expandedSkills.has(key) ? ' open' : ''}><summary data-hh-focus="skill-${esc(dimension.id)}"><span class="hh-skill-heading"><span class="hh-skill-kicker">数字员工技术技能</span><strong>${esc(skill.title)}</strong></span><span class="hh-skill-toggle">查看步骤</span></summary><div class="hh-skill-body"><p>${esc(skill.appliesTo)}</p><h4>核对这些证据</h4><ul class="hh-skill-evidence">${skill.evidence.map(item => `<li>${esc(item)}</li>`).join('')}</ul><h4>按顺序排查</h4><ol class="hh-skill-checks">${skill.checks.map(item => `<li><strong>${esc(item.title)}</strong><p>${esc(item.detail)}</p></li>`).join('')}</ol><h4>复验条件</h4><ul class="hh-skill-verify">${skill.verify.map(item => `<li>${esc(item)}</li>`).join('')}</ul><p class="hh-skill-handoff"><strong>转人工：</strong>${esc(skill.handoff)}</p><div class="hh-skill-actions">${event ? `<button type="button" class="hh-button hh-button-primary" data-hh-action="event" data-event-id="${esc(event.id)}" data-hh-focus="skill-event-${esc(dimension.id)}">${event.status === 'resolved' ? '查看排障记录' : '开始分步排障'}</button>` : '<span class="hh-muted">当前没有关联待办，可先核对资料。</span>'}<button type="button" class="hh-button" data-hh-action="quick" data-question="按${esc(dimension.label)}技能，应该怎么处理？" data-hh-focus="skill-ask-${esc(dimension.id)}">让管家解读</button><small>技能 ${esc(skill.version)} · 演示流程</small></div></div></details>`;
+  }
+
   renderDetail(model, dimension) {
     const devices = dimension.devices.length ? `<div class="hh-device-list" role="list">${dimension.devices.map(device => {
       const current = device.current;
@@ -255,7 +269,7 @@ export class HouseholdWorkspace {
       return `<article class="hh-device-row" role="listitem"><div class="hh-device-main"><strong>${esc(device.name)}</strong><span class="hh-muted">${esc(device.room)} · ${esc(device.id)}</span><p class="hh-device-metrics">${esc(this.deviceMetrics(device, dimension.id))}</p></div><div class="hh-device-status"><span class="hh-badge" data-tone="${current?.status === 'online' ? 'good' : 'warning'}">${label}</span></div>${model.canModel ? `<div class="hh-device-actions"><button type="button" class="hh-button" data-hh-action="model" data-device-id="${esc(device.id)}" data-hh-focus="model-${esc(device.id)}" aria-label="在三维样板中定位${esc(device.name)}">定位设备</button></div>` : ''}</article>`;
     }).join('')}</div>` : '<div class="hh-empty"><strong>设备台账尚未接入</strong><p>单条演示待办中的设备名不是该房源的完整设备列表。</p></div>';
     const rules = dimension.rules.length ? `<div class="hh-device-list" aria-label="演示规则结果">${dimension.rules.map(rule => `<div class="hh-device-row"><div class="hh-device-main"><strong>${esc(rule.name)}</strong><span class="hh-muted">${rule.triggered} 次触发 · ${rule.confirmed} 次确认 · ${rule.failed} 次记录失败 · ${rule.unknown} 次未知</span></div></div>`).join('')}</div>` : '';
-    this.elements.detail.innerHTML = `<header class="hh-section-head"><div><span class="hh-eyebrow">运行详情</span><h3 id="${this.uid}-detail-title">${esc(dimension.label)} · ${esc(dimension.subtitle)}</h3></div><span class="hh-badge" data-tone="${dimension.tone}">${model.hasSample ? '固定演示数据' : '数据待接入'}</span></header><p class="hh-muted">${esc(dimension.summary)}</p><div class="hh-stat-grid">${dimension.stats.map(stat => `<div class="hh-stat"><span>${esc(stat.label)}</span><strong>${esc(stat.value)}</strong><small>${esc(stat.meta)}</small></div>`).join('')}</div>${rules}${devices}<details class="hh-evidence" data-hh-evidence="${esc(this.evidenceKey)}"${this.expandedEvidence.has(this.evidenceKey) ? ' open' : ''}><summary data-hh-focus="evidence-toggle">口径、采样来源与待核验证据</summary><p><strong>指标口径：</strong>${esc(dimension.formula)}</p><p><strong>采样来源：</strong>${esc(dimension.source)}</p><p><strong>统计窗口：</strong>${esc(dimension.windowLabel)}</p>${model.hasSample ? `<p>本窗口包含 ${model.aggregate.days} 个逐日演示归档；每个设备每天预期 24 个小时状态位置。归档 ID：${esc(model.aggregate.archiveIds[0])}${model.aggregate.days > 1 ? ` 至 ${esc(model.aggregate.archiveIds.at(-1))}` : ''}。这些是人工编写的固定场景，不是后台真实采集。</p>` : ''}<strong>仍需核验</strong><ul>${dimension.evidenceNeeded.map(item => `<li>${esc(item)}</li>`).join('')}</ul></details>`;
+    this.elements.detail.innerHTML = `<header class="hh-section-head"><div><span class="hh-eyebrow">运行详情</span><h3 id="${this.uid}-detail-title">${esc(dimension.label)} · ${esc(dimension.subtitle)}</h3></div><span class="hh-badge" data-tone="${dimension.tone}">${model.hasSample ? '固定演示数据' : '数据待接入'}</span></header><p class="hh-muted">${esc(dimension.summary)}</p><div class="hh-stat-grid">${dimension.stats.map(stat => `<div class="hh-stat"><span>${esc(stat.label)}</span><strong>${esc(stat.value)}</strong><small>${esc(stat.meta)}</small></div>`).join('')}</div>${rules}${devices}${this.skillHtml(model, dimension)}<details class="hh-evidence" data-hh-evidence="${esc(this.evidenceKey)}"${this.expandedEvidence.has(this.evidenceKey) ? ' open' : ''}><summary data-hh-focus="evidence-toggle">口径、采样来源与待核验证据</summary><p><strong>指标口径：</strong>${esc(dimension.formula)}</p><p><strong>采样来源：</strong>${esc(dimension.source)}</p><p><strong>统计窗口：</strong>${esc(dimension.windowLabel)}</p>${model.hasSample ? `<p>本窗口包含 ${model.aggregate.days} 个逐日演示归档；每个设备每天预期 24 个小时状态位置。归档 ID：${esc(model.aggregate.archiveIds[0])}${model.aggregate.days > 1 ? ` 至 ${esc(model.aggregate.archiveIds.at(-1))}` : ''}。这些是人工编写的固定场景，不是后台真实采集。</p>` : ''}<strong>仍需核验</strong><ul>${dimension.evidenceNeeded.map(item => `<li>${esc(item)}</li>`).join('')}</ul></details>`;
   }
 
   renderTodos(model) {
@@ -294,7 +308,7 @@ export class HouseholdWorkspace {
     if (message.role === 'user') return `<article class="hh-message" data-role="user"><span class="hh-message-context">你 · ${esc(message.context.propertyName)} · ${esc(message.context.dimensionLabel)} / ${esc(message.context.periodLabel)}窗口</span><p>${esc(message.text)}</p></article>`;
     if (message.welcome) return `<article class="hh-message" data-role="assistant"><span class="hh-message-context">灵之百晓生 · 演示问答</span><p>${esc(message.text)}</p></article>`;
     const answer = message.answer;
-    return `<article class="hh-message" data-role="assistant"><span class="hh-message-context">提问时上下文：${esc(answer.context.propertyName)} · ${esc(answer.context.dimensionLabel)} / ${esc(answer.context.periodLabel)}窗口${answer.context.eventId ? ` · ${esc(answer.context.eventId)}` : ''}</span>${answer.sections.map(section => `<section class="hh-answer-block"><h4>${esc(section.title)}</h4><p>${esc(section.text)}</p></section>`).join('')}<div class="hh-entry-actions">${answer.actions.map(action => action.type === 'event' ? `<button type="button" class="hh-button" data-hh-action="event" data-event-id="${esc(action.id)}">${esc(action.label)}</button>` : `<button type="button" class="hh-button" data-hh-action="dimension" data-dimension="${esc(action.id)}">${esc(action.label)}</button>`).join('')}</div><p class="hh-chat-note">${esc(answer.sourceNote)}</p></article>`;
+    return `<article class="hh-message" data-role="assistant"><span class="hh-message-context">提问时上下文：${esc(answer.context.propertyName)} · ${esc(answer.context.dimensionLabel)} / ${esc(answer.context.periodLabel)}窗口${answer.context.eventId ? ` · ${esc(answer.context.eventId)}` : ''}</span>${answer.skill ? `<span class="hh-skill-answer-label">${esc(answer.skill.title)} · ${esc(answer.skill.version)}</span>` : ''}${answer.sections.map(section => `<section class="hh-answer-block"><h4>${esc(section.title)}</h4><p>${esc(section.text)}</p></section>`).join('')}<div class="hh-entry-actions">${answer.actions.map(action => action.type === 'event' ? `<button type="button" class="hh-button" data-hh-action="event" data-event-id="${esc(action.id)}">${esc(action.label)}</button>` : `<button type="button" class="hh-button" data-hh-action="dimension" data-dimension="${esc(action.id)}">${esc(action.label)}</button>`).join('')}</div><p class="hh-chat-note">${esc(answer.sourceNote)}</p></article>`;
   }
 
   renderConversation() {
@@ -313,7 +327,7 @@ export class HouseholdWorkspace {
     for (const button of this.elements.conversation.querySelectorAll('[data-event-id]')) {
       const event = this.model.allEvents.find(item => text(item.id) === button.dataset.eventId);
       button.disabled = !event;
-      button.textContent = !event ? '该事件已不在当前列表' : event.status === 'resolved' ? '查看演示复验记录' : '打开关联待办';
+      button.textContent = !event ? '该事件已不在当前列表' : event.status === 'resolved' ? '查看演示复验记录' : '开始分步排障';
     }
   }
 

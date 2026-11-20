@@ -1,3 +1,5 @@
+import { mountDiagnosticWorkspace, verificationResult } from './diagnostic-workspace.js';
+import { mountReferenceGallery } from './reference-gallery.js';
 import { mountCollectionLeads } from './collection-leads.js';
 import { SceneViewer } from './scene-viewer.js';
 import { PropertyMapWorkspace } from './property-map-workspace.js';
@@ -216,7 +218,7 @@ async function openTwin(id=MODEL_PROPERTY_ID){
 async function showScene(mode){
  if(!mapWorkspace){toast('房源资料正在加载，请稍后。');return;}
  showPage('overview',false);
- state.scene=mode;document.body.dataset.scene=mode;state.activeDevice=null;$$('[data-scene]').forEach(b=>b.classList.toggle('selected',b.dataset.scene===mode));$('#rotate-btn').classList.remove('active');$('#top-view-btn').classList.remove('active');$('#scene-detail').hidden=true;
+ state.scene=mode;document.body.dataset.scene=mode;state.activeDevice=null;$$('button[data-scene]').forEach(b=>b.classList.toggle('selected',b.dataset.scene===mode));$('#rotate-btn').classList.remove('active');$('#top-view-btn').classList.remove('active');$('#scene-detail').hidden=true;
  const property=allProperties().find(p=>p.id===activeTwinPropertyId)||allProperties().find(p=>p.id===MODEL_PROPERTY_ID),referenceReady=canOpenModel(property);
  twinWorkspace?.setVisible(mode==='apartment');$('.geo-panel').hidden=mode!=='city';
  mapWorkspace.setVisible(mode==='city');viewer?.setActive(false);
@@ -334,41 +336,63 @@ function showProperty(id){
 function renderAgents(){$('#agent-grid').innerHTML=agentRoles.map(a=>`<article class="agent-card"><div class="agent-symbol">${icon(a.icon)}</div><span class="eyebrow">${a.id}</span><h2>${a.name}</h2><p>${a.task}</p><dl><dt>主要交付成果</dt><dd>${a.result}</dd><dt>真人管理责任</dt><dd>${a.owner}</dd></dl><span class="tag blue">${a.state}</span></article>`).join('');}
 function renderTickets(){
  const n=state.tickets.length;$('#nav-ticket-count').textContent=n;$('#nav-ticket-count').style.display=n?'block':'none';
- $('#ticket-list').innerHTML=n?state.tickets.map(t=>`<article class="ticket"><div class="ticket-top"><span class="tag ${t.status==='closed'?'green':'amber'}">${t.status==='closed'?'已完成演示复验':'派单草稿'}</span><h3>${esc(t.title)}</h3><span class="dim" style="font-size:.75rem">${esc(t.id)}</span></div><p>${esc(t.property)} · ${esc(t.assignee)} · ${esc(t.note)}</p><div class="ticket-details"><span>生成：${esc(t.createdAt)}</span><span>建议时限：${esc(t.deadline)}</span><span>${t.status==='closed'?'复验：模拟心跳恢复，结果仅限演示':'待业务负责人确认派单与处理方式'}</span></div><button class="button" data-ticket-event="${t.eventId}">${t.status==='closed'?'查看记录':'打开工作台'}</button></article>`).join(''):`<div class="empty-state">${icon('ticket')}<h3>从一次异常开始</h3><p>运行数字员工诊断后，可以在这里生成、跟进和复验演示工单。</p><button class="button primary" id="ticket-start">演示异常闭环</button></div>`;
+ $('#ticket-list').innerHTML=n?state.tickets.map(t=>`<article class="ticket"><div class="ticket-top"><span class="tag ${t.status==='closed'?'green':'amber'}">${t.status==='closed'?'已完成演示复验':'派单草稿'}</span><h3>${esc(t.title)}</h3><span class="dim" style="font-size:.75rem">${esc(t.id)}</span></div><p>${esc(t.property)} · ${esc(t.assignee)} · ${esc(t.note)}</p><div class="ticket-details"><span>生成：${esc(t.createdAt)}</span><span>建议时限：${esc(t.deadline)}</span><span>${t.status==='closed'?(t.verification?.status==='passed'?'复验：逐项条件已通过，结果仅限演示':'复验：旧版演示记录，未保存逐项结果'):'待业务负责人确认派单与处理方式'}</span></div><button class="button" data-ticket-event="${t.eventId}">${t.status==='closed'?'查看记录':'打开工作台'}</button></article>`).join(''):`<div class="empty-state">${icon('ticket')}<h3>从一次异常开始</h3><p>运行数字员工诊断后，可以在这里生成、跟进和复验演示工单。</p><button class="button primary" id="ticket-start">演示异常闭环</button></div>`;
  $$('[data-ticket-event]').forEach(b=>b.onclick=()=>openEvent(b.dataset.ticketEvent));if($('#ticket-start'))$('#ticket-start').onclick=()=>openEvent('EVT-DEMO-001');
  syncHousehold();
 }
 function openEvent(id){state.activeEvent=id;$('#event-drawer').hidden=false;$('#drawer-backdrop').hidden=false;document.body.classList.add('drawer-open');renderDrawer();$('.close-drawer').focus();}
 function closeDrawer(){$('#event-drawer').hidden=true;$('#drawer-backdrop').hidden=true;document.body.classList.remove('drawer-open');state.activeEvent=null;}
-function diagnosticSteps(e){return e.id==='EVT-DEMO-001'?[['核对同户影响','演示日志：网关与 2 个设备同一时段失去心跳。'],['检查共同依赖','需核对网关供电、上联网络和平台上报链路。'],['形成原因候选','共同链路异常优先；现有证据不足以判定具体根因。'],['制定升级与复验','请求现场核查供电/网络；恢复后校验心跳与场景。']]:e.id==='EVT-DEMO-002'?[['核对上报证据','演示电量 18%，需核对采样时效与连续读数。'],['核查资产与使用状态','确认锁具在管、可正常开关及备用进入方式。'],['生成处理建议','安排合适时间人工更换电池，不发送开锁指令。'],['制定复验条件','更换后核对电量与真实锁具使用反馈。']]:e.id==='EVT-DEMO-003'?[['确认指令与回执','区分已发送、已执行与已确认状态。'],['核对通信依赖','检查网关、网络与设备回执链路。'],['形成排查建议','先补日志，再检查控制协议和设备状态。'],['制定复验条件','以真实执行回执和状态变化确认恢复。']]:[['核对未上报时段','演示未上报，不等同于传感器确认漏水。'],['核对设备在管状态','确认上报能力、采样周期及资产是否仍使用。'],['检查电池与网关','补充现场电池信息和网关通信日志。'],['制定复验条件','依据传感器真实心跳与测试事件验证恢复。']];}
 function renderDrawer(){
- const e=state.events.find(e=>e.id===state.activeEvent);if(!e)return;const progress=state.diagnosticProgress[e.id]||0;const running=e.status==='diagnosing';const completed=['diagnosed','ticketed','resolved'].includes(e.status);const ticket=state.tickets.find(t=>t.eventId===e.id);const steps=diagnosticSteps(e);
- $('#drawer-title').textContent=e.status==='resolved'?'事件复验记录':'事件工作台';
- $('#drawer-body').innerHTML=`<div class="event-summary"><div class="event-summary-title"><span class="priority ${e.priority.toLowerCase()}">${e.priority}</span><strong>${esc(e.title)}</strong></div><p>${esc(e.property)} · 北京${esc(e.district)} · ${esc(e.id)}</p><span class="tag ${e.status==='resolved'?'green':'amber'}">${e.status==='resolved'?'已完成演示复验':'演示遥测 · 未连接生产设备'}</span></div><dl class="detail-grid"><div><dt>处理数字员工</dt><dd>${esc(e.agent)}</dd></div><div><dt>当前状态</dt><dd>${({new:'待核验',diagnosing:'诊断演示中',diagnosed:'建议待确认',ticketed:'已生成工单草稿',resolved:'演示已复验'})[e.status]||'待核验'}</dd></div><div><dt>关联对象</dt><dd>${esc(e.deviceName)}</dd></div><div><dt>真人管理责任</dt><dd>运维业务负责人</dd></div></dl><section class="drawer-section"><h3>当前证据</h3>${e.evidence.map(([k,v])=>`<div class="evidence-row"><span>${esc(k)}</span><strong>${esc(v)}</strong></div>`).join('')}<p class="small-note">${esc(e.summary)}</p></section><section class="drawer-section"><h3>数字员工诊断路径</h3><div class="diagnostic-steps">${steps.map(([title,body],i)=>`<div class="diag-step ${progress>i?'complete':running&&progress===i?'current':''}"><span class="diag-node">${progress>i?'✓':i+1}</span><div><strong>${title}</strong><p>${progress>i||completed?body:'等待核验演示'}</p></div></div>`).join('')}</div>${completed?`<div class="diagnostic-conclusion"><strong>处理建议 · 仍需核验</strong>${e.id==='EVT-DEMO-001'?'优先核查共同网关供电与上联链路；当前证据不足以直接认定网关损坏。不执行重置或配置变更。':'先补齐真实设备、现场与上报证据，再确认处理方式；建议文本不是执行回执。'}<br>升级条件：关键证据缺失、远程无法验证或存在现场风险时转人工。</div>`:''}</section>${e.status==='resolved'?'<div class="diagnostic-conclusion"><strong>演示复验已记录</strong>已模拟恢复心跳、核对关联设备并保存演示记录。未向真实设备发送任何指令，案例可继续交由专家形成技能草案。</div>':''}<div class="drawer-actions">${!completed?`<button class="button primary" id="diagnose-btn" ${running?'disabled':''}>${running?'正在演示诊断…':'启动数字员工诊断'}</button>`:!ticket?'<button class="button primary" id="create-ticket-btn">生成工单草稿</button>':e.status!=='resolved'?'<button class="button primary" id="verify-btn">模拟恢复并复验</button>':'<button class="button" id="view-ticket-btn">查看工单记录</button>'}${e.propertyId==='810151211'?'<button class="button" id="locate-model-btn">定位三维设备</button>':''}</div><p class="small-note">${ticket?'工单 '+esc(ticket.id)+' · 仅保存于当前浏览器。':'所有诊断步骤与回执均为交互演示；真实执行须接入设备系统并遵循业务授权。'}</p>`;
- if($('#diagnose-btn'))$('#diagnose-btn').onclick=()=>runDiagnosis(e.id);if($('#create-ticket-btn'))$('#create-ticket-btn').onclick=()=>createTicket(e.id);if($('#verify-btn'))$('#verify-btn').onclick=()=>verifyEvent(e.id);if($('#view-ticket-btn'))$('#view-ticket-btn').onclick=()=>{closeDrawer();showPage('tickets');};if($('#locate-model-btn'))$('#locate-model-btn').onclick=async()=>{closeDrawer();await openTwin(e.propertyId);twinWorkspace?.setScenario('gateway-offline');showDevice(e.device);};
- $('.drawer-actions').insertAdjacentHTML('beforeend','<button class="button" id="event-running">查看家庭运行</button>');
- $('#event-running').onclick=()=>{closeDrawer();openHousehold(e.propertyId);};
-}
-function runDiagnosis(id){
- if(diagnosisTimer){toast('已有一项演示诊断正在进行。');return;}
- const e=state.events.find(e=>e.id===id);if(!e||e.status==='resolved')return;e.status='diagnosing';state.diagnosticProgress[id]=0;renderDrawer();
- addActivity('远程诊断工程师 · 开始核验',`${e.property}：读取演示证据，核查共同依赖。`,'tool');
- diagnosisTimer=setInterval(()=>{state.diagnosticProgress[id]++;if(state.diagnosticProgress[id]>=4){clearInterval(diagnosisTimer);diagnosisTimer=null;e.status='diagnosed';addActivity('远程诊断工程师 · 建议已形成',`${e.property}：保留原因候选、证据缺口和升级条件。`,'tool');renderEvents();}persist();if(state.activeEvent===id)renderDrawer();},950);
+ const e=state.events.find(event=>event.id===state.activeEvent);if(!e)return;
+ const ticket=state.tickets.find(item=>item.eventId===e.id),body=$('#drawer-body'),scroll=body.scrollTop;
+ const focused=document.activeElement,focusEvidence=focused?.dataset?.diagwEvidence,focusCheck=focused?.dataset?.diagwCheck;
+ $('#drawer-title').textContent=e.status==='resolved'?'事件复验记录':'数字员工 · 分步排障';
+ body.innerHTML='<div class="event-summary"><div class="event-summary-title"><span class="priority '+e.priority.toLowerCase()+'">'+esc(e.priority)+'</span><strong>'+esc(e.title)+'</strong></div><p>'+esc(e.property)+' · 北京'+esc(e.district)+' · '+esc(e.id)+'</p><span class="tag '+(e.status==='resolved'?'green':'amber')+'">'+(e.status==='resolved'?(e.skillRun?.verification?.status==='passed'?'已完成逐项演示复验':'旧版演示闭环记录'):'演示遥测 · 未连接生产设备')+'</span></div><dl class="detail-grid"><div><dt>处理数字员工</dt><dd>'+esc(e.agent)+'</dd></div><div><dt>当前状态</dt><dd>'+({new:'待核验',diagnosing:'待核验',diagnosed:'已形成原因候选',ticketed:'工单草稿待复验',resolved:'演示已复验'}[e.status]||'待核验')+'</dd></div><div><dt>关联对象</dt><dd>'+esc(e.deviceName)+'</dd></div><div><dt>技能版本</dt><dd>v0.2 · 本地规则演练</dd></div></dl><details class="diagw-history"><summary>查看原始演示证据</summary>'+e.evidence.map(pair=>'<div class="evidence-row"><span>'+esc(pair[0])+'</span><strong>'+esc(pair[1])+'</strong></div>').join('')+'<p class="small-note">'+esc(e.summary)+'</p></details><div id="technical-diagnosis"></div>';
+ mountDiagnosticWorkspace($('#technical-diagnosis'),{
+  event:e,ticket,
+  onUpdate:(run,action)=>{
+   e.skillRun=run;
+   if(!ticket&&e.status!=='resolved')e.status=action==='生成排障结论'?'diagnosed':run.assessment?'diagnosed':'new';
+   if(ticket)ticket.latestSkillRun=structuredClone(run);
+   persist();renderEvents();renderTickets();
+   if(state.activeEvent===e.id)renderDrawer();
+  },
+  onTicket:()=>createTicket(e.id),
+  onVerify:()=>verifyEvent(e.id),
+  onLocate:e.propertyId===MODEL_PROPERTY_ID?async()=>{closeDrawer();await openTwin(e.propertyId);twinWorkspace?.setScenario('gateway-offline');showDevice(e.device);}:null,
+  onRunning:()=>{closeDrawer();openHousehold(e.propertyId);},
+  onExport:record=>downloadFile('灵之排障记录-'+e.id+'.json',JSON.stringify(record,null,2),'application/json;charset=utf-8')
+ });
+ body.scrollTop=scroll;
+ if(focusEvidence)body.querySelector('[data-diagw-evidence="'+focusEvidence+'"]')?.focus({preventScroll:true});
+ if(focusCheck)body.querySelector('[data-diagw-check="'+focusCheck+'"]')?.focus({preventScroll:true});
 }
 function createTicket(id){
- if(state.tickets.some(t=>t.eventId===id)){toast('该事件已有演示工单。');return;}
- const e=state.events.find(e=>e.id===id);if(!e||e.status!=='diagnosed')return;
- const t={id:'LZ-DEMO-'+String(state.tickets.length+1).padStart(3,'0'),eventId:id,title:e.title,property:e.property,assignee:'LZ-06 售后工单调度员',status:'draft',createdAt:timeNow(),deadline:e.priority==='P1'?'2 小时内确认处理（演示）':'当日确认处理（演示）',note:'先补充现场与链路证据，处理后复验设备状态'};
- state.tickets.unshift(t);e.status='ticketed';persist();renderDrawer();renderTickets();renderEvents();addActivity('工单调度员 · 草稿已生成',`${t.id} · ${e.property}，待真人确认责任人与处理方式。`,'ticket');toast('工单草稿已生成，仅保存在本 Demo。');
+ if(state.tickets.some(ticket=>ticket.eventId===id)){toast('该事件已有演示工单。');return;}
+ const e=state.events.find(event=>event.id===id);
+ if(!e||e.status!=='diagnosed'||!e.skillRun?.assessment){toast('请先核对证据并生成排障结论。');return;}
+ const t={id:'LZ-DEMO-'+String(state.tickets.length+1).padStart(3,'0'),eventId:id,title:e.title,property:e.property,assignee:'LZ-06 售后工单调度员',status:'draft',createdAt:timeNow(),createdAtISO:new Date().toISOString(),deadline:e.priority==='P1'?'2 小时内确认处理（演示）':'当日确认处理（演示）',note:e.skillRun.summary,skillId:e.skillRun.skillId,skillVersion:e.skillRun.skillVersion,diagnosticSnapshot:structuredClone(e.skillRun),mode:'simulation'};
+ state.tickets.unshift(t);e.status='ticketed';persist();renderDrawer();renderTickets();renderEvents();
+ addActivity('工单调度员 · 技能记录已归档',t.id+' · '+e.property+'，证据、原因候选和待补项随草稿保存。','ticket');
+ toast('工单草稿已关联本轮排障记录，等待逐项模拟复验。');
 }
 function verifyEvent(id){
- const e=state.events.find(e=>e.id===id),t=state.tickets.find(t=>t.eventId===id);if(!e||!t||e.status==='resolved')return;e.status='resolved';t.status='closed';t.verifiedAt=timeNow();persist();renderDrawer();renderEvents();renderTickets();renderSceneLegend();if(id==='EVT-DEMO-001'){if(twinWorkspace?.scenario==='gateway-offline')twinWorkspace.setScenario('unknown');if(state.activeDevice==='gateway'&&!$('#scene-detail').hidden)showDevice('gateway');}addActivity('监控与调度 · 演示复验完成',`${e.property}：模拟恢复已记录；案例进入待专家核验队列。`,'check');toast('演示事件已闭环，真实设备状态未改变。');
+ const e=state.events.find(event=>event.id===id),t=state.tickets.find(ticket=>ticket.eventId===id);
+ if(!e||!t||e.status==='resolved')return;
+ if(e.skillRun?.verification?.status!=='passed'||verificationResult(e,e.skillRun?.verification?.checks)!=='passed'){
+  toast('复验条件尚未全部通过，工单继续保持待处理。');return;
+ }
+ e.status='resolved';t.status='closed';t.verifiedAt=timeNow();t.verifiedAtISO=new Date().toISOString();t.verification=structuredClone(e.skillRun.verification);t.latestSkillRun=structuredClone(e.skillRun);
+ persist();renderDrawer();renderEvents();renderTickets();renderSceneLegend();
+ if(id==='EVT-DEMO-001'){if(twinWorkspace?.scenario==='gateway-offline')twinWorkspace.setScenario('unknown');if(state.activeDevice==='gateway'&&!$('#scene-detail').hidden)showDevice('gateway');}
+ addActivity('监控与调度 · 逐项复验通过',e.property+'：本轮模拟复验条件已通过，保留证据及技能版本供专家复核。','check');
+ toast('逐项模拟复验通过，演示事件已闭环。');
 }
 function showModal(title,body){$('#modal-title').textContent=title;$('#modal-body').innerHTML=body;$('#modal').showModal();hydrateIcons($('#modal'));}
 function showCrawlStatus(){
  if(!data){toast('采集记录仍在加载。');return;}
  const verification=mapLastAttempt(),stats=collectedStats(),url=safeUrl(data.source.url);
- const rows=[['主数据源','自如北京地图'],['筛选','更多 → 灵之智能 → 确定'],['运维中房源',`${stats.count} 条累计已采集记录`],['最近原地图访问',formatObservedAt(verification.checkedAt)],['最近补采新增',`${mapAddedCount()??'—'} 条`],['有效列表页',verification.validListingPages??'—'],['全北京总量','尚未取得完整清单'],['请求结果',verification.status==='blocked'?'原地图返回校验页；保留累计收录':'以来源记录为准']];
+ const rows=[['主数据源','自如北京地图'],['筛选','更多 → 灵之智能 → 确定'],['运维中房源',`${stats.count} 条累计已采集记录`],['最近原地图访问',formatObservedAt(verification.checkedAt)],['最近补采新增',`${mapAddedCount()??'—'} 条`],['有效列表页',verification.validListingPages??'—'],['全北京总量','尚未取得完整清单'],['请求结果',verification.status==='blocked'?'来源响应含校验迹象；具体规则待确认':'以来源记录为准']];
  showModal('自如地图 · 采集状态',`<span class="tag blue">累计收录 ${stats.count} 条</span><p>累计房源与最近新增分别记录。最近一次补采未新增数据，不影响已收录房源的运维展示。</p><table><tbody>${rows.map(([key,value])=>`<tr><td>${esc(key)}</td><td>${esc(value)}</td></tr>`).join('')}</tbody></table><div class="view-menu"><button class="button" id="crawl-audit">查看已采集台账</button>${url?`<a class="button" href="${esc(url)}" target="_blank" rel="noopener noreferrer">打开自如北京地图</a>`:''}</div><p class="small-note">地图 URL 不保存筛选状态，打开后需重新选择“更多 → 灵之智能 → 确定”。这里展示最近一次保存的访问记录。</p>`);
  $('#crawl-audit').onclick=()=>{$('#modal').close();showInventoryAudit();};
 }
@@ -377,7 +401,14 @@ function showSources(){
  const verification=mapLastAttempt(),stats=collectedStats(),source=safeUrl(data.source.url);
  showModal('数据来源与重建范围',`<div class="source-block"><h3>① 自如北京地图 · 已采集房源</h3><p>主来源为自如北京地图，筛选“更多 → 灵之智能 → 确定”。运维中房源计入全部已采集收录记录，当前累计 ${stats.count} 条；包含资料待补记录，按真实房源 ID 或本地记录索引去重。本地 CSV 不计入公开采集数量。</p><p>最近原地图访问记录为 ${esc(formatObservedAt(verification.checkedAt))}，新增 ${mapAddedCount()??'—'} 条，累计收录保留。房源按实际出租对象分类，合租单间独立列示；现有清单不是北京全量，也不表示真实设备已接入。</p>${source?`<a href="${esc(source)}" target="_blank" rel="noopener noreferrer">打开自如北京地图（需重新选择灵之智能）</a>`:''} · <a href="./ops/assets/properties.json" target="_blank" rel="noopener noreferrer">已收录原始记录</a></div><div class="source-block"><h3>② 三维参考资料</h3><p>仅望京路3号院（810151211）具备 1 张户型图、10 张照片，支持对应房源的近似重建；其余 9 条历史记录尚缺独立房源身份、户型图及照片。部分尺寸和遮挡结构为推断，设备位置与运行状态为演示。</p><a href="./ops/assets/three-source-coverage.json" target="_blank" rel="noopener noreferrer">逐套建模资料</a> · <a href="https://github.com/img2threejs/img2threejs" target="_blank" rel="noopener noreferrer">img2threejs 方法参考</a></div><div class="source-block"><h3>③ 家庭运行与问题承接</h3><p>连接、执行、联动、安防、耗材和使用六个维度；仅参考样板使用 7 台演示设备的数据。日、周、月指标来自固定演示窗口，模拟复验只更新当前演示状态，不改写历史统计。其他房源的真实遥测均未接入。</p><p>灵之百晓生是本地规则问答演示，使用当前房源、维度、演示事件与浏览器中的工单记录；未连接大模型，未向真实设备发送命令或实际派单。</p></div><div class="source-block"><h3>④ 公共地图与商圈</h3><p>OpenStreetMap 底图、MapLibre 与 Three.js 业务图层；支持 WebGL2 时可叠加 Mapzen / AWS 地形，其他环境显示二维兼容地图。地形不代表楼栋或室内结构。</p><p>历史参考中有 7 条小区参考位置、3 条地铁代理位置，均不是房间精确坐标。太阳宫已计入确认商圈，其余 9 条为待核验候选，单独列示。</p><div class="view-menu"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a><a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener noreferrer">Mapzen / AWS</a><a href="./ops/assets/property-geography.json" target="_blank" rel="noopener noreferrer">位置核验依据</a></div></div><div class="source-block"><h3>⑤ 原运维报表与演示</h3><p>设备报表来自用户提供截图，采样日期未知，可读 7 个型号、8 台设备记录，不能推算全局在线率，也不与北京房源建立未经核验的映射。4 条事件与工单草稿仅保存在当前浏览器。</p></div>`);
 }
-function showReferences(){showModal('望京路3号院 · 参考图对照',`<div class="source-state"><span class="tag blue">实际房源参考</span><span>1 张户型图 · 10 张实景照片 · 观察日期 2026.11.19</span></div><div class="reference-grid"><figure><img src="./ops/assets/reference/floorplan.webp" alt="望京路3号院实际户型图"><figcaption>户型：南阳台—卧室—餐厅/玄关，西北卫生间，东北厨房与洗衣阳台。</figcaption></figure><figure><img src="./ops/assets/reference/bedroom.webp" alt="望京路3号院卧室实景"><figcaption>卧室实景：床、衣柜、灰色窗帘与材质差异。</figcaption></figure><figure><img src="./ops/assets/reference/room4.webp" alt="房源餐厅及室内参考"><figcaption>室内结构与家具关系参考。</figcaption></figure><figure><img src="./ops/assets/reference/room9.webp" alt="房源厨卫参考"><figcaption>厨卫及设施材质参考。</figcaption></figure></div><h3>可核验与推断的界线</h3><p>房间连接关系、主要家具、门窗位置与视觉材质以参考资料为依据；未给出实测尺寸的高度与遮挡结构保留推断标记。设备布点和遥测用于演示，不是现场设备台账。</p><div class="view-menu"><button class="button" id="reference-top">关闭对照并查看俯视</button><a class="button" href="https://www.ziroom.com/x/810151211.html" target="_blank" rel="noopener noreferrer">打开房源原页</a></div>`);$('#reference-top').onclick=()=>{$('#modal').close();viewer?.toggleTop();$('#top-view-btn').classList.toggle('active',viewer?.topView);};}
+let referenceGallery=null;
+function showReferences(propertyId){
+ const id=typeof propertyId==='string'?propertyId:activeTwinPropertyId;
+ const property=allProperties().find(row=>row.id===id),record=modelCoverage?.properties?.find(row=>row.id===id);
+ referenceGallery?.destroy?.();
+ showModal((property?.name||'房源')+' · 原始资料对照','<div id="reference-gallery"></div>');
+ referenceGallery=mountReferenceGallery($('#reference-gallery'),{record,onViewModel:canOpenModel(property)?async()=>{$('#modal').close();await openTwin(property.id);viewer?.toggleTop();$('#top-view-btn').classList.toggle('active',viewer?.topView);}:null});
+}
 function showSkill(){showModal('技能草案：同一房源多设备离线',`<span class="tag amber">示范技能 · 尚未完成专家与留出案例验证</span><h3>适用条件</h3><p>同一房源多个设备在相近时间未上报，且存在共同网关、网络或供电依赖。</p><h3>判断顺序</h3><ol style="color:var(--muted);line-height:1.9"><li>核对房源、设备在管状态与采样时间，排除台账或采集问题。</li><li>识别同户设备与网关关系，按共同依赖聚合影响范围。</li><li>依次收集供电、网络、网关状态与平台日志证据。</li><li>形成可验证的原因候选；证据不足保留未知项并转人工。</li><li>处理后以设备心跳、执行回执和必要现场反馈复验。</li></ol><h3>反例与边界</h3><p>外网正常并不证明网关正常；没有上报记录也不等同于持续故障。不把重启或恢复出厂设置作为默认动作。</p><h3>发布前还需完成</h3><p>专家核对来源与适用版本，使用未参与提炼的新案例测试，并与现行流程比较准确性、耗时与转人工成本。</p><div class="source-block"><strong>草案版本 v0.1</strong><p>来源：本 Demo 的业务情景、用户提供运维讨论与公开蒸馏方法。不是已验证生产 SOP。</p></div>`);}
 function downloadFile(name,text,type='text/plain;charset=utf-8'){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function parseCsv(text){const rows=[];let row=[],cell='',quote=false;for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quote&&text[i+1]==='"'){cell+='"';i++;}else quote=!quote;}else if(c===','&&!quote){row.push(cell);cell='';}else if((c==='\n'||c==='\r')&&!quote){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);if(row.some(v=>v.trim()))rows.push(row);row=[];cell='';}else cell+=c;}if(quote)throw Error('CSV 存在未闭合引号');row.push(cell);if(row.some(v=>v.trim()))rows.push(row);return rows;}
@@ -395,7 +426,7 @@ $('#menu-toggle').onclick=()=>{if(window.matchMedia('(max-width:640px)').matches
 syncHeader();
 $$('.nav-item[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));$$('[data-go]').forEach(b=>b.onclick=()=>showPage(b.dataset.go));
 $$('[data-event-filter]').forEach(b=>b.onclick=()=>{state.eventFilter=b.dataset.eventFilter;$$('[data-event-filter]').forEach(v=>v.classList.toggle('selected',v===b));renderEvents();});
-$$('[data-scene]').forEach(b=>b.onclick=()=>showScene(b.dataset.scene));
+$$('button[data-scene]').forEach(b=>b.onclick=()=>showScene(b.dataset.scene));
 $('#show-apartment-btn').onclick=()=>openTwin(MODEL_PROPERTY_ID);$('#tour-btn').onclick=async()=>{await openTwin(MODEL_PROPERTY_ID);twinWorkspace?.setScenario('gateway-offline');openEvent('EVT-DEMO-001');};
  $('#agent-home-entry').onclick=()=>openHousehold();$('#agent-ask-entry').onclick=()=>openHousehold(MODEL_PROPERTY_ID,{ask:true});$('#apartment-running-btn').onclick=()=>openHousehold(activeTwinPropertyId);
  $('#map-inventory-scope').addEventListener('change',event=>setMapScope(event.target.value));

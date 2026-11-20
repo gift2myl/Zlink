@@ -1,5 +1,6 @@
 // Authored scenario data, never telemetry from the photographed property.
 // All three windows aggregate the same immutable daily archive.
+import { getDiagnosticSkill } from './diagnostic-skill-catalog.js';
 export const HOUSEHOLD_SAMPLE_ID = '810151211';
 export const HOUSEHOLD_FIXTURE_ID = 'HH-DEMO-20261119-v1';
 export const HOUSEHOLD_PERIODS = Object.freeze({
@@ -248,18 +249,31 @@ const CANDIDATES = {
   usage: '请求数量会受统计窗口与启用功能影响。当前没有住户行为或实际体验数据，不能据此判断家庭活跃度或满意度。'
 };
 
+function recordedSkillResult(event) {
+  const run = event?.skillRun;
+  if (!run || typeof run !== 'object') return '';
+  const summary = text(run.summary).trim().slice(0, 1200);
+  const status = text(run.verification?.status);
+  if (!summary && !status) return '';
+  const labels = { passed: '本地模拟复验通过', failed: '本地模拟复验未通过', pending: '本地模拟复验待完成', unknown: '复验结果仍未知' };
+  return `已记录的排障结论：${summary || '尚无结论记录'}。${status ? `复验记录：${labels[status] || '状态待核验'}。` : '尚无复验记录。'}这些是当前浏览器的演示记录，不是生产设备回执。`;
+}
+
 export function answerHouseholdQuestion({ model, dimensionId = 'connection', eventId = null, question = '' }) {
   const input = text(question).trim();
   const inferred = QUESTION_DIMENSIONS.find(([pattern]) => pattern.test(input))?.[1];
   const selectedId = inferred || dimensionId;
   const dimension = model.dimensions.find(item => item.id === selectedId) || model.dimensions[0];
+  const skill = getDiagnosticSkill(dimension.id);
+  const skillMetadata = { id: skill.id, title: skill.title, version: skill.version };
   const selectedEvent = model.allEvents.find(event => text(event.id) === text(eventId) && (!inferred || householdEventDimensions(event).includes(inferred)));
   const event = selectedEvent || dimension.pendingEvents[0] || dimension.relatedEvents[0] || null;
   const context = { propertyId: model.propertyId, propertyName: model.property?.name || '未选择房源', dimensionId: dimension.id, dimensionLabel: dimension.label, period: model.period, periodLabel: HOUSEHOLD_PERIODS[model.period].label, windowLabel: dimension.windowLabel, eventId: event?.id || null, eventStatus: event?.status || null };
   const historyIntent = /以前|历史|处理过|维修记录|工单记录|上次/.test(input);
   const actionIntent = /(?:帮我|立即|现在|请|直接).*(?:开门|关门|开灯|关灯|开空调|关空调|重启|重置|下发|维修|派单)|下发指令|自动修复|^(?:开门|关门|开灯|关灯|开空调|关空调|重启|重置)/.test(input);
-  const supported = historyIntent || actionIntent || /为什么|异常|原因|怎么办|处理|核验|复验|状态|设备|连接|在线|离线|网关|心跳|回执|执行|联动|场景|安防|烟感|漏水|水浸|报警|电量|电池|耗材|使用|请求|统计|样本|采样|覆盖|缺失|维修|工单/.test(input);
-  const actions = event ? [{ type: 'event', id: text(event.id), label: event.status === 'resolved' ? '查看演示复验记录' : '打开关联待办' }] : [];
+  const supported = historyIntent || actionIntent || /为什么|异常|原因|怎么办|处理|排查|技能|核验|复验|状态|设备|连接|在线|离线|网关|心跳|回执|执行|联动|场景|安防|烟感|漏水|水浸|报警|电量|电池|耗材|使用|请求|统计|样本|采样|覆盖|缺失|维修|工单/.test(input);
+  const actions = event ? [{ type: 'event', id: text(event.id), label: event.status === 'resolved' ? '查看演示复验记录' : '开始分步排障' }] : [];
+  const recordedResult = recordedSkillResult(event);
   const sourceNote = '演示问答 · 本地规则匹配，未连接大模型。依据提问时的房源、维度、现有事件和当前浏览器工单；不执行设备控制或自动派单。';
   if (!supported) return {
     context, sourceNote, sections: [
@@ -274,8 +288,8 @@ export function answerHouseholdQuestion({ model, dimensionId = 'connection', eve
     const records = model.tickets.filter(ticket => eventIds.has(text(ticket.eventId)));
     const closed = records.filter(ticket => ticket.status === 'closed');
     const recordText = records.length ? records.map(ticket => `${text(ticket.id) || '未编号'}：${ticket.status === 'closed' ? '演示已复验' : '工单草稿'}；生成 ${text(ticket.createdAt) || '时间未提供'}${ticket.verifiedAt ? `；复验 ${text(ticket.verifiedAt)}` : ''}`).join('。') : '当前浏览器没有这项问题的关联工单记录。';
-    return { context, sourceNote, sections: [
-      { title: '观察到什么', text: recordText },
+    return { context, sourceNote, skill: skillMetadata, sections: [
+      { title: '观察到什么', text: `${recordText}${recordedResult ? `\n${recordedResult}` : ''}` },
       { title: '原因候选', text: closed.length ? `已有 ${closed.length} 条演示复验记录，可作为本次核验的参考；不能证明真实设备已维修，也不能据此认定同一根因。` : '缺少已复验记录，无法判断以前是否在真实业务中处理过；未接入外部维修系统。' },
       { title: '建议核验', text: '核对现有工单的设备、证据、处理建议与复验字段，必要时由业务负责人补充真实历史。' },
       { title: '下一步与复验', text: event ? '可打开关联待办查看当前演示流程；已有记录不会被改写为新的维修经历。' : '先选择当前房源的一条待办；没有待办时不虚构工单或维修记录。' }
@@ -287,10 +301,12 @@ export function answerHouseholdQuestion({ model, dimensionId = 'connection', eve
     : event
       ? `${event.status === 'resolved' ? '该事件已在当前浏览器完成模拟复验。以下是事件初始记录，不是新的设备回执：' : '当前有一条关联演示待办。'}${text(event.title)}。${text(event.summary)}${evidence ? ` 事件初始证据：${evidence}。` : ''}`
       : model.hasSample ? dimension.summary : `本房源「${dimension.label}」的全户遥测未接入；没有该维度的关联演示待办，运行状态仍未知。`;
-  return { context, sourceNote, sections: [
-    { title: '观察到什么', text: observed },
+  const checksText = skill.checks.map((check, index) => `${index + 1}. ${check.title}：${check.detail}`).join('\n');
+  const verificationText = skill.verify.map((item, index) => `${index + 1}. ${item}`).join('\n');
+  return { context, sourceNote, skill: skillMetadata, sections: [
+    { title: '观察到什么', text: `${observed}${recordedResult ? `\n${recordedResult}` : ''}` },
     { title: '原因候选', text: CANDIDATES[dimension.id] },
-    { title: '建议核验', text: `${dimension.evidenceNeeded.join('；')}。${model.hasSample ? ` 窗口口径：${dimension.formula}` : ' 缺少这些资料时不计算整户指标。'}` },
-    { title: '下一步与复验', text: event ? event.status === 'resolved' ? '打开现有记录核对模拟复验结果；固定演示窗口的历史统计保持原值，不会因此变成 100%。' : '打开关联待办，沿用现有诊断、工单草稿与模拟复验流程。现场证据不足时交由业务负责人确认，建议不是执行回执。' : '可继续查看当前维度或其他待办；没有匹配事件时不自动创建工单。接入真实数据后再核验运行结果。' }
+    { title: '建议核验', text: `先准备：${skill.evidence.join('；')}。\n${checksText}` },
+    { title: '下一步与复验', text: `${verificationText}\n${event ? event.status === 'resolved' ? '打开现有记录核对本地模拟复验结果；固定演示窗口的历史统计保持原值。' : '可进入关联事件逐项记录核验结果，再生成处理建议和工单草稿。' : '当前没有匹配事件，先按技能核对资料；不会自动新建工单。'}\n转人工条件：${skill.handoff}` }
   ], actions };
 }

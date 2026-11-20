@@ -153,3 +153,26 @@ body[data-scene="apartment"] .scene-detail{top:15px;left:18px;width:260px;max-wi
 .collection-leads{margin:0 28px 24px;padding:22px;display:flex;justify-content:space-between;gap:24px;align-items:center;border:1px solid #dce5ef;border-radius:5px;background:#fff}
 .collection-leads[hidden]{display:none!important}.collection-leads h3{margin:12px 0 8px;font-size:19px;font-weight:500}.collection-leads p{margin:0;max-width:720px;font-size:13px;line-height:1.8;color:#657181}.collection-leads small{display:block;margin-top:8px;color:#7a8491;font-size:11px}.collection-leads-actions{display:flex;flex-direction:column;gap:9px;flex-shrink:0}.collection-leads-table{overflow:auto;margin:24px 0}.collection-leads-table table{min-width:650px;width:100%}.collection-leads-table small{display:block;margin-top:6px;color:#7a8491;font-size:12px;line-height:1.6}.collection-leads-table strong{font-weight:500}.collection-leads-table td{vertical-align:top}
 @media(max-width:700px){.collection-leads{margin:0 20px 20px;padding:18px;align-items:flex-start;flex-direction:column}.collection-leads-actions{flex-direction:row;flex-wrap:wrap}.collection-leads h3{font-size:18px}}
+
+/* Keep triage within the selected room and preserve unknown telemetry states. */
+.twin-room-state.selected{outline:2px solid #3388e5;outline-offset:1px}
+.twin-device-filters{padding:0 18px 15px}
+.twin-state-filters{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,.8fr) minmax(0,1.55fr);gap:6px;margin-bottom:14px}
+.twin-state-filters button{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:40px;padding:7px 6px;border:1px solid #d6dfe9;border-radius:4px;background:#fff;color:#485b70;font-size:14px;line-height:1.45;white-space:nowrap;cursor:pointer}
+.twin-state-filters button>span{font-variant-numeric:tabular-nums;color:#697b8d}
+.twin-state-filters button.selected{background:#eaf3ff;border-color:#3c89df;color:#155ca8}
+.twin-state-filters button.selected>span{color:#155ca8}
+.twin-device-filter-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:9px}
+.twin-device-filter-row label{min-width:0}
+.twin-device-filter-row label>span{display:block;font-size:14px;color:#526577;margin-bottom:6px}
+.twin-device-filter-row select{width:100%;max-width:none;min-width:0;min-height:44px;padding:9px 29px 9px 10px;appearance:none;border:1px solid #cbd6e1;border-radius:4px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='m2 4 4 4 4-4' fill='none' stroke='%23526577' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 10px center;color:#31465d;font-size:14px;line-height:1.4}
+.twin-locate-anomaly{min-height:44px;padding:9px 11px;border:1px solid #2e78c9;border-radius:4px;background:#2268b7;color:#fff;font-size:14px;line-height:1.4;cursor:pointer;white-space:nowrap}
+.twin-locate-anomaly>span{display:inline-block;margin-left:3px;font-variant-numeric:tabular-nums}
+.twin-locate-anomaly:disabled{background:#eef2f6;border-color:#d6dfe8;color:#7c8895;cursor:default}
+.twin-filter-summary{font-size:14px;line-height:1.65;color:#465e76;margin:12px 0 3px;font-variant-numeric:tabular-nums}
+.twin-focus-status{font-size:14px;line-height:1.65;color:#69798a;margin:0;overflow-wrap:anywhere}
+.twin-filter-empty{padding:14px 13px 19px;border:1px dashed #ccd6e2;border-radius:4px;background:#f7f9fc;margin:0 9px 10px}
+.twin-filter-empty p{font-size:14px;line-height:1.8;color:#64778a;margin:0 0 13px}
+.twin-filter-empty .button{min-height:40px;padding:8px 11px;font-size:14px}
+.twin-state-filters button:focus-visible,.twin-device-filter-row select:focus-visible,.twin-locate-anomaly:focus-visible,.twin-room-state:focus-visible,.twin-device-row:focus-visible{outline:3px solid #267edc;outline-offset:2px}
+@media(max-width:640px){.twin-device-filters{padding:0 14px 15px}.twin-device-filter-row select{font-size:16px}.twin-state-filters button{min-height:44px}.twin-locate-anomaly{min-height:46px}}

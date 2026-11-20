@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-19T18:53:42+08:00",
+  "updatedAt": "2026-11-20",
   "purpose": "灵之运维 Demo 公共地图与地形来源；不代表全量房源重建或实时设备数据",
   "renderModes": [
     {
@@ -70,7 +70,28 @@
     "usagePolicy": "https://operations.osmfoundation.org/policies/tiles/",
     "requestPolicy": "仅按用户实际视口正常请求；不预取、不批量下载、不绕过缓存；保留有效 Referer 和可见署名",
     "serviceLevel": "best effort; no SLA",
-    "tilesDownloadedByDependencyTask": 0
+    "tilesDownloadedByDependencyTask": 0,
+    "displayTheme": {
+      "id": "operations-dark",
+      "name": "运维监控深色",
+      "sourceUnchanged": true,
+      "methodWebGL": "Raster brightness endpoint inversion and desaturation; Three.js layer colours unchanged",
+      "method2D": "CSS filter on Leaflet tile pane only",
+      "palette": {
+        "collected": "#4bb9ff",
+        "P1Demo": "#ff6577",
+        "P2Demo": "#ffbd69"
+      },
+      "counts": "Dynamic current-filter collected records and unresolved demo events; no live telemetry or new inventory implied",
+      "validation": {
+        "checkedOn": "2026-11-20",
+        "browserMode": "leaflet-2d",
+        "basemapAndMarkersVisible": true,
+        "priorityFilterAndSummaryChecked": true,
+        "selectionAndApartmentSwitchChecked": true,
+        "webglVisuallyVerified": false
+      }
+    }
   },
   "terrain": {
     "id": "aws-terrarium",

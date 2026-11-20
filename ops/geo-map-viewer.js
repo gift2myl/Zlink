@@ -3,6 +3,17 @@ import * as THREE from 'three';
 const OSM_ATTRIBUTION = '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>';
 const TERRAIN_ATTRIBUTION = 'Terrain: <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener">Mapzen / AWS</a> · <a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md" target="_blank" rel="noopener">Contributors</a>';
 const BEIJING = [116.4, 39.91];
+// Tint the existing public OSM raster locally; no extra tile service or API key.
+// The pinned MapLibre raster shader mixes the two brightness endpoints, so
+// reversing them inverts only the basemap, leaving Three.js status colours intact.
+const MONITOR_RASTER_PAINT = {
+  'raster-saturation': -1,
+  'raster-contrast': .08,
+  'raster-brightness-min': .78,
+  'raster-brightness-max': .055,
+  'raster-opacity': .84
+};
+const propertyColour = entry => entry.priority === 'P1' ? 0xff6577 : entry.priority === 'P2' ? 0xffbd69 : 0x4bb9ff;
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 const hasPoint = entry => Array.isArray(entry.position) && entry.position.length === 2 && entry.position.every(Number.isFinite) && entry.position[0] >= 115 && entry.position[0] <= 118 && entry.position[1] >= 39 && entry.position[1] <= 42;
 class InitializationPaused extends Error {}
@@ -75,7 +86,7 @@ function createPropertyLayer(maplibre, entries) {
         const point = maplibre.MercatorCoordinate.fromLngLat(entry.position, 0);
         const placement = new THREE.Group();
         placement.position.set((point.x - origin.x) / metre, 0, (point.y - origin.y) / metre);
-        const colour = entry.hasPending ? 0xc28b47 : entry.matchType === 'station_proxy' ? 0x687d8b : 0x242b32;
+        const colour = propertyColour(entry);
         const height = entry.hasPending ? 95 : 65;
         const stalk = new THREE.Mesh(new THREE.CylinderGeometry(13, 13, height, 12), new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: .8 }));
         stalk.position.y = height / 2;
@@ -143,7 +154,7 @@ export class GeographicMap {
     this.topView = false;
     this.element = document.createElement('div');
     this.element.id = 'geo-city-map';
-    this.element.setAttribute('aria-label', '北京 OpenStreetMap 房源地图');
+    this.element.setAttribute('aria-label', '北京房源运维监控地图 · OpenStreetMap');
     this.container.prepend(this.element);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(container);
@@ -162,8 +173,8 @@ export class GeographicMap {
     const tileNote = this.tileError ? ' · 底图部分瓦片未返回' : '';
     const terrainLabel = this.terrainState === 'ready' ? 'Mapzen / AWS 地形 ×1.2' : this.terrainState === 'error' ? '地形暂不可用' : '地形加载中';
     const text = this.mode === 'webgl'
-      ? 'Three.js · WebGL 地图' + (this.terrainEnabled ? ' · ' + terrainLabel : ' · 平面视图') + tileNote
-      : this.mode === 'leaflet' ? '二维兼容地图 · OSM · 当前环境无三维地形' + tileNote
+      ? '监控深色 · 三维地图' + (this.terrainEnabled ? ' · ' + terrainLabel : ' · 平面视图') + tileNote
+      : this.mode === 'leaflet' ? '监控深色 · 二维兼容视图' + tileNote
       : this.mode === 'failed' ? '地图加载失败，房源清单仍可使用'
       : '正在加载北京公共地图';
     this.onStatus?.({ mode: this.mode, text, terrainEnabled: this.mode === 'webgl' && this.terrainEnabled, terrainState: this.terrainState, ...extra });
@@ -295,7 +306,10 @@ export class GeographicMap {
           osm: { type: 'raster', tiles, tileSize: 256, maxzoom: 19, attribution: OSM_ATTRIBUTION },
           'aws-terrain': { type: 'raster-dem', tiles: terrainTiles, tileSize: 256, encoding: 'terrarium', maxzoom: this.sources.terrain?.demoMaxZoom || 14, attribution: TERRAIN_ATTRIBUTION }
         },
-        layers: [{ id: 'osm-basemap', type: 'raster', source: 'osm', paint: { 'raster-saturation': -.28, 'raster-contrast': .04 } }],
+        layers: [
+          { id: 'monitor-background', type: 'background', paint: { 'background-color': '#081827' } },
+          { id: 'osm-basemap', type: 'raster', source: 'osm', paint: MONITOR_RASTER_PAINT }
+        ],
         terrain: { source: 'aws-terrain', exaggeration: 1.2 }
       }
     });
@@ -364,7 +378,8 @@ export class GeographicMap {
     map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
     L.control.scale({ maxWidth: 100, imperial: false }).addTo(map);
     const tiles = L.tileLayer(this.sources.basemap?.tiles?.[0] || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: OSM_ATTRIBUTION, minZoom: 8, maxZoom: 19, updateWhenIdle: true, keepBuffer: 0
+      attribution: OSM_ATTRIBUTION, minZoom: 8, maxZoom: 19, updateWhenIdle: true, keepBuffer: 0,
+      className: 'geo-monitor-tiles'
     }).addTo(map);
     tiles.on('tileerror', () => { this.tileError = true; this.emitStatus(); });
     tiles.on('load', () => this.emitStatus());
@@ -376,12 +391,14 @@ export class GeographicMap {
   markerElement(entry) {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'geo-map-marker' + (entry.matchType === 'station_proxy' ? ' is-proxy' : '') + (entry.hasPending ? ' is-alert' : '') + (entry.id === this.selectedId ? ' is-selected' : '');
+    button.className = 'geo-map-marker' + (entry.matchType === 'station_proxy' ? ' is-proxy' : '') + (entry.hasPending ? ' is-alert' : '') + (entry.priority === 'P1' ? ' is-p1' : entry.priority === 'P2' ? ' is-p2' : '') + (entry.id === this.selectedId ? ' is-selected' : '');
     button.dataset.propertyId = entry.id;
-    button.innerHTML = '<span>' + escapeHtml(entry.mapIndex) + '</span>';
+    button.innerHTML = '<span class="geo-marker-number">' + escapeHtml(entry.mapIndex) + '</span>' + (entry.priority ? '<span class="geo-marker-priority" aria-hidden="true">' + escapeHtml(entry.priority) + '</span>' : '') + '<span class="geo-marker-caption" aria-hidden="true">' + escapeHtml(entry.name) + '</span>';
     const precision = entry.matchType === 'station_proxy' ? '地铁参考点，非房源位置' : '小区级参考位置';
-    button.setAttribute('aria-label', entry.name + ' · ' + precision);
-    button.title = entry.name + ' · ' + precision;
+    const status = entry.hasPending ? (entry.priority || '') + ' 演示待办 ' + (entry.pendingCount || 1) + ' 条' : '暂无演示待办 · 真实状态未接入';
+    button.setAttribute('aria-label', entry.name + ' · ' + precision + ' · ' + status);
+    button.setAttribute('aria-pressed', String(entry.id === this.selectedId));
+    button.title = entry.name + ' · ' + precision + ' · ' + status;
     button.addEventListener('click', event => { event.stopPropagation(); this.onProperty?.(entry.id); });
     return button;
   }
@@ -411,7 +428,10 @@ export class GeographicMap {
 
   select(id) {
     this.selectedId = id;
-    for (const record of this.markerRecords) record.element.classList.toggle('is-selected', record.entry.id === id);
+    for (const record of this.markerRecords) {
+      record.element.classList.toggle('is-selected', record.entry.id === id);
+      record.element.setAttribute('aria-pressed', String(record.entry.id === id));
+    }
   }
 
   async focusProperty(id) {

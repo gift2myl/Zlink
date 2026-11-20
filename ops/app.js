@@ -159,7 +159,7 @@ function mapScopeNote(){return mapInventoryScope==='model'?'有三维参考的�
 function setMapScope(scope){
  mapInventoryScope=scope==='model'?'model':'collected';
  $('#map-inventory-scope').value=mapInventoryScope;mapWorkspace?.closeDetail();mapWorkspace?.update(mapProperties(),state.events);
- if(state.scene==='city'){$('#scene-footnote').textContent=mapScopeNote();$('#scene-subtitle').textContent=mapInventoryScope==='model'?'已取得对应户型与照片 · 房源参考位置':'已采集房源分布 · 商圈候选另列';}
+ if(state.scene==='city'){$('#scene-footnote').textContent=mapScopeNote();$('#scene-subtitle').textContent=mapInventoryScope==='model'?'已取得对应户型与照片 · 房源参考位置':'房源分布 · 演示待办 · 分级跟进';}
 }
 function inventoryMissing(row){
  if(!row)return '详细字段待补';
@@ -223,8 +223,8 @@ async function showScene(mode){
  $('#geo-filters').hidden=mode!=='city';$('#geo-map-status').hidden=mode!=='city';$('#geo-terrain-btn').hidden=mode!=='city';
  $('#scene-labels').hidden=mode!=='apartment'||!referenceReady;$('.scene-orientation').hidden=mode!=='apartment'||!referenceReady;
  $('.render-mode-note')?.toggleAttribute('hidden',mode!=='apartment'||!referenceReady);
- $('#scene-title').textContent=mode==='city'?'北京房源地图':property.name+' · '+(referenceReady?'三维设备运维':'设备配置');
- $('#scene-subtitle').textContent=mode==='city'?(mapInventoryScope==='model'?'已取得对应户型与照片 · 房源参考位置':'已采集房源分布 · 商圈候选另列'):`${property.areaScope==='listed_bedroom'?'卧室 ':''}${property.area??'—'}㎡ · ${property.areaScope==='listed_bedroom'?'合租单间（所属'+(property.bedrooms??'—')+'居）':(property.bedrooms??'—')+'居'} · ${referenceReady?'官方户型 / 照片近似重建':'对应户型资料待补'}`;
+ $('#scene-title').textContent=mode==='city'?'北京 · 房源运行态势':property.name+' · '+(referenceReady?'三维设备运维':'设备配置');
+ $('#scene-subtitle').textContent=mode==='city'?(mapInventoryScope==='model'?'已取得对应户型与照片 · 房源参考位置':'房源分布 · 演示待办 · 分级跟进'):`${property.areaScope==='listed_bedroom'?'卧室 ':''}${property.area??'—'}㎡ · ${property.areaScope==='listed_bedroom'?'合租单间（所属'+(property.bedrooms??'—')+'居）':(property.bedrooms??'—')+'居'} · ${referenceReady?'官方户型 / 照片近似重建':'对应户型资料待补'}`;
  $('#scene-breadcrumb').innerHTML=mode==='city'?'<span>北京</span><span class="crumb-divider">/</span><strong>全部区域</strong>':`<button class="text-btn" id="back-city">北京</button><span class="crumb-divider">/</span><span>${esc(property.district||'区域待确认')}</span><span class="crumb-divider">/</span><strong>${esc(property.name)}</strong>`;
  if($('#back-city'))$('#back-city').onclick=()=>showScene('city');
  $('#scene-footnote').textContent=mode==='city'?mapScopeNote():'方案配置推演 · 实装与遥测待接入';
@@ -255,7 +255,7 @@ function showDistrict(id){
  state.activeDevice=null;showScene('city');mapWorkspace?.focusDistrict(id);
 }
 function renderSceneLegend(){
- $('#scene-legend').innerHTML=state.scene==='city'?'<span><i class="legend-dot"></i>小区参考点</span><span><i class="legend-dot blue"></i>地铁参考点</span><span><i class="legend-dot amber"></i>演示待办</span>':'<span><i class="legend-dot"></i>状态未接入</span><span><i class="legend-dot amber"></i>链路受影响</span><span><i class="legend-dot red"></i>演示异常 / 告警</span>';
+ $('#scene-legend').innerHTML=state.scene==='city'?'<span><i class="legend-dot collected"></i>小区参考</span><span><i class="legend-dot proxy"></i>地铁参考</span><span><i class="legend-dot critical"></i>P1 演示</span><span><i class="legend-dot warning"></i>P2 演示</span>':'<span><i class="legend-dot"></i>状态未接入</span><span><i class="legend-dot amber"></i>链路受影响</span><span><i class="legend-dot red"></i>演示异常 / 告警</span>';
 }
 function showDevice(id){
  if(!twinWorkspace){toast('设备配置正在载入。');return;}

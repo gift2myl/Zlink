@@ -54,7 +54,7 @@ export class PropertyMapWorkspace {
     this.filters = { district: '', business: '', status: 'all' };
     this.elements = Object.fromEntries([
       'geo-filters', 'geo-district-filter', 'geo-business-filter', 'geo-status-filter', 'geo-property-list',
-      'geo-coverage-summary', 'geo-map-status', 'scene-detail', 'scene-breadcrumb',
+      'geo-coverage-summary', 'geo-monitor-summary', 'geo-map-status', 'scene-detail', 'scene-breadcrumb',
       'geo-terrain-btn', 'top-view-btn', 'rotate-btn'
     ].map(id => [id, document.getElementById(id)]));
     this.originalTitles = new Map(['geo-terrain-btn', 'top-view-btn', 'rotate-btn'].map(id => [id, this.elements[id]?.title || '']));
@@ -90,12 +90,24 @@ export class PropertyMapWorkspace {
       const geographicRecord = geographyById.get(id) || null;
       const position = verifiedPosition(geographicRecord);
       const business = businessInfo(geographicRecord);
+      const seenEvents = new Set();
+      const pending = this.pendingEvents(id).filter(event => {
+        const eventId = string(event.id);
+        if (!eventId) return true;
+        if (seenEvents.has(eventId)) return false;
+        seenEvents.add(eventId);
+        return true;
+      });
+      const pendingP1Count = pending.filter(event => event.priority === 'P1').length;
+      const pendingP2Count = pending.filter(event => event.priority === 'P2').length;
       return [{
         id, name: string(property.name) || '未命名房源',
         district: districtName(property.district) || districtName(geographicRecord?.district) || '区域待核验',
         mapIndex: this.indices.get(id), position,
         matchType: position ? geographicRecord.matchType : 'unmatched',
-        hasPending: this.pendingEvents(id).length > 0,
+        hasPending: pending.length > 0,
+        pendingCount: pending.length, pendingP1Count, pendingP2Count,
+        priority: pendingP1Count > 0 ? 'P1' : pendingP2Count > 0 ? 'P2' : null,
         property, geography: geographicRecord, businessLabel: business.label,
         businessKey: business.key, businessConfirmed: business.confirmed
       }];
@@ -175,12 +187,15 @@ export class PropertyMapWorkspace {
       (!this.filters.district || entry.district === this.filters.district) &&
       (!this.filters.business || entry.businessKey === this.filters.business) &&
       (this.filters.status !== 'pending' || entry.hasPending) &&
+      (this.filters.status !== 'p1' || entry.pendingP1Count > 0) &&
+      (this.filters.status !== 'p2' || entry.pendingP2Count > 0) &&
       (this.filters.status !== 'unconnected' || !entry.hasPending)
     );
     if (this.selectedId && !this.filteredEntries.some(entry => entry.id === this.selectedId)) this.closeDetail();
     this.viewer?.setEntries(this.filteredEntries);
     this.renderList();
     this.renderCoverage();
+    this.renderMonitorSummary();
     this.renderBreadcrumb();
     if (fit) { this.viewer?.setRotate(false); this.viewer?.fitAll(); this.syncControls(); }
   }
@@ -190,11 +205,14 @@ export class PropertyMapWorkspace {
     if (!element) return;
     element.innerHTML = this.filteredEntries.length ? this.filteredEntries.map(entry => {
       const precision = entry.matchType === 'community' ? '小区参考' : entry.matchType === 'station_proxy' ? '地铁参考 · 非房屋' : '待定位';
-      return `<button type="button" class="geo-property-item${entry.id === this.selectedId ? ' is-selected' : ''}" data-geo-property-id="${esc(entry.id)}" aria-pressed="${entry.id === this.selectedId}">
+      const priorityClass = entry.priority === 'P1' ? ' is-p1' : entry.priority === 'P2' ? ' is-p2' : '';
+      const pendingLabel = entry.hasPending ? `${entry.priority ? entry.priority + ' ' : ''}演示待办 · ${entry.pendingCount}条` : '暂无演示待办';
+      const pendingTag = entry.priority === 'P1' ? 'red' : entry.hasPending ? 'amber' : 'neutral';
+      return `<button type="button" class="geo-property-item${priorityClass}${entry.id === this.selectedId ? ' is-selected' : ''}" data-geo-property-id="${esc(entry.id)}" aria-pressed="${entry.id === this.selectedId}">
         <span class="geo-property-index">${entry.mapIndex}</span><span class="geo-property-main"><strong>${esc(entry.name)}</strong>
         <span class="geo-property-region" style="display:block">${esc(entry.district)} · ${esc(entry.businessLabel)}</span>
         <span class="geo-property-region" style="display:block">${esc(propertyFacts(entry.property))}</span>
-        <span class="geo-property-status"><span class="tag neutral">${precision}</span><span class="tag ${entry.hasPending ? 'amber' : 'neutral'}">${entry.hasPending ? '演示有待办' : '状态未接入'}</span></span>
+        <span class="geo-property-status"><span class="tag neutral">${precision}</span><span class="tag ${pendingTag}">${pendingLabel}</span></span>
         </span></button>`;
     }).join('') : `<p class="geo-list-empty">${this.entries.length ? '当前筛选没有房源记录，请调整区域、商圈或状态。' : '当前范围暂无已收录房源。可查看采集状态，或切换为全部采集房源。'}</p>`;
   }
@@ -206,6 +224,22 @@ export class PropertyMapWorkspace {
     const proxy = this.entries.filter(entry => entry.matchType === 'station_proxy').length;
     const unmatched = this.entries.length - community - proxy;
     element.innerHTML = `已采集 ${this.entries.length} 条 · 小区参考 ${community} · 地铁参考 ${proxy} · 待定位 ${unmatched}<br>当前筛选 ${this.filteredEntries.length} 条 · 非北京全量 · 真实设备状态未接入`;
+  }
+
+  renderMonitorSummary() {
+    const element = this.elements['geo-monitor-summary'];
+    if (!element) return;
+    const entries = this.filteredEntries;
+    const p1 = entries.reduce((sum, entry) => sum + entry.pendingP1Count, 0);
+    const p2 = entries.reduce((sum, entry) => sum + entry.pendingP2Count, 0);
+    const pendingHomes = entries.filter(entry => entry.hasPending).length;
+    element.innerHTML = [
+      ['当前筛选房源', entries.length, '条', ''],
+      ['P1 演示待办', p1, '条', 'is-p1'],
+      ['P2 演示待办', p2, '条', 'is-p2'],
+      ['有待办房源', pendingHomes, '条', '']
+    ].map(([label, count, unit, className]) => `<div class="geo-monitor-metric${className ? ' ' + className : ''}"><span>${label}</span><strong>${count}<small>${unit}</small></strong></div>`).join('')
+      + '<p class="geo-monitor-caption">随当前筛选统计 · 待办为演示事件，真实设备状态未接入</p>';
   }
 
   renderBreadcrumb() {

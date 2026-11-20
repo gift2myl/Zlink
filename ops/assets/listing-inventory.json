@@ -1,0 +1,2266 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-20T03:02:50+00:00",
+  "query": {
+    "url": "https://www.ziroom.com/z/z2-q1308385113142296577-a1308384876582944769/?p=x63&isOpen=1",
+    "city": "北京",
+    "cityCode": "110000",
+    "rentalMode": "整租",
+    "feature": "灵之智能",
+    "declaredBy": "latest_user_request",
+    "filterParametersVerified": false,
+    "filterParameterInterpretation": null,
+    "note": "查询口径来自用户明确要求；未取得正常页面，未臆测路径及p/isOpen参数与筛选的映射。"
+  },
+  "verification": {
+    "attempted": true,
+    "startedAt": "2026-11-20T02:59:48.528218+00:00",
+    "checkedAt": "2026-11-20T02:59:57.531163+00:00",
+    "status": "blocked",
+    "reason": "challenge_page",
+    "message": "访问校验页面，未取得房源列表。",
+    "httpStatus": 200,
+    "bodyBytes": 987,
+    "sha256": "6c4acfab1a2647b178b75c6820183c740cf684bb5e20bcaf9a3c486cda53f5b9",
+    "challengeMarkers": [
+      "EO_Bot_Ssid",
+      "__tst_status"
+    ],
+    "validListingPages": 0,
+    "newVerifiedListings": 0,
+    "requestMode": "single ordinary GET; no retry; no cookies; no redirects",
+    "requestsAttempted": 1,
+    "sourceUrl": "https://www.ziroom.com/z/z2-q1308385113142296577-a1308384876582944769/?p=x63&isOpen=1",
+    "evidenceFile": "/workspace/scratch/d26fdd117e22/ziroom_requested_listing_check.json",
+    "evidenceFileSha256": "447a9abea07059919e5b5fa8b046634d3d798f187d62f27f03b8b3bd95a53801",
+    "fullResponseStoredHere": false,
+    "performedBy": "root",
+    "requestCountScope": "single ordinary direct HTTP GET recorded in the supplied evidence file",
+    "ordinaryHttpRetries": 0,
+    "additionalReadOnlyLookup": {
+      "reportedBy": "root",
+      "method": "search_service_open_same_requested_url",
+      "readableListingContentObtained": false,
+      "newVerifiedListings": 0
+    }
+  },
+  "summary": {
+    "actualFetchedCount": 0,
+    "knownVerifiedCount": 0,
+    "eligible": 0,
+    "excluded": 1,
+    "needsVerification": 9,
+    "historicalRecordsReviewed": 10,
+    "historicalIdentityVerified": 1,
+    "confirmedBusinessAreas": 0,
+    "confirmedCommunities": 0,
+    "confirmedDistricts": 0,
+    "bedroomCounts": {
+      "1": 0,
+      "2": 0,
+      "3+": 0,
+      "unknown": 0
+    },
+    "fullInventoryCount": null,
+    "isFullInventory": false,
+    "completeness": "unknown"
+  },
+  "aggregation": {
+    "population": "eligible_only",
+    "eligibilityRequires": [
+      "city.verified=true and city.value=北京",
+      "rentalMode.verified=true and rentalMode.value=整租",
+      "lingzhi.verified=true and lingzhi.value=true",
+      "listingId.verified=true and realListingId present"
+    ],
+    "deduplicateBy": "verified Ziroom realListingId",
+    "actualFetchedCountDefinition": "此次用户指定URL实际取得并核验的房源记录数；校验页不产生房源记录。",
+    "knownVerifiedCountDefinition": "现有证据中满足完整新口径并可按真实房源ID去重的记录数，不等同于北京市场总量。",
+    "businessAreaDefinition": "仅对eligible集合中官方详情确认的自如商圈名称去重；候选站点与OSM地址层级不计入。",
+    "communityDefinition": "仅对eligible集合中已确认行政区与小区名称组成的键去重；不把地铁站对象当楼盘。",
+    "districtDefinition": "仅对eligible集合中已确认的行政区名称去重。",
+    "bedroomsDefinition": "仅对eligible集合的已确认整套居室数分1居/2居/3居及以上；未知列unknown；合租卧室排除。",
+    "currentAvailabilityNotRefreshedForHistoricalRows": true,
+    "emptyEligibleSetMeaning": "现有证据暂无可严格计入的记录；不表示北京没有符合条件的房源。",
+    "suggestedEmptyMetricDisplay": "—",
+    "fullInventoryCountWhenUnverified": null
+  },
+  "confirmedCoverage": {
+    "businessAreas": [],
+    "communities": [],
+    "districts": []
+  },
+  "groups": {
+    "eligible": [],
+    "excluded": [
+      "map-sample-03"
+    ],
+    "needsVerification": [
+      "map-sample-01",
+      "map-sample-02",
+      "map-sample-04",
+      "810151211",
+      "map-sample-06",
+      "map-sample-07",
+      "map-sample-08",
+      "map-sample-09",
+      "map-sample-10"
+    ]
+  },
+  "historicalEvidenceNotes": {
+    "uniqueConfirmedListingId": "810151211",
+    "historicalBusinessArea": "太阳宫",
+    "historicalBusinessAreaSource": "已保存的此前详情实读记录；不计入当前口径覆盖数。",
+    "historicalCityVerified": true,
+    "historicalWholeRentalModeExplicitlyVerified": false,
+    "opaqueLocalSampleIdsAreNotActualListingIds": true,
+    "map500PlusIsNotAnExactInventoryCount": true,
+    "opsSnapshotExcluded": true,
+    "scopeChangeDoesNotRewriteOriginalSources": true
+  },
+  "sourceAudit": [
+    {
+      "file": "assets/properties.json",
+      "sha256": "26d416915c11cf2c0106d8736b53cfeed85c3f2298e6f0b6d33667043d5a759b",
+      "purpose": "历史10条混合列表样本；含1条合租和9个本地索引，仅逐字段证据用于审计。",
+      "usedForHistoricalFieldAudit": true,
+      "usedAsCurrentListingBatch": false
+    },
+    {
+      "file": "assets/property-geography.json",
+      "sha256": "b2e8e78c098e62f4b906ee70975cd3428f4d15d89178c5cdfd1a0fa064aa54d6",
+      "purpose": "既有小区/站点定位与历史商圈标签；站点、OSM suburb不能代替自如商圈。",
+      "usedForHistoricalFieldAudit": true,
+      "usedAsCurrentListingBatch": false
+    },
+    {
+      "file": "assets/three-source-coverage.json",
+      "sha256": "53a0b3ad74dd4591a63127617d0dc6be9c36a9956992472e763b10561b412780",
+      "purpose": "真实详情身份及照片/户型齐备度；素材齐备不证明整租或当前在租。",
+      "usedForHistoricalFieldAudit": true,
+      "usedAsCurrentListingBatch": false
+    },
+    {
+      "file": "assets/ops-source.json",
+      "sha256": "af05feb7e441d77f3b70086288de9135a886a028928c3cb1bffc49d7ea2a8c3f",
+      "purpose": "用户提供设备运维快照，采样日期未知、房源ID已匿名且没有出租方式；完全排除出公开租赁库存计数。",
+      "usedForHistoricalFieldAudit": false,
+      "usedAsCurrentListingBatch": false
+    },
+    {
+      "file": "assets/crawl-status.json",
+      "sha256": "b6681a286fdda3d2ee0d335b0324b55172567ebf6759165bf51d1787781a9422",
+      "purpose": "此前地图访问阻断证据，不是新列表URL的当前结果。",
+      "usedForHistoricalFieldAudit": false,
+      "usedAsCurrentListingBatch": false
+    }
+  ],
+  "properties": [
+    {
+      "id": "map-sample-01",
+      "name": "棕榈泉国际公寓",
+      "realListingId": null,
+      "status": "needsVerification",
+      "eligible": false,
+      "reasonCodes": [
+        "entire_rental_mode_unverified",
+        "real_listing_id_unverified",
+        "lingzhi_label_unverified"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "sourceKind": "historical_map_sample",
+      "sourceObservedAt": "2026-11-19",
+      "obtainedFromCurrentRequestedUrl": false,
+      "currentAvailabilityVerified": false,
+      "fields": {
+        "city": {
+          "value": "北京",
+          "verified": true,
+          "status": "confirmed_historical_city",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.source.city",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原北京地图样本明确city=北京、cityCode=110000；不是从新URL的未验证参数推断。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "rentalMode": {
+          "value": null,
+          "verified": false,
+          "status": "not_explicitly_verified",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[0].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "现有产品标签没有明确记录出租方式；不由心舍或曼舍名称推断整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[0].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "N居描述房屋居室数，不能单独证明出租方式为整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[0].areaScope",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "listed_property描述面积口径，不代替已核验的整租标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "requestedValue": "整租",
+          "matchesRequested": null
+        },
+        "lingzhi": {
+          "value": null,
+          "verified": false,
+          "status": "filter_returned_label_unverified",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[0].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见产品标签为曼舍。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[0].lingzhiFilterReturned",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "此前记录从灵之智能筛选结果返回；其URL不保存筛选状态，不能证明本次新URL参数映射。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[0].lingzhiLabelVisible",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表未确认可见灵之智能标签，不能补写产品事实。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "historicalFilterReturned": true,
+          "reportedProduct": "曼舍"
+        },
+        "listingId": {
+          "value": null,
+          "verified": false,
+          "status": "local_index_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[0].id",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "map-sample-*为本地列表索引，不能作为自如真实ID或去重键。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[0].sourceUrl",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "只有历史地图入口，没有该套已确认详情地址。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "bedrooms": {
+          "value": 3,
+          "verified": true,
+          "status": "confirmed_historical_list_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[0].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表居室数实读；仅描述整套结构，即使本条出租对象为卧室。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "scope": "entire_property",
+          "rentedRoom": null,
+          "countedInEligibleBedroomDistribution": false
+        },
+        "businessArea": {
+          "value": null,
+          "verified": false,
+          "status": "station_candidate_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/property-geography.json",
+              "jsonPath": "$.properties[0].businessDistrict",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "candidate": "朝阳公园站周边",
+          "sourceType": "station_inference",
+          "stationProxyExcluded": true
+        },
+        "community": {
+          "value": "棕榈泉国际公寓",
+          "verified": true,
+          "status": "confirmed_historical_list_name",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[0].name",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "小区名称来自历史官方列表；楼盘覆盖只在eligible集合中按已确认名称与行政区去重。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "officialCommunityId": null
+        },
+        "district": {
+          "value": "朝阳",
+          "verified": true,
+          "status": "confirmed_historical_community_district",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[0].districtEvidence",
+              "sourceUrl": "https://ziroom.com/xiaoqu/1111027382589.html",
+              "basis": "自如小区页可租房源标注「朝阳｜朝阳公园」。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "reportedValue": "朝阳",
+          "reportedConfidence": "confirmed"
+        }
+      },
+      "verifiedHistoricFields": [
+        "city",
+        "bedrooms",
+        "community",
+        "district"
+      ],
+      "missingEligibilityEvidence": [
+        "官方明确整租标签或等价已核验出租方式证据",
+        "该条对应真实房源ID与已确认详情链接",
+        "可核验灵之智能标签或有效筛选证据"
+      ],
+      "notes": [
+        "历史字段继续保留，但未满足当前北京/整租/灵之智能/真实ID完整核验条件，不计入当前统计。"
+      ],
+      "geographyUse": {
+        "matchType": "community",
+        "isExactPropertyLocation": false,
+        "stationOrOsmSuburbCountsAsBusinessArea": false
+      },
+      "referenceAssets": {
+        "hasVerifiedDetailIdentity": false,
+        "floorplanCount": 0,
+        "interiorPhotoCount": 0,
+        "countsAsRentalEligibilityEvidence": false
+      }
+    },
+    {
+      "id": "map-sample-02",
+      "name": "郁花园二里",
+      "realListingId": null,
+      "status": "needsVerification",
+      "eligible": false,
+      "reasonCodes": [
+        "entire_rental_mode_unverified",
+        "real_listing_id_unverified"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "sourceKind": "historical_map_sample",
+      "sourceObservedAt": "2026-11-19",
+      "obtainedFromCurrentRequestedUrl": false,
+      "currentAvailabilityVerified": false,
+      "fields": {
+        "city": {
+          "value": "北京",
+          "verified": true,
+          "status": "confirmed_historical_city",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.source.city",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原北京地图样本明确city=北京、cityCode=110000；不是从新URL的未验证参数推断。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "rentalMode": {
+          "value": null,
+          "verified": false,
+          "status": "not_explicitly_verified",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[1].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "现有产品标签没有明确记录出租方式；不由心舍或曼舍名称推断整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[1].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "N居描述房屋居室数，不能单独证明出租方式为整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[1].areaScope",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "listed_property描述面积口径，不代替已核验的整租标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "requestedValue": "整租",
+          "matchesRequested": null
+        },
+        "lingzhi": {
+          "value": true,
+          "verified": true,
+          "status": "confirmed_visible_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[1].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见产品标签为心舍2.0·灵之智能。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[1].lingzhiFilterReturned",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "此前记录从灵之智能筛选结果返回；其URL不保存筛选状态，不能证明本次新URL参数映射。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[1].lingzhiLabelVisible",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见灵之智能标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "historicalFilterReturned": true,
+          "reportedProduct": "心舍2.0·灵之智能"
+        },
+        "listingId": {
+          "value": null,
+          "verified": false,
+          "status": "local_index_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[1].id",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "map-sample-*为本地列表索引，不能作为自如真实ID或去重键。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[1].sourceUrl",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "只有历史地图入口，没有该套已确认详情地址。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "bedrooms": {
+          "value": 2,
+          "verified": true,
+          "status": "confirmed_historical_list_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[1].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表居室数实读；仅描述整套结构，即使本条出租对象为卧室。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "scope": "entire_property",
+          "rentedRoom": null,
+          "countedInEligibleBedroomDistribution": false
+        },
+        "businessArea": {
+          "value": null,
+          "verified": false,
+          "status": "station_candidate_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/property-geography.json",
+              "jsonPath": "$.properties[1].businessDistrict",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "candidate": "高米店北站周边",
+          "sourceType": "station_inference",
+          "stationProxyExcluded": true
+        },
+        "community": {
+          "value": "郁花园二里",
+          "verified": true,
+          "status": "confirmed_historical_list_name",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[1].name",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "小区名称来自历史官方列表；楼盘覆盖只在eligible集合中按已确认名称与行政区去重。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "officialCommunityId": null
+        },
+        "district": {
+          "value": "大兴",
+          "verified": true,
+          "status": "confirmed_historical_community_district",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[1].districtEvidence",
+              "sourceUrl": "https://www.amap.com/place/B000A81HAE",
+              "basis": "高德地图郁花园二里地址标注北京市大兴区。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "reportedValue": "大兴",
+          "reportedConfidence": "confirmed"
+        }
+      },
+      "verifiedHistoricFields": [
+        "city",
+        "lingzhi",
+        "bedrooms",
+        "community",
+        "district"
+      ],
+      "missingEligibilityEvidence": [
+        "官方明确整租标签或等价已核验出租方式证据",
+        "该条对应真实房源ID与已确认详情链接"
+      ],
+      "notes": [
+        "历史字段继续保留，但未满足当前北京/整租/灵之智能/真实ID完整核验条件，不计入当前统计。"
+      ],
+      "geographyUse": {
+        "matchType": "community",
+        "isExactPropertyLocation": false,
+        "stationOrOsmSuburbCountsAsBusinessArea": false
+      },
+      "referenceAssets": {
+        "hasVerifiedDetailIdentity": false,
+        "floorplanCount": 0,
+        "interiorPhotoCount": 0,
+        "countsAsRentalEligibilityEvidence": false
+      }
+    },
+    {
+      "id": "map-sample-03",
+      "name": "海特花园西区",
+      "realListingId": null,
+      "status": "excluded",
+      "eligible": false,
+      "reasonCodes": [
+        "rental_mode_is_shared"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "sourceKind": "historical_map_sample",
+      "sourceObservedAt": "2026-11-19",
+      "obtainedFromCurrentRequestedUrl": false,
+      "currentAvailabilityVerified": false,
+      "fields": {
+        "city": {
+          "value": "北京",
+          "verified": true,
+          "status": "confirmed_historical_city",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.source.city",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原北京地图样本明确city=北京、cityCode=110000；不是从新URL的未验证参数推断。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "rentalMode": {
+          "value": "合租",
+          "verified": true,
+          "status": "confirmed_shared_exclusion",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[2].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表明确产品为合租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[2].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表为2居02卧，出租对象是卧室。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[2].areaScope",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "listed_bedroom指卧室面积，支持排除整租。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "requestedValue": "整租",
+          "matchesRequested": false
+        },
+        "lingzhi": {
+          "value": null,
+          "verified": false,
+          "status": "filter_returned_label_unverified",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[2].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见产品标签为合租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[2].lingzhiFilterReturned",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "此前记录从灵之智能筛选结果返回；其URL不保存筛选状态，不能证明本次新URL参数映射。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[2].lingzhiLabelVisible",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表未确认可见灵之智能标签，不能补写产品事实。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "historicalFilterReturned": true,
+          "reportedProduct": "合租"
+        },
+        "listingId": {
+          "value": null,
+          "verified": false,
+          "status": "local_index_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[2].id",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "map-sample-*为本地列表索引，不能作为自如真实ID或去重键。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[2].sourceUrl",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "只有历史地图入口，没有该套已确认详情地址。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "bedrooms": {
+          "value": 2,
+          "verified": true,
+          "status": "confirmed_historical_list_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[2].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表居室数实读；仅描述整套结构，即使本条出租对象为卧室。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "scope": "entire_property",
+          "rentedRoom": "02卧",
+          "countedInEligibleBedroomDistribution": false
+        },
+        "businessArea": {
+          "value": null,
+          "verified": false,
+          "status": "station_candidate_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/property-geography.json",
+              "jsonPath": "$.properties[2].businessDistrict",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "candidate": "杨庄站周边",
+          "sourceType": "station_inference",
+          "stationProxyExcluded": true
+        },
+        "community": {
+          "value": "海特花园西区",
+          "verified": true,
+          "status": "confirmed_historical_list_name",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[2].name",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "小区名称来自历史官方列表；楼盘覆盖只在eligible集合中按已确认名称与行政区去重。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "officialCommunityId": null
+        },
+        "district": {
+          "value": "石景山",
+          "verified": true,
+          "status": "confirmed_historical_community_district",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[2].districtEvidence",
+              "sourceUrl": "https://ggzyfw.beijing.gov.cn/jyxxzbgg/20250527/5128526.html",
+              "basis": "北京市公共资源交易服务平台项目地址标注北京石景山区苹果园街道海特花园西区。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "reportedValue": "石景山",
+          "reportedConfidence": "confirmed"
+        }
+      },
+      "verifiedHistoricFields": [
+        "city",
+        "rentalMode",
+        "bedrooms",
+        "community",
+        "district"
+      ],
+      "missingEligibilityEvidence": [],
+      "notes": [
+        "合租卧室按整租口径明确排除；2居不是本条出租整套的证明。"
+      ],
+      "geographyUse": {
+        "matchType": "station_proxy",
+        "isExactPropertyLocation": false,
+        "stationOrOsmSuburbCountsAsBusinessArea": false
+      },
+      "referenceAssets": {
+        "hasVerifiedDetailIdentity": false,
+        "floorplanCount": 0,
+        "interiorPhotoCount": 0,
+        "countsAsRentalEligibilityEvidence": false
+      }
+    },
+    {
+      "id": "map-sample-04",
+      "name": "东大街6号院",
+      "realListingId": null,
+      "status": "needsVerification",
+      "eligible": false,
+      "reasonCodes": [
+        "entire_rental_mode_unverified",
+        "real_listing_id_unverified"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "sourceKind": "historical_map_sample",
+      "sourceObservedAt": "2026-11-19",
+      "obtainedFromCurrentRequestedUrl": false,
+      "currentAvailabilityVerified": false,
+      "fields": {
+        "city": {
+          "value": "北京",
+          "verified": true,
+          "status": "confirmed_historical_city",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.source.city",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原北京地图样本明确city=北京、cityCode=110000；不是从新URL的未验证参数推断。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "rentalMode": {
+          "value": null,
+          "verified": false,
+          "status": "not_explicitly_verified",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[3].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "现有产品标签没有明确记录出租方式；不由心舍或曼舍名称推断整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[3].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "N居描述房屋居室数，不能单独证明出租方式为整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[3].areaScope",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "listed_property描述面积口径，不代替已核验的整租标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "requestedValue": "整租",
+          "matchesRequested": null
+        },
+        "lingzhi": {
+          "value": true,
+          "verified": true,
+          "status": "confirmed_visible_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[3].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见产品标签为心舍2.0·灵之智能。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[3].lingzhiFilterReturned",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "此前记录从灵之智能筛选结果返回；其URL不保存筛选状态，不能证明本次新URL参数映射。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[3].lingzhiLabelVisible",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见灵之智能标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "historicalFilterReturned": true,
+          "reportedProduct": "心舍2.0·灵之智能"
+        },
+        "listingId": {
+          "value": null,
+          "verified": false,
+          "status": "local_index_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[3].id",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "map-sample-*为本地列表索引，不能作为自如真实ID或去重键。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[3].sourceUrl",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "只有历史地图入口，没有该套已确认详情地址。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "bedrooms": {
+          "value": 1,
+          "verified": true,
+          "status": "confirmed_historical_list_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[3].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表居室数实读；仅描述整套结构，即使本条出租对象为卧室。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "scope": "entire_property",
+          "rentedRoom": null,
+          "countedInEligibleBedroomDistribution": false
+        },
+        "businessArea": {
+          "value": null,
+          "verified": false,
+          "status": "station_candidate_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/property-geography.json",
+              "jsonPath": "$.properties[3].businessDistrict",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "candidate": "七里庄站周边",
+          "sourceType": "station_inference",
+          "stationProxyExcluded": true
+        },
+        "community": {
+          "value": "东大街6号院",
+          "verified": true,
+          "status": "confirmed_historical_list_name",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[3].name",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "小区名称来自历史官方列表；楼盘覆盖只在eligible集合中按已确认名称与行政区去重。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "officialCommunityId": null
+        },
+        "district": {
+          "value": "丰台",
+          "verified": true,
+          "status": "confirmed_historical_community_district",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[3].districtEvidence",
+              "sourceUrl": "https://mfang.58.com/bj/xinfang/xq100410664/zhoubian/",
+              "basis": "东大街6号院小区页地址标注丰台—七里庄、东大街6号；核验范围仅为社区行政区。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "reportedValue": "丰台",
+          "reportedConfidence": "confirmed"
+        }
+      },
+      "verifiedHistoricFields": [
+        "city",
+        "lingzhi",
+        "bedrooms",
+        "community",
+        "district"
+      ],
+      "missingEligibilityEvidence": [
+        "官方明确整租标签或等价已核验出租方式证据",
+        "该条对应真实房源ID与已确认详情链接"
+      ],
+      "notes": [
+        "历史字段继续保留，但未满足当前北京/整租/灵之智能/真实ID完整核验条件，不计入当前统计。"
+      ],
+      "geographyUse": {
+        "matchType": "community",
+        "isExactPropertyLocation": false,
+        "stationOrOsmSuburbCountsAsBusinessArea": false
+      },
+      "referenceAssets": {
+        "hasVerifiedDetailIdentity": false,
+        "floorplanCount": 0,
+        "interiorPhotoCount": 0,
+        "countsAsRentalEligibilityEvidence": false
+      }
+    },
+    {
+      "id": "810151211",
+      "name": "望京路3号院",
+      "realListingId": "810151211",
+      "status": "needsVerification",
+      "eligible": false,
+      "reasonCodes": [
+        "entire_rental_mode_unverified"
+      ],
+      "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+      "sourceKind": "historical_map_sample_with_detail",
+      "sourceObservedAt": "2026-11-19",
+      "obtainedFromCurrentRequestedUrl": false,
+      "currentAvailabilityVerified": false,
+      "fields": {
+        "city": {
+          "value": "北京",
+          "verified": true,
+          "status": "confirmed_historical_city",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.source.city",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原北京地图样本明确city=北京、cityCode=110000；不是从新URL的未验证参数推断。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "rentalMode": {
+          "value": null,
+          "verified": false,
+          "status": "not_explicitly_verified",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[4].product",
+              "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+              "basis": "现有产品标签没有明确记录出租方式；不由心舍或曼舍名称推断整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[4].listingLabel",
+              "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+              "basis": "N居描述房屋居室数，不能单独证明出租方式为整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[4].areaScope",
+              "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+              "basis": "listed_property描述面积口径，不代替已核验的整租标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "requestedValue": "整租",
+          "matchesRequested": null
+        },
+        "lingzhi": {
+          "value": true,
+          "verified": true,
+          "status": "confirmed_visible_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[4].product",
+              "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+              "basis": "原列表可见产品标签为心舍2.0·灵之智能。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[4].lingzhiFilterReturned",
+              "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+              "basis": "此前记录从灵之智能筛选结果返回；其URL不保存筛选状态，不能证明本次新URL参数映射。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[4].lingzhiLabelVisible",
+              "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+              "basis": "原列表可见灵之智能标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "historicalFilterReturned": true,
+          "reportedProduct": "心舍2.0·灵之智能"
+        },
+        "listingId": {
+          "value": "810151211",
+          "verified": true,
+          "status": "confirmed_historical_detail_identity",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[4].id",
+              "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+              "basis": "已核验的自如详情房源ID。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[4].sourceUrl",
+              "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+              "basis": "来源为已确认详情地址。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "bedrooms": {
+          "value": 1,
+          "verified": true,
+          "status": "confirmed_historical_list_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[4].listingLabel",
+              "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+              "basis": "原列表居室数实读；仅描述整套结构，即使本条出租对象为卧室。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "scope": "entire_property",
+          "rentedRoom": null,
+          "countedInEligibleBedroomDistribution": false
+        },
+        "businessArea": {
+          "value": "太阳宫",
+          "verified": true,
+          "status": "confirmed_historical_detail_read",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/property-geography.json",
+              "jsonPath": "$.properties[4].businessDistrict",
+              "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+              "basis": "本会话此前实读该房源自如详情的商圈标签；本次未重新请求自如。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "candidate": null,
+          "sourceType": "ziroom_detail",
+          "stationProxyExcluded": true
+        },
+        "community": {
+          "value": "望京路3号院",
+          "verified": true,
+          "status": "confirmed_historical_list_name",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[4].name",
+              "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+              "basis": "小区名称来自历史官方列表；楼盘覆盖只在eligible集合中按已确认名称与行政区去重。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "officialCommunityId": null
+        },
+        "district": {
+          "value": "朝阳",
+          "verified": true,
+          "status": "confirmed_historical_community_district",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[4].districtEvidence",
+              "sourceUrl": "https://www.amap.com/place/B000A7Z1YH",
+              "basis": "高德地图望京路3号院地址标注北京市朝阳区，并提及阜通站。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "reportedValue": "朝阳",
+          "reportedConfidence": "confirmed"
+        }
+      },
+      "verifiedHistoricFields": [
+        "city",
+        "lingzhi",
+        "listingId",
+        "bedrooms",
+        "businessArea",
+        "community",
+        "district"
+      ],
+      "missingEligibilityEvidence": [
+        "官方明确整租标签或等价已核验出租方式证据"
+      ],
+      "notes": [
+        "历史字段继续保留，但未满足当前北京/整租/灵之智能/真实ID完整核验条件，不计入当前统计。"
+      ],
+      "geographyUse": {
+        "matchType": "station_proxy",
+        "isExactPropertyLocation": false,
+        "stationOrOsmSuburbCountsAsBusinessArea": false
+      },
+      "referenceAssets": {
+        "hasVerifiedDetailIdentity": true,
+        "floorplanCount": 1,
+        "interiorPhotoCount": 10,
+        "countsAsRentalEligibilityEvidence": false
+      }
+    },
+    {
+      "id": "map-sample-06",
+      "name": "东大街西里",
+      "realListingId": null,
+      "status": "needsVerification",
+      "eligible": false,
+      "reasonCodes": [
+        "entire_rental_mode_unverified",
+        "real_listing_id_unverified"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "sourceKind": "historical_map_sample",
+      "sourceObservedAt": "2026-11-19",
+      "obtainedFromCurrentRequestedUrl": false,
+      "currentAvailabilityVerified": false,
+      "fields": {
+        "city": {
+          "value": "北京",
+          "verified": true,
+          "status": "confirmed_historical_city",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.source.city",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原北京地图样本明确city=北京、cityCode=110000；不是从新URL的未验证参数推断。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "rentalMode": {
+          "value": null,
+          "verified": false,
+          "status": "not_explicitly_verified",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[5].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "现有产品标签没有明确记录出租方式；不由心舍或曼舍名称推断整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[5].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "N居描述房屋居室数，不能单独证明出租方式为整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[5].areaScope",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "listed_property描述面积口径，不代替已核验的整租标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "requestedValue": "整租",
+          "matchesRequested": null
+        },
+        "lingzhi": {
+          "value": true,
+          "verified": true,
+          "status": "confirmed_visible_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[5].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见产品标签为心舍2.0·灵之智能。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[5].lingzhiFilterReturned",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "此前记录从灵之智能筛选结果返回；其URL不保存筛选状态，不能证明本次新URL参数映射。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[5].lingzhiLabelVisible",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见灵之智能标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "historicalFilterReturned": true,
+          "reportedProduct": "心舍2.0·灵之智能"
+        },
+        "listingId": {
+          "value": null,
+          "verified": false,
+          "status": "local_index_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[5].id",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "map-sample-*为本地列表索引，不能作为自如真实ID或去重键。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[5].sourceUrl",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "只有历史地图入口，没有该套已确认详情地址。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "bedrooms": {
+          "value": 2,
+          "verified": true,
+          "status": "confirmed_historical_list_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[5].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表居室数实读；仅描述整套结构，即使本条出租对象为卧室。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "scope": "entire_property",
+          "rentedRoom": null,
+          "countedInEligibleBedroomDistribution": false
+        },
+        "businessArea": {
+          "value": null,
+          "verified": false,
+          "status": "station_candidate_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/property-geography.json",
+              "jsonPath": "$.properties[5].businessDistrict",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "candidate": "七里庄站周边",
+          "sourceType": "station_inference",
+          "stationProxyExcluded": true
+        },
+        "community": {
+          "value": "东大街西里",
+          "verified": true,
+          "status": "confirmed_historical_list_name",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[5].name",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "小区名称来自历史官方列表；楼盘覆盖只在eligible集合中按已确认名称与行政区去重。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "officialCommunityId": null
+        },
+        "district": {
+          "value": "丰台",
+          "verified": true,
+          "status": "confirmed_historical_community_district",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[5].districtEvidence",
+              "sourceUrl": "https://www.bjft.gov.cn/ftq/ftsq/202203/cbccbc7573384cdab947a9b4190cdaf0.shtml",
+              "basis": "北京市丰台区政府的东大街西里社区页面列示东大街西里小区。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "reportedValue": "丰台",
+          "reportedConfidence": "confirmed"
+        }
+      },
+      "verifiedHistoricFields": [
+        "city",
+        "lingzhi",
+        "bedrooms",
+        "community",
+        "district"
+      ],
+      "missingEligibilityEvidence": [
+        "官方明确整租标签或等价已核验出租方式证据",
+        "该条对应真实房源ID与已确认详情链接"
+      ],
+      "notes": [
+        "历史字段继续保留，但未满足当前北京/整租/灵之智能/真实ID完整核验条件，不计入当前统计。"
+      ],
+      "geographyUse": {
+        "matchType": "community",
+        "isExactPropertyLocation": false,
+        "stationOrOsmSuburbCountsAsBusinessArea": false
+      },
+      "referenceAssets": {
+        "hasVerifiedDetailIdentity": false,
+        "floorplanCount": 0,
+        "interiorPhotoCount": 0,
+        "countsAsRentalEligibilityEvidence": false
+      }
+    },
+    {
+      "id": "map-sample-07",
+      "name": "辉煌国际",
+      "realListingId": null,
+      "status": "needsVerification",
+      "eligible": false,
+      "reasonCodes": [
+        "entire_rental_mode_unverified",
+        "real_listing_id_unverified"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "sourceKind": "historical_map_sample",
+      "sourceObservedAt": "2026-11-19",
+      "obtainedFromCurrentRequestedUrl": false,
+      "currentAvailabilityVerified": false,
+      "fields": {
+        "city": {
+          "value": "北京",
+          "verified": true,
+          "status": "confirmed_historical_city",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.source.city",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原北京地图样本明确city=北京、cityCode=110000；不是从新URL的未验证参数推断。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "rentalMode": {
+          "value": null,
+          "verified": false,
+          "status": "not_explicitly_verified",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[6].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "现有产品标签没有明确记录出租方式；不由心舍或曼舍名称推断整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[6].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "N居描述房屋居室数，不能单独证明出租方式为整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[6].areaScope",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "listed_property描述面积口径，不代替已核验的整租标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "requestedValue": "整租",
+          "matchesRequested": null
+        },
+        "lingzhi": {
+          "value": true,
+          "verified": true,
+          "status": "confirmed_visible_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[6].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见产品标签为心舍2.0·灵之智能。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[6].lingzhiFilterReturned",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "此前记录从灵之智能筛选结果返回；其URL不保存筛选状态，不能证明本次新URL参数映射。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[6].lingzhiLabelVisible",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见灵之智能标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "historicalFilterReturned": true,
+          "reportedProduct": "心舍2.0·灵之智能"
+        },
+        "listingId": {
+          "value": null,
+          "verified": false,
+          "status": "local_index_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[6].id",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "map-sample-*为本地列表索引，不能作为自如真实ID或去重键。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[6].sourceUrl",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "只有历史地图入口，没有该套已确认详情地址。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "bedrooms": {
+          "value": 1,
+          "verified": true,
+          "status": "confirmed_historical_list_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[6].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表居室数实读；仅描述整套结构，即使本条出租对象为卧室。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "scope": "entire_property",
+          "rentedRoom": null,
+          "countedInEligibleBedroomDistribution": false
+        },
+        "businessArea": {
+          "value": null,
+          "verified": false,
+          "status": "station_candidate_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/property-geography.json",
+              "jsonPath": "$.properties[6].businessDistrict",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "candidate": "西二旗站周边",
+          "sourceType": "station_inference",
+          "stationProxyExcluded": true
+        },
+        "community": {
+          "value": "辉煌国际",
+          "verified": true,
+          "status": "confirmed_historical_list_name",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[6].name",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "小区名称来自历史官方列表；楼盘覆盖只在eligible集合中按已确认名称与行政区去重。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "officialCommunityId": null
+        },
+        "district": {
+          "value": null,
+          "verified": false,
+          "status": "inferred_pending_verification",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[6].districtEvidence",
+              "sourceUrl": "https://www.amap.com/place/B000A852ES",
+              "basis": "按列表名「辉煌国际」与西二旗站匹配高德「辉煌国际广场」；该社区地址为海淀区上地十街。未核实该套房所在楼栋。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "reportedValue": "海淀",
+          "reportedConfidence": "high_inferred_match"
+        }
+      },
+      "verifiedHistoricFields": [
+        "city",
+        "lingzhi",
+        "bedrooms",
+        "community"
+      ],
+      "missingEligibilityEvidence": [
+        "官方明确整租标签或等价已核验出租方式证据",
+        "该条对应真实房源ID与已确认详情链接"
+      ],
+      "notes": [
+        "历史字段继续保留，但未满足当前北京/整租/灵之智能/真实ID完整核验条件，不计入当前统计。"
+      ],
+      "geographyUse": {
+        "matchType": "station_proxy",
+        "isExactPropertyLocation": false,
+        "stationOrOsmSuburbCountsAsBusinessArea": false
+      },
+      "referenceAssets": {
+        "hasVerifiedDetailIdentity": false,
+        "floorplanCount": 0,
+        "interiorPhotoCount": 0,
+        "countsAsRentalEligibilityEvidence": false
+      }
+    },
+    {
+      "id": "map-sample-08",
+      "name": "美立方",
+      "realListingId": null,
+      "status": "needsVerification",
+      "eligible": false,
+      "reasonCodes": [
+        "entire_rental_mode_unverified",
+        "real_listing_id_unverified"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "sourceKind": "historical_map_sample",
+      "sourceObservedAt": "2026-11-19",
+      "obtainedFromCurrentRequestedUrl": false,
+      "currentAvailabilityVerified": false,
+      "fields": {
+        "city": {
+          "value": "北京",
+          "verified": true,
+          "status": "confirmed_historical_city",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.source.city",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原北京地图样本明确city=北京、cityCode=110000；不是从新URL的未验证参数推断。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "rentalMode": {
+          "value": null,
+          "verified": false,
+          "status": "not_explicitly_verified",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[7].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "现有产品标签没有明确记录出租方式；不由心舍或曼舍名称推断整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[7].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "N居描述房屋居室数，不能单独证明出租方式为整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[7].areaScope",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "listed_property描述面积口径，不代替已核验的整租标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "requestedValue": "整租",
+          "matchesRequested": null
+        },
+        "lingzhi": {
+          "value": true,
+          "verified": true,
+          "status": "confirmed_visible_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[7].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见产品标签为心舍2.0·灵之智能。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[7].lingzhiFilterReturned",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "此前记录从灵之智能筛选结果返回；其URL不保存筛选状态，不能证明本次新URL参数映射。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[7].lingzhiLabelVisible",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见灵之智能标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "historicalFilterReturned": true,
+          "reportedProduct": "心舍2.0·灵之智能"
+        },
+        "listingId": {
+          "value": null,
+          "verified": false,
+          "status": "local_index_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[7].id",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "map-sample-*为本地列表索引，不能作为自如真实ID或去重键。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[7].sourceUrl",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "只有历史地图入口，没有该套已确认详情地址。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "bedrooms": {
+          "value": 2,
+          "verified": true,
+          "status": "confirmed_historical_list_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[7].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表居室数实读；仅描述整套结构，即使本条出租对象为卧室。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "scope": "entire_property",
+          "rentedRoom": null,
+          "countedInEligibleBedroomDistribution": false
+        },
+        "businessArea": {
+          "value": null,
+          "verified": false,
+          "status": "station_candidate_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/property-geography.json",
+              "jsonPath": "$.properties[7].businessDistrict",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "candidate": "立水桥南站周边",
+          "sourceType": "station_inference",
+          "stationProxyExcluded": true
+        },
+        "community": {
+          "value": "美立方",
+          "verified": true,
+          "status": "confirmed_historical_list_name",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[7].name",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "小区名称来自历史官方列表；楼盘覆盖只在eligible集合中按已确认名称与行政区去重。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "officialCommunityId": null
+        },
+        "district": {
+          "value": "朝阳",
+          "verified": true,
+          "status": "confirmed_historical_community_district",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[7].districtEvidence",
+              "sourceUrl": "https://www.amap.com/place/B000A863V9",
+              "basis": "高德地图美立方地址标注北京市朝阳区双营路11号院。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "reportedValue": "朝阳",
+          "reportedConfidence": "confirmed"
+        }
+      },
+      "verifiedHistoricFields": [
+        "city",
+        "lingzhi",
+        "bedrooms",
+        "community",
+        "district"
+      ],
+      "missingEligibilityEvidence": [
+        "官方明确整租标签或等价已核验出租方式证据",
+        "该条对应真实房源ID与已确认详情链接"
+      ],
+      "notes": [
+        "历史字段继续保留，但未满足当前北京/整租/灵之智能/真实ID完整核验条件，不计入当前统计。"
+      ],
+      "geographyUse": {
+        "matchType": "community",
+        "isExactPropertyLocation": false,
+        "stationOrOsmSuburbCountsAsBusinessArea": false
+      },
+      "referenceAssets": {
+        "hasVerifiedDetailIdentity": false,
+        "floorplanCount": 0,
+        "interiorPhotoCount": 0,
+        "countsAsRentalEligibilityEvidence": false
+      }
+    },
+    {
+      "id": "map-sample-09",
+      "name": "日新家园",
+      "realListingId": null,
+      "status": "needsVerification",
+      "eligible": false,
+      "reasonCodes": [
+        "entire_rental_mode_unverified",
+        "real_listing_id_unverified"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "sourceKind": "historical_map_sample",
+      "sourceObservedAt": "2026-11-19",
+      "obtainedFromCurrentRequestedUrl": false,
+      "currentAvailabilityVerified": false,
+      "fields": {
+        "city": {
+          "value": "北京",
+          "verified": true,
+          "status": "confirmed_historical_city",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.source.city",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原北京地图样本明确city=北京、cityCode=110000；不是从新URL的未验证参数推断。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "rentalMode": {
+          "value": null,
+          "verified": false,
+          "status": "not_explicitly_verified",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[8].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "现有产品标签没有明确记录出租方式；不由心舍或曼舍名称推断整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[8].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "N居描述房屋居室数，不能单独证明出租方式为整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[8].areaScope",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "listed_property描述面积口径，不代替已核验的整租标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "requestedValue": "整租",
+          "matchesRequested": null
+        },
+        "lingzhi": {
+          "value": true,
+          "verified": true,
+          "status": "confirmed_visible_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[8].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见产品标签为心舍2.0·灵之智能。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[8].lingzhiFilterReturned",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "此前记录从灵之智能筛选结果返回；其URL不保存筛选状态，不能证明本次新URL参数映射。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[8].lingzhiLabelVisible",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见灵之智能标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "historicalFilterReturned": true,
+          "reportedProduct": "心舍2.0·灵之智能"
+        },
+        "listingId": {
+          "value": null,
+          "verified": false,
+          "status": "local_index_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[8].id",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "map-sample-*为本地列表索引，不能作为自如真实ID或去重键。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[8].sourceUrl",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "只有历史地图入口，没有该套已确认详情地址。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "bedrooms": {
+          "value": 1,
+          "verified": true,
+          "status": "confirmed_historical_list_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[8].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表居室数实读；仅描述整套结构，即使本条出租对象为卧室。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "scope": "entire_property",
+          "rentedRoom": null,
+          "countedInEligibleBedroomDistribution": false
+        },
+        "businessArea": {
+          "value": null,
+          "verified": false,
+          "status": "station_candidate_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/property-geography.json",
+              "jsonPath": "$.properties[8].businessDistrict",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "candidate": "宋家庄站周边",
+          "sourceType": "station_inference",
+          "stationProxyExcluded": true
+        },
+        "community": {
+          "value": "日新家园",
+          "verified": true,
+          "status": "confirmed_historical_list_name",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[8].name",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "小区名称来自历史官方列表；楼盘覆盖只在eligible集合中按已确认名称与行政区去重。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "officialCommunityId": null
+        },
+        "district": {
+          "value": "丰台",
+          "verified": true,
+          "status": "confirmed_historical_community_district",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[8].districtEvidence",
+              "sourceUrl": "https://tyj.beijing.gov.cn/bjsports/xxcx/zxhdcd/1582529/index.html",
+              "basis": "北京市体育局日新家园场地页面明确标注所属区为丰台区。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "reportedValue": "丰台",
+          "reportedConfidence": "confirmed"
+        }
+      },
+      "verifiedHistoricFields": [
+        "city",
+        "lingzhi",
+        "bedrooms",
+        "community",
+        "district"
+      ],
+      "missingEligibilityEvidence": [
+        "官方明确整租标签或等价已核验出租方式证据",
+        "该条对应真实房源ID与已确认详情链接"
+      ],
+      "notes": [
+        "历史字段继续保留，但未满足当前北京/整租/灵之智能/真实ID完整核验条件，不计入当前统计。"
+      ],
+      "geographyUse": {
+        "matchType": "community",
+        "isExactPropertyLocation": false,
+        "stationOrOsmSuburbCountsAsBusinessArea": false
+      },
+      "referenceAssets": {
+        "hasVerifiedDetailIdentity": false,
+        "floorplanCount": 0,
+        "interiorPhotoCount": 0,
+        "countsAsRentalEligibilityEvidence": false
+      }
+    },
+    {
+      "id": "map-sample-10",
+      "name": "东方雅苑",
+      "realListingId": null,
+      "status": "needsVerification",
+      "eligible": false,
+      "reasonCodes": [
+        "entire_rental_mode_unverified",
+        "real_listing_id_unverified"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "sourceKind": "historical_map_sample",
+      "sourceObservedAt": "2026-11-19",
+      "obtainedFromCurrentRequestedUrl": false,
+      "currentAvailabilityVerified": false,
+      "fields": {
+        "city": {
+          "value": "北京",
+          "verified": true,
+          "status": "confirmed_historical_city",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.source.city",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原北京地图样本明确city=北京、cityCode=110000；不是从新URL的未验证参数推断。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "rentalMode": {
+          "value": null,
+          "verified": false,
+          "status": "not_explicitly_verified",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[9].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "现有产品标签没有明确记录出租方式；不由心舍或曼舍名称推断整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[9].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "N居描述房屋居室数，不能单独证明出租方式为整租。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[9].areaScope",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "listed_property描述面积口径，不代替已核验的整租标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "requestedValue": "整租",
+          "matchesRequested": null
+        },
+        "lingzhi": {
+          "value": true,
+          "verified": true,
+          "status": "confirmed_visible_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[9].product",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见产品标签为心舍2.0·灵之智能。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[9].lingzhiFilterReturned",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "此前记录从灵之智能筛选结果返回；其URL不保存筛选状态，不能证明本次新URL参数映射。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[9].lingzhiLabelVisible",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表可见灵之智能标签。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "historicalFilterReturned": true,
+          "reportedProduct": "心舍2.0·灵之智能"
+        },
+        "listingId": {
+          "value": null,
+          "verified": false,
+          "status": "local_index_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[9].id",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "map-sample-*为本地列表索引，不能作为自如真实ID或去重键。",
+              "observedAt": "2026-11-19"
+            },
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[9].sourceUrl",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "只有历史地图入口，没有该套已确认详情地址。",
+              "observedAt": "2026-11-19"
+            }
+          ]
+        },
+        "bedrooms": {
+          "value": 2,
+          "verified": true,
+          "status": "confirmed_historical_list_label",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[9].listingLabel",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "原列表居室数实读；仅描述整套结构，即使本条出租对象为卧室。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "scope": "entire_property",
+          "rentedRoom": null,
+          "countedInEligibleBedroomDistribution": false
+        },
+        "businessArea": {
+          "value": null,
+          "verified": false,
+          "status": "station_candidate_only",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/property-geography.json",
+              "jsonPath": "$.properties[9].businessDistrict",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "仅依据原列表最近地铁站构造区域候选，尚未核验自如商圈分类或边界。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "candidate": "平乐园站周边",
+          "sourceType": "station_inference",
+          "stationProxyExcluded": true
+        },
+        "community": {
+          "value": "东方雅苑",
+          "verified": true,
+          "status": "confirmed_historical_list_name",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[9].name",
+              "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+              "basis": "小区名称来自历史官方列表；楼盘覆盖只在eligible集合中按已确认名称与行政区去重。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "officialCommunityId": null
+        },
+        "district": {
+          "value": "朝阳",
+          "verified": true,
+          "status": "confirmed_historical_community_district",
+          "verificationScope": "historical_evidence_only",
+          "evidence": [
+            {
+              "file": "assets/properties.json",
+              "jsonPath": "$.properties[9].districtEvidence",
+              "sourceUrl": "https://ditu.amap.com/place/B000A84FK8",
+              "basis": "高德地图东方雅苑地址标注北京市朝阳区西大望路63号，并提及平乐园站。",
+              "observedAt": "2026-11-19"
+            }
+          ],
+          "reportedValue": "朝阳",
+          "reportedConfidence": "confirmed"
+        }
+      },
+      "verifiedHistoricFields": [
+        "city",
+        "lingzhi",
+        "bedrooms",
+        "community",
+        "district"
+      ],
+      "missingEligibilityEvidence": [
+        "官方明确整租标签或等价已核验出租方式证据",
+        "该条对应真实房源ID与已确认详情链接"
+      ],
+      "notes": [
+        "历史字段继续保留，但未满足当前北京/整租/灵之智能/真实ID完整核验条件，不计入当前统计。"
+      ],
+      "geographyUse": {
+        "matchType": "community",
+        "isExactPropertyLocation": false,
+        "stationOrOsmSuburbCountsAsBusinessArea": false
+      },
+      "referenceAssets": {
+        "hasVerifiedDetailIdentity": false,
+        "floorplanCount": 0,
+        "interiorPhotoCount": 0,
+        "countsAsRentalEligibilityEvidence": false
+      }
+    }
+  ]
+}

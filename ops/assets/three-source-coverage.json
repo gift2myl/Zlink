@@ -1,0 +1,788 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-20T02:56:23+00:00",
+  "verification": {
+    "attemptedNow": true,
+    "startedAt": "2026-11-20T02:54:59+00:00",
+    "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+    "transport": "urllib",
+    "requestsAttempted": 1,
+    "redirectsFollowed": false,
+    "retried": false,
+    "cookieJarUsed": false,
+    "javascriptExecuted": false,
+    "browserUsed": false,
+    "impersonationEnabled": false,
+    "httpStatus": 200,
+    "bodyBytes": 988,
+    "sha256": "93d2c2effeea7dc3de087b1dec68e1c77b3781d67e6bf89c245d5fed8eed49fc",
+    "title": null,
+    "challengeMarkers": [
+      "EO_Bot_Ssid",
+      "__tst_status"
+    ],
+    "rawBodyRetained": false,
+    "status": "blocked",
+    "reason": "challenge_page",
+    "validListingPages": 0,
+    "newVerifiedListings": 0,
+    "checkedAt": "2026-11-20T02:55:06+00:00",
+    "lastKnownBlockAt": "2026-11-19T18:23:01+08:00",
+    "lastKnownBlockFile": "assets/crawl-status.json",
+    "message": "本次普通访问仍返回EdgeOne/JavaScript校验页，HTTP 200不代表有效房源数据；已立即停止，未继续翻页或访问详情。",
+    "followupRequestsMade": 0,
+    "alternateEndpointsUsed": false,
+    "challengeSolved": false,
+    "requestUserAgent": "LingzhiPublicInventory/1.0",
+    "authorizationBasis": "本轮再次抓取的明确要求下，对同一原始URL仅复核一次；保留旧的停止记录。"
+  },
+  "coverage": {
+    "knownListingRecords": 10,
+    "referenceComplete": 1,
+    "incomplete": 9,
+    "targetMinimum": 10,
+    "shortfallToTarget": 9,
+    "realListingIdsVerified": 1,
+    "localSampleIndices": 9,
+    "floorplanFiles": 1,
+    "interiorPhotoFiles": 10,
+    "engineeringMeasuredLayouts": 0,
+    "newVerifiedListingsThisReview": 0,
+    "targetMet": false
+  },
+  "scope": "仅审查现有10条历史列表样本的三维参考资料；不将列表记录数、OSM定位数或通用模型数当作真实户型完成数。",
+  "countingRules": {
+    "referenceComplete": "已核验真实房源身份，并有本地实际存在、逐图检查的对应户型图和室内参考照片；仅达到参考可视化重建资料门槛。",
+    "knownListingRecords": "此前从官方筛选列表实读的样本记录，不能等同于10套可重建真实户型。",
+    "genericModelsExcluded": true,
+    "osmGeometryExcludedFromReferenceCompleteness": true,
+    "liveDeviceInventoryExcluded": true,
+    "unknownIdsAndDimensionsNotInferred": true
+  },
+  "sourceEvidence": [
+    {
+      "file": "assets/properties.json",
+      "sha256": "26d416915c11cf2c0106d8736b53cfeed85c3f2298e6f0b6d33667043d5a759b",
+      "purpose": "10条历史列表样本、唯一真实详情ID和素材关联"
+    },
+    {
+      "file": "assets/crawl-status.json",
+      "sha256": "b6681a286fdda3d2ee0d335b0324b55172567ebf6759165bf51d1787781a9422",
+      "purpose": "保留的上次官方地图访问证据，不作为本次实测"
+    },
+    {
+      "file": "assets/property-geography.json",
+      "sha256": "b2e8e78c098e62f4b906ee70975cd3428f4d15d89178c5cdfd1a0fa064aa54d6",
+      "purpose": "区分社区/地铁参考与真实房屋/室内位置"
+    },
+    {
+      "file": "tools/installation-report.json",
+      "sha256": "6ec2f8c5541f1678946119ea2f13be92ac2240dbe85ca13f6c780431aa541af1",
+      "purpose": "解析组件可用、原生Fetcher依赖受限的既有记录"
+    }
+  ],
+  "lastKnownAccess": {
+    "checkedAt": "2026-11-19T18:23:01+08:00",
+    "status": "blocked",
+    "reason": "challenge_page",
+    "httpStatus": 200,
+    "bodyBytes": 986,
+    "sha256": "fd65cb8794166884870f97ce8025bf122e04ad2e6d22e940e8d779425253dad5",
+    "file": "assets/crawl-status.json"
+  },
+  "properties": [
+    {
+      "id": "map-sample-01",
+      "name": "棕榈泉国际公寓",
+      "realListingId": null,
+      "idType": "local_sample_index",
+      "status": "needs_references",
+      "modelReady": false,
+      "floorplanCount": 0,
+      "interiorPhotoCount": 0,
+      "missing": [
+        "可核验的自如真实房源ID与对应详情链接",
+        "与该套房唯一关联的实际户型图",
+        "与该套房唯一关联的卧室/客厅/厨房/卫生间等室内照片"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "confirmedDetailUrl": null,
+      "sourceObservedAt": "2026-11-19",
+      "currentListingStatusVerified": false,
+      "reportedListing": {
+        "district": "朝阳",
+        "area": 189.76,
+        "areaScope": "listed_property",
+        "bedrooms": 3,
+        "bedroomsScope": "entire_property",
+        "roomLabel": null,
+        "floor": 6,
+        "totalFloors": 27,
+        "orientation": "东北",
+        "station": "朝阳公园",
+        "distance": 408,
+        "product": "曼舍"
+      },
+      "notes": [
+        "本地列表索引不是自如真实房源ID；未猜测或探测详情链接。",
+        "没有对应原始户型与室内照片，不能以通用模型计作该套真实重建。",
+        "OSM小区中心或地铁站参考只支持地图展示，不补足室内户型证据。"
+      ],
+      "assets": [],
+      "reconstructionScope": "not_eligible_for_source_based_reconstruction",
+      "measurementVerified": false,
+      "measurementGaps": [
+        "可核验的绝对平面尺寸",
+        "现场层高、门窗、墙厚与家具尺寸"
+      ],
+      "genericModelCountsAsActualLayout": false,
+      "geoEvidence": {
+        "sourceFile": "assets/property-geography.json",
+        "matchType": "community",
+        "precision": "community_centroid",
+        "isExactPropertyLocation": false,
+        "isInteriorLayoutEvidence": false
+      },
+      "acquisitionBarrier": "official_map_challenge_and_unconfirmed_detail_identity"
+    },
+    {
+      "id": "map-sample-02",
+      "name": "郁花园二里",
+      "realListingId": null,
+      "idType": "local_sample_index",
+      "status": "needs_references",
+      "modelReady": false,
+      "floorplanCount": 0,
+      "interiorPhotoCount": 0,
+      "missing": [
+        "可核验的自如真实房源ID与对应详情链接",
+        "与该套房唯一关联的实际户型图",
+        "与该套房唯一关联的卧室/客厅/厨房/卫生间等室内照片"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "confirmedDetailUrl": null,
+      "sourceObservedAt": "2026-11-19",
+      "currentListingStatusVerified": false,
+      "reportedListing": {
+        "district": "大兴",
+        "area": 81.02,
+        "areaScope": "listed_property",
+        "bedrooms": 2,
+        "bedroomsScope": "entire_property",
+        "roomLabel": null,
+        "floor": 5,
+        "totalFloors": 7,
+        "orientation": "南",
+        "station": "高米店北",
+        "distance": 508,
+        "product": "心舍2.0·灵之智能"
+      },
+      "notes": [
+        "本地列表索引不是自如真实房源ID；未猜测或探测详情链接。",
+        "没有对应原始户型与室内照片，不能以通用模型计作该套真实重建。",
+        "OSM小区中心或地铁站参考只支持地图展示，不补足室内户型证据。"
+      ],
+      "assets": [],
+      "reconstructionScope": "not_eligible_for_source_based_reconstruction",
+      "measurementVerified": false,
+      "measurementGaps": [
+        "可核验的绝对平面尺寸",
+        "现场层高、门窗、墙厚与家具尺寸"
+      ],
+      "genericModelCountsAsActualLayout": false,
+      "geoEvidence": {
+        "sourceFile": "assets/property-geography.json",
+        "matchType": "community",
+        "precision": "community_centroid",
+        "isExactPropertyLocation": false,
+        "isInteriorLayoutEvidence": false
+      },
+      "acquisitionBarrier": "official_map_challenge_and_unconfirmed_detail_identity"
+    },
+    {
+      "id": "map-sample-03",
+      "name": "海特花园西区",
+      "realListingId": null,
+      "idType": "local_sample_index",
+      "status": "needs_references",
+      "modelReady": false,
+      "floorplanCount": 0,
+      "interiorPhotoCount": 0,
+      "missing": [
+        "可核验的自如真实房源ID与对应详情链接",
+        "与该套房唯一关联的实际户型图",
+        "与该套房唯一关联的卧室/客厅/厨房/卫生间等室内照片"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "confirmedDetailUrl": null,
+      "sourceObservedAt": "2026-11-19",
+      "currentListingStatusVerified": false,
+      "reportedListing": {
+        "district": "石景山",
+        "area": 8.5,
+        "areaScope": "listed_bedroom",
+        "bedrooms": 2,
+        "bedroomsScope": "entire_property",
+        "roomLabel": "02卧",
+        "floor": 3,
+        "totalFloors": 7,
+        "orientation": "南",
+        "station": "杨庄",
+        "distance": 981,
+        "product": "合租"
+      },
+      "notes": [
+        "本地列表索引不是自如真实房源ID；未猜测或探测详情链接。",
+        "没有对应原始户型与室内照片，不能以通用模型计作该套真实重建。",
+        "8.5㎡是02卧的房间面积，2居是整套居室数，不能把8.5㎡当整套户型面积。",
+        "OSM小区中心或地铁站参考只支持地图展示，不补足室内户型证据。"
+      ],
+      "assets": [],
+      "reconstructionScope": "not_eligible_for_source_based_reconstruction",
+      "measurementVerified": false,
+      "measurementGaps": [
+        "可核验的绝对平面尺寸",
+        "现场层高、门窗、墙厚与家具尺寸"
+      ],
+      "genericModelCountsAsActualLayout": false,
+      "geoEvidence": {
+        "sourceFile": "assets/property-geography.json",
+        "matchType": "station_proxy",
+        "precision": "station_proxy",
+        "isExactPropertyLocation": false,
+        "isInteriorLayoutEvidence": false
+      },
+      "acquisitionBarrier": "official_map_challenge_and_unconfirmed_detail_identity"
+    },
+    {
+      "id": "map-sample-04",
+      "name": "东大街6号院",
+      "realListingId": null,
+      "idType": "local_sample_index",
+      "status": "needs_references",
+      "modelReady": false,
+      "floorplanCount": 0,
+      "interiorPhotoCount": 0,
+      "missing": [
+        "可核验的自如真实房源ID与对应详情链接",
+        "与该套房唯一关联的实际户型图",
+        "与该套房唯一关联的卧室/客厅/厨房/卫生间等室内照片"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "confirmedDetailUrl": null,
+      "sourceObservedAt": "2026-11-19",
+      "currentListingStatusVerified": false,
+      "reportedListing": {
+        "district": "丰台",
+        "area": 36.26,
+        "areaScope": "listed_property",
+        "bedrooms": 1,
+        "bedroomsScope": "entire_property",
+        "roomLabel": null,
+        "floor": 4,
+        "totalFloors": 5,
+        "orientation": "南",
+        "station": "七里庄",
+        "distance": 328,
+        "product": "心舍2.0·灵之智能"
+      },
+      "notes": [
+        "本地列表索引不是自如真实房源ID；未猜测或探测详情链接。",
+        "没有对应原始户型与室内照片，不能以通用模型计作该套真实重建。",
+        "OSM小区中心或地铁站参考只支持地图展示，不补足室内户型证据。"
+      ],
+      "assets": [],
+      "reconstructionScope": "not_eligible_for_source_based_reconstruction",
+      "measurementVerified": false,
+      "measurementGaps": [
+        "可核验的绝对平面尺寸",
+        "现场层高、门窗、墙厚与家具尺寸"
+      ],
+      "genericModelCountsAsActualLayout": false,
+      "geoEvidence": {
+        "sourceFile": "assets/property-geography.json",
+        "matchType": "community",
+        "precision": "community_centroid",
+        "isExactPropertyLocation": false,
+        "isInteriorLayoutEvidence": false
+      },
+      "acquisitionBarrier": "official_map_challenge_and_unconfirmed_detail_identity"
+    },
+    {
+      "id": "810151211",
+      "name": "望京路3号院",
+      "realListingId": "810151211",
+      "idType": "ziroom_property_id",
+      "status": "reference_ready",
+      "modelReady": true,
+      "floorplanCount": 1,
+      "interiorPhotoCount": 10,
+      "missing": [],
+      "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+      "confirmedDetailUrl": "https://www.ziroom.com/x/810151211.html",
+      "sourceObservedAt": "2026-11-19",
+      "currentListingStatusVerified": false,
+      "reportedListing": {
+        "district": "朝阳",
+        "area": 50.83,
+        "areaScope": "listed_property",
+        "bedrooms": 1,
+        "bedroomsScope": "entire_property",
+        "roomLabel": null,
+        "floor": 5,
+        "totalFloors": 7,
+        "orientation": "南",
+        "station": "阜通",
+        "distance": 156,
+        "product": "心舍2.0·灵之智能"
+      },
+      "notes": [
+        "已具1张户型图与10张室内照片，可支持基于参考的近似可视化重建。",
+        "并非测绘、摄影测量或工程数字孪生；户型绝对尺寸、层高、墙厚与家具尺寸未实测。",
+        "素材保留自此前公开详情实读；本次没有刷新该详情的在租状态。",
+        "OSM小区中心或地铁站参考只支持地图展示，不补足室内户型证据。"
+      ],
+      "assets": [
+        {
+          "file": "assets/reference/floorplan.webp",
+          "kind": "floorplan",
+          "bytes": 20856,
+          "sha256": "3b94b5fd7d006519e79482f15d7e36d46d673e0aaa88d5b147ec1f0a31f7a896",
+          "width": 800,
+          "height": 600,
+          "visuallyInspectedThisReview": true,
+          "content": "完整户型图；尺寸文字较小，未作为实测尺寸使用",
+          "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+          "originalImageUrl": null,
+          "originalCaptureTime": null,
+          "sourceAssociationBasis": "既有properties.modelReference与reconstruction/apartment-spec.json均将这11个文件关联至810151211；本次逐图检查内容与文件。"
+        },
+        {
+          "file": "assets/reference/bedroom.webp",
+          "kind": "interior_photo",
+          "bytes": 40362,
+          "sha256": "050d8c052fbfd6ff392780b48d40fba97107b3b1f042a1be41c74779c3938acd",
+          "width": 800,
+          "height": 600,
+          "visuallyInspectedThisReview": true,
+          "content": "卧室：床、衣柜、书桌、南向阳台开口",
+          "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+          "originalImageUrl": null,
+          "originalCaptureTime": null,
+          "sourceAssociationBasis": "既有properties.modelReference与reconstruction/apartment-spec.json均将这11个文件关联至810151211；本次逐图检查内容与文件。"
+        },
+        {
+          "file": "assets/reference/bedroom2.webp",
+          "kind": "interior_photo",
+          "bytes": 59914,
+          "sha256": "2588f2e1507c42b90879caf4b7725de6a92b563759eb888123ae475f66db5d9a",
+          "width": 800,
+          "height": 600,
+          "visuallyInspectedThisReview": true,
+          "content": "南向阳台：窗框、晾衣杆",
+          "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+          "originalImageUrl": null,
+          "originalCaptureTime": null,
+          "sourceAssociationBasis": "既有properties.modelReference与reconstruction/apartment-spec.json均将这11个文件关联至810151211；本次逐图检查内容与文件。"
+        },
+        {
+          "file": "assets/reference/bedroom3.webp",
+          "kind": "interior_photo",
+          "bytes": 28152,
+          "sha256": "e3773069d723ccace393cdb307b62ad395efdb7e17c47fb0c9a7a497a3c62295",
+          "width": 800,
+          "height": 600,
+          "visuallyInspectedThisReview": true,
+          "content": "卧室反向：内窗、房门、衣柜",
+          "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+          "originalImageUrl": null,
+          "originalCaptureTime": null,
+          "sourceAssociationBasis": "既有properties.modelReference与reconstruction/apartment-spec.json均将这11个文件关联至810151211；本次逐图检查内容与文件。"
+        },
+        {
+          "file": "assets/reference/room4.webp",
+          "kind": "interior_photo",
+          "bytes": 46308,
+          "sha256": "f1bdf3f2b79810c0823cc8b7972a04e3bb04479659576820c13244b933d0fd8b",
+          "width": 800,
+          "height": 600,
+          "visuallyInspectedThisReview": true,
+          "content": "卫生间：马桶、淋浴区",
+          "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+          "originalImageUrl": null,
+          "originalCaptureTime": null,
+          "sourceAssociationBasis": "既有properties.modelReference与reconstruction/apartment-spec.json均将这11个文件关联至810151211；本次逐图检查内容与文件。"
+        },
+        {
+          "file": "assets/reference/room5.webp",
+          "kind": "interior_photo",
+          "bytes": 64098,
+          "sha256": "3fb7234d3a8b104061b19976b6e238c9d3207e4e81babecdee1b09fddb185745",
+          "width": 800,
+          "height": 600,
+          "visuallyInspectedThisReview": true,
+          "content": "洗漱区：台盆、镜柜",
+          "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+          "originalImageUrl": null,
+          "originalCaptureTime": null,
+          "sourceAssociationBasis": "既有properties.modelReference与reconstruction/apartment-spec.json均将这11个文件关联至810151211；本次逐图检查内容与文件。"
+        },
+        {
+          "file": "assets/reference/room6.webp",
+          "kind": "interior_photo",
+          "bytes": 23324,
+          "sha256": "47c5f6f581eb02d7c283221db5b9f724a07a0e0139d4d743078ea5ef1e6283d5",
+          "width": 800,
+          "height": 600,
+          "visuallyInspectedThisReview": true,
+          "content": "餐厅/起居厅：餐桌椅、冰箱",
+          "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+          "originalImageUrl": null,
+          "originalCaptureTime": null,
+          "sourceAssociationBasis": "既有properties.modelReference与reconstruction/apartment-spec.json均将这11个文件关联至810151211；本次逐图检查内容与文件。"
+        },
+        {
+          "file": "assets/reference/room7.webp",
+          "kind": "interior_photo",
+          "bytes": 25534,
+          "sha256": "452050d4da95b57a8703abe1a5849cbbb3ef0c3328bb8193260794ba85bebb8f",
+          "width": 800,
+          "height": 600,
+          "visuallyInspectedThisReview": true,
+          "content": "玄关：入户门、暖气、卧室门窗",
+          "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+          "originalImageUrl": null,
+          "originalCaptureTime": null,
+          "sourceAssociationBasis": "既有properties.modelReference与reconstruction/apartment-spec.json均将这11个文件关联至810151211；本次逐图检查内容与文件。"
+        },
+        {
+          "file": "assets/reference/room8.webp",
+          "kind": "interior_photo",
+          "bytes": 26766,
+          "sha256": "03dcf3a30bd0d5f639fd6d59da876d2779e8c23e17f9113618c6607955c6351c",
+          "width": 800,
+          "height": 600,
+          "visuallyInspectedThisReview": true,
+          "content": "餐厅/起居厅反向：内窗、餐桌、冰箱",
+          "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+          "originalImageUrl": null,
+          "originalCaptureTime": null,
+          "sourceAssociationBasis": "既有properties.modelReference与reconstruction/apartment-spec.json均将这11个文件关联至810151211；本次逐图检查内容与文件。"
+        },
+        {
+          "file": "assets/reference/room9.webp",
+          "kind": "interior_photo",
+          "bytes": 51260,
+          "sha256": "0c53b32070286b71ffc76eef7c4859eb3d902ca28e2095a7b2bdddd8bfa37cfc",
+          "width": 800,
+          "height": 600,
+          "visuallyInspectedThisReview": true,
+          "content": "厨房：橱柜、台面、水槽、灶具、油烟机",
+          "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+          "originalImageUrl": null,
+          "originalCaptureTime": null,
+          "sourceAssociationBasis": "既有properties.modelReference与reconstruction/apartment-spec.json均将这11个文件关联至810151211；本次逐图检查内容与文件。"
+        },
+        {
+          "file": "assets/reference/room10.webp",
+          "kind": "interior_photo",
+          "bytes": 83048,
+          "sha256": "3a50bb79a529f59c62bfea1308e2e8f45b7c0b553acabee8d70f75cbd0da2aad",
+          "width": 800,
+          "height": 600,
+          "visuallyInspectedThisReview": true,
+          "content": "北向洗衣阳台：洗衣机、热水器、窗户",
+          "sourceUrl": "https://www.ziroom.com/x/810151211.html",
+          "originalImageUrl": null,
+          "originalCaptureTime": null,
+          "sourceAssociationBasis": "既有properties.modelReference与reconstruction/apartment-spec.json均将这11个文件关联至810151211；本次逐图检查内容与文件。"
+        }
+      ],
+      "reconstructionScope": "reference_guided_approximation",
+      "measurementVerified": false,
+      "measurementGaps": [
+        "可核验的绝对平面尺寸",
+        "现场层高、门窗、墙厚与家具尺寸"
+      ],
+      "genericModelCountsAsActualLayout": false,
+      "geoEvidence": {
+        "sourceFile": "assets/property-geography.json",
+        "matchType": "station_proxy",
+        "precision": "station_proxy",
+        "isExactPropertyLocation": false,
+        "isInteriorLayoutEvidence": false
+      },
+      "acquisitionBarrier": null
+    },
+    {
+      "id": "map-sample-06",
+      "name": "东大街西里",
+      "realListingId": null,
+      "idType": "local_sample_index",
+      "status": "needs_references",
+      "modelReady": false,
+      "floorplanCount": 0,
+      "interiorPhotoCount": 0,
+      "missing": [
+        "可核验的自如真实房源ID与对应详情链接",
+        "与该套房唯一关联的实际户型图",
+        "与该套房唯一关联的卧室/客厅/厨房/卫生间等室内照片"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "confirmedDetailUrl": null,
+      "sourceObservedAt": "2026-11-19",
+      "currentListingStatusVerified": false,
+      "reportedListing": {
+        "district": "丰台",
+        "area": 54.7,
+        "areaScope": "listed_property",
+        "bedrooms": 2,
+        "bedroomsScope": "entire_property",
+        "roomLabel": null,
+        "floor": 4,
+        "totalFloors": 6,
+        "orientation": "南",
+        "station": "七里庄",
+        "distance": 597,
+        "product": "心舍2.0·灵之智能"
+      },
+      "notes": [
+        "本地列表索引不是自如真实房源ID；未猜测或探测详情链接。",
+        "没有对应原始户型与室内照片，不能以通用模型计作该套真实重建。",
+        "OSM小区中心或地铁站参考只支持地图展示，不补足室内户型证据。"
+      ],
+      "assets": [],
+      "reconstructionScope": "not_eligible_for_source_based_reconstruction",
+      "measurementVerified": false,
+      "measurementGaps": [
+        "可核验的绝对平面尺寸",
+        "现场层高、门窗、墙厚与家具尺寸"
+      ],
+      "genericModelCountsAsActualLayout": false,
+      "geoEvidence": {
+        "sourceFile": "assets/property-geography.json",
+        "matchType": "community",
+        "precision": "community_centroid",
+        "isExactPropertyLocation": false,
+        "isInteriorLayoutEvidence": false
+      },
+      "acquisitionBarrier": "official_map_challenge_and_unconfirmed_detail_identity"
+    },
+    {
+      "id": "map-sample-07",
+      "name": "辉煌国际",
+      "realListingId": null,
+      "idType": "local_sample_index",
+      "status": "needs_references",
+      "modelReady": false,
+      "floorplanCount": 0,
+      "interiorPhotoCount": 0,
+      "missing": [
+        "可核验的自如真实房源ID与对应详情链接",
+        "与该套房唯一关联的实际户型图",
+        "与该套房唯一关联的卧室/客厅/厨房/卫生间等室内照片"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "confirmedDetailUrl": null,
+      "sourceObservedAt": "2026-11-19",
+      "currentListingStatusVerified": false,
+      "reportedListing": {
+        "district": "海淀",
+        "area": 64.36,
+        "areaScope": "listed_property",
+        "bedrooms": 1,
+        "bedroomsScope": "entire_property",
+        "roomLabel": null,
+        "floor": 13,
+        "totalFloors": 23,
+        "orientation": "南",
+        "station": "西二旗",
+        "distance": 549,
+        "product": "心舍2.0·灵之智能"
+      },
+      "notes": [
+        "本地列表索引不是自如真实房源ID；未猜测或探测详情链接。",
+        "没有对应原始户型与室内照片，不能以通用模型计作该套真实重建。",
+        "OSM小区中心或地铁站参考只支持地图展示，不补足室内户型证据。"
+      ],
+      "assets": [],
+      "reconstructionScope": "not_eligible_for_source_based_reconstruction",
+      "measurementVerified": false,
+      "measurementGaps": [
+        "可核验的绝对平面尺寸",
+        "现场层高、门窗、墙厚与家具尺寸"
+      ],
+      "genericModelCountsAsActualLayout": false,
+      "geoEvidence": {
+        "sourceFile": "assets/property-geography.json",
+        "matchType": "station_proxy",
+        "precision": "station_proxy",
+        "isExactPropertyLocation": false,
+        "isInteriorLayoutEvidence": false
+      },
+      "acquisitionBarrier": "official_map_challenge_and_unconfirmed_detail_identity"
+    },
+    {
+      "id": "map-sample-08",
+      "name": "美立方",
+      "realListingId": null,
+      "idType": "local_sample_index",
+      "status": "needs_references",
+      "modelReady": false,
+      "floorplanCount": 0,
+      "interiorPhotoCount": 0,
+      "missing": [
+        "可核验的自如真实房源ID与对应详情链接",
+        "与该套房唯一关联的实际户型图",
+        "与该套房唯一关联的卧室/客厅/厨房/卫生间等室内照片"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "confirmedDetailUrl": null,
+      "sourceObservedAt": "2026-11-19",
+      "currentListingStatusVerified": false,
+      "reportedListing": {
+        "district": "朝阳",
+        "area": 95.26,
+        "areaScope": "listed_property",
+        "bedrooms": 2,
+        "bedroomsScope": "entire_property",
+        "roomLabel": null,
+        "floor": 17,
+        "totalFloors": 17,
+        "orientation": "南",
+        "station": "立水桥南",
+        "distance": 641,
+        "product": "心舍2.0·灵之智能"
+      },
+      "notes": [
+        "本地列表索引不是自如真实房源ID；未猜测或探测详情链接。",
+        "没有对应原始户型与室内照片，不能以通用模型计作该套真实重建。",
+        "OSM小区中心或地铁站参考只支持地图展示，不补足室内户型证据。"
+      ],
+      "assets": [],
+      "reconstructionScope": "not_eligible_for_source_based_reconstruction",
+      "measurementVerified": false,
+      "measurementGaps": [
+        "可核验的绝对平面尺寸",
+        "现场层高、门窗、墙厚与家具尺寸"
+      ],
+      "genericModelCountsAsActualLayout": false,
+      "geoEvidence": {
+        "sourceFile": "assets/property-geography.json",
+        "matchType": "community",
+        "precision": "community_centroid",
+        "isExactPropertyLocation": false,
+        "isInteriorLayoutEvidence": false
+      },
+      "acquisitionBarrier": "official_map_challenge_and_unconfirmed_detail_identity"
+    },
+    {
+      "id": "map-sample-09",
+      "name": "日新家园",
+      "realListingId": null,
+      "idType": "local_sample_index",
+      "status": "needs_references",
+      "modelReady": false,
+      "floorplanCount": 0,
+      "interiorPhotoCount": 0,
+      "missing": [
+        "可核验的自如真实房源ID与对应详情链接",
+        "与该套房唯一关联的实际户型图",
+        "与该套房唯一关联的卧室/客厅/厨房/卫生间等室内照片"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "confirmedDetailUrl": null,
+      "sourceObservedAt": "2026-11-19",
+      "currentListingStatusVerified": false,
+      "reportedListing": {
+        "district": "丰台",
+        "area": 69.44,
+        "areaScope": "listed_property",
+        "bedrooms": 1,
+        "bedroomsScope": "entire_property",
+        "roomLabel": null,
+        "floor": 4,
+        "totalFloors": 14,
+        "orientation": "西",
+        "station": "宋家庄",
+        "distance": 812,
+        "product": "心舍2.0·灵之智能"
+      },
+      "notes": [
+        "本地列表索引不是自如真实房源ID；未猜测或探测详情链接。",
+        "没有对应原始户型与室内照片，不能以通用模型计作该套真实重建。",
+        "OSM小区中心或地铁站参考只支持地图展示，不补足室内户型证据。"
+      ],
+      "assets": [],
+      "reconstructionScope": "not_eligible_for_source_based_reconstruction",
+      "measurementVerified": false,
+      "measurementGaps": [
+        "可核验的绝对平面尺寸",
+        "现场层高、门窗、墙厚与家具尺寸"
+      ],
+      "genericModelCountsAsActualLayout": false,
+      "geoEvidence": {
+        "sourceFile": "assets/property-geography.json",
+        "matchType": "community",
+        "precision": "community_centroid",
+        "isExactPropertyLocation": false,
+        "isInteriorLayoutEvidence": false
+      },
+      "acquisitionBarrier": "official_map_challenge_and_unconfirmed_detail_identity"
+    },
+    {
+      "id": "map-sample-10",
+      "name": "东方雅苑",
+      "realListingId": null,
+      "idType": "local_sample_index",
+      "status": "needs_references",
+      "modelReady": false,
+      "floorplanCount": 0,
+      "interiorPhotoCount": 0,
+      "missing": [
+        "可核验的自如真实房源ID与对应详情链接",
+        "与该套房唯一关联的实际户型图",
+        "与该套房唯一关联的卧室/客厅/厨房/卫生间等室内照片"
+      ],
+      "sourceUrl": "https://ditu.ziroom.com/map?city_code=110000&page_source=homepage_map",
+      "confirmedDetailUrl": null,
+      "sourceObservedAt": "2026-11-19",
+      "currentListingStatusVerified": false,
+      "reportedListing": {
+        "district": "朝阳",
+        "area": 64.95,
+        "areaScope": "listed_property",
+        "bedrooms": 2,
+        "bedroomsScope": "entire_property",
+        "roomLabel": null,
+        "floor": 1,
+        "totalFloors": 18,
+        "orientation": "南",
+        "station": "平乐园",
+        "distance": 447,
+        "product": "心舍2.0·灵之智能"
+      },
+      "notes": [
+        "本地列表索引不是自如真实房源ID；未猜测或探测详情链接。",
+        "没有对应原始户型与室内照片，不能以通用模型计作该套真实重建。",
+        "OSM小区中心或地铁站参考只支持地图展示，不补足室内户型证据。"
+      ],
+      "assets": [],
+      "reconstructionScope": "not_eligible_for_source_based_reconstruction",
+      "measurementVerified": false,
+      "measurementGaps": [
+        "可核验的绝对平面尺寸",
+        "现场层高、门窗、墙厚与家具尺寸"
+      ],
+      "genericModelCountsAsActualLayout": false,
+      "geoEvidence": {
+        "sourceFile": "assets/property-geography.json",
+        "matchType": "community",
+        "precision": "community_centroid",
+        "isExactPropertyLocation": false,
+        "isInteriorLayoutEvidence": false
+      },
+      "acquisitionBarrier": "official_map_challenge_and_unconfirmed_detail_identity"
+    }
+  ]
+}

@@ -41,12 +41,12 @@ function propertyFacts(property) {
 export class PropertyMapWorkspace {
   constructor(container, {
     properties = [], events = [], geography = {}, sources = {},
-    onOpenProperty, onOpenModel, onEvent, onViewInventory, onStatus, onActivateMap
+    onOpenProperty, onOpenModel, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap
   } = {}) {
     this.container = container;
     this.geography = geography || {};
     this.sources = sources || {};
-    this.callbacks = { onOpenProperty, onOpenModel, onEvent, onViewInventory, onStatus, onActivateMap };
+    this.callbacks = { onOpenProperty, onOpenModel, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap };
     this.active = true;
     this.selectedId = null;
     this.indices = new Map();
@@ -131,6 +131,7 @@ export class PropertyMapWorkspace {
       if (button.dataset.geoAction === 'close') { this.closeDetail(); return; }
       if (!entry) return;
       if (button.dataset.geoAction === 'property') this.callbacks.onOpenProperty?.(entry.id);
+      if (button.dataset.geoAction === 'operations') this.callbacks.onOpenOperations?.(entry.id);
       if (button.dataset.geoAction === 'model' && this.canOpenModel(entry)) this.callbacks.onOpenModel?.(entry.id);
       if (button.dataset.geoAction === 'inventory') this.callbacks.onViewInventory?.(entry.district);
       if (button.dataset.geoAction === 'event') {
@@ -195,7 +196,7 @@ export class PropertyMapWorkspace {
         <span class="geo-property-region" style="display:block">${esc(propertyFacts(entry.property))}</span>
         <span class="geo-property-status"><span class="tag neutral">${precision}</span><span class="tag ${entry.hasPending ? 'amber' : 'neutral'}">${entry.hasPending ? '演示有待办' : '状态未接入'}</span></span>
         </span></button>`;
-    }).join('') : '<p class="geo-list-empty">当前筛选没有房源记录，请调整区域、商圈或状态。</p>';
+    }).join('') : `<p class="geo-list-empty">${this.entries.length ? '当前筛选没有房源记录，请调整区域、商圈或状态。' : '当前范围暂无可统计房源。可查看采集状态，或切换历史参考样本查看已有资料。'}</p>`;
   }
 
   renderCoverage() {
@@ -275,6 +276,7 @@ export class PropertyMapWorkspace {
       </details>
       <p>${pending.length ? `演示待办 ${pending.length} 条；` : '无未闭环演示待办；'}真实设备状态未接入。</p>
       <div style="display:grid;gap:8px">
+        <button type="button" class="button" data-geo-action="operations">查看家庭运行</button>
         <button type="button" class="button" data-geo-action="property">查看房源详情</button>
         ${this.canOpenModel(entry) ? '<button type="button" class="button" data-geo-action="model">进入三维样板</button>' : ''}
         ${pending.map(event => `<button type="button" class="button" data-geo-action="event" data-geo-event-id="${esc(event.id)}">演示事件 · ${esc(event.title || '查看待办')}</button>`).join('')}

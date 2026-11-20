@@ -117,7 +117,7 @@ export class TwinWorkspace {
   }
   renderEmpty(){
     const p=this.property,ref=this.coverage?.properties?.find(row=>row.id===p.id);
-    this.empty.innerHTML=`<div class="twin-empty-icon">${icon('panel')}</div><span class="eyebrow">${esc(p.name)}</span><h3>等待这套房源的真实户型</h3><p>已为本套整理设备配置。取得对应 VR 或户型图后，才能将设备放进实际空间。</p><div class="twin-reference-checks"><div><span>公开房源记录</span><strong>已收录</strong></div><div><span>对应户型图</span><strong>${ref?.floorplanCount||0} 张</strong></div><div><span>室内参考照片</span><strong>${ref?.interiorPhotoCount||0} 张</strong></div><div><span>VR / 实测尺寸</span><strong>待补充</strong></div></div><p class="twin-empty-foot">${p.areaScope==='listed_bedroom'?'合租单间 · 所属户型 '+esc(p.bedrooms)+'居':esc(p.bedrooms)+' 居'} · ${p.areaScope==='listed_bedroom'?'出租卧室 ':''}${esc(p.area)}㎡ · 设备实装待核验</p><button class="button" data-missing-source>查看本套来源资料</button>`;
+    this.empty.innerHTML=`<div class="twin-empty-icon">${icon('panel')}</div><span class="eyebrow">${esc(p.name)}</span><h3>${p.publicFloorplanUrl?'这套房源已有官网户型图':'等待这套房源的真实户型'}</h3><p>${p.publicFloorplanUrl?'可从本套来源资料查看户型和室内照片。设备点位仍需与现场安装清单核对。':'已为本套整理设备配置。取得对应 VR 或户型图后，才能将设备放进实际空间。'}</p><div class="twin-reference-checks"><div><span>公开房源记录</span><strong>已收录</strong></div><div><span>对应户型图</span><strong>${ref?.floorplanCount||0} 张</strong></div><div><span>室内参考照片</span><strong>${Math.max(ref?.interiorPhotoCount||0,p.publicPhotoUrls?.length||0)} 张</strong></div><div><span>VR / 实测尺寸</span><strong>${p.publicVrUrl?'有官网 VR / 尺寸待补':'待补充'}</strong></div></div><p class="twin-empty-foot">${p.areaScope==='listed_bedroom'?'合租单间 · 所属户型 '+esc(p.bedrooms)+'居':esc(p.bedrooms)+' 居'} · ${p.areaScope==='listed_bedroom'?'出租卧室 ':''}${esc(p.area)}㎡ · 设备实装待核验</p><button class="button" data-missing-source>查看本套来源资料</button>`;
     this.empty.querySelector('[data-missing-source]').onclick=()=>this.onSource?.(p.id);
   }
   selectDevice(id,focus=true,announcement=''){
@@ -134,7 +134,7 @@ export class TwinWorkspace {
     this.detail.querySelector('[data-device-rule]').onclick=()=>this.onCatalog?.(device);
   }
   exportData(){
-    return {schemaVersion:1,property:{id:this.property.id,name:this.property.name,bedrooms:this.property.bedrooms,areaScope:this.property.areaScope||null,roomLabel:this.property.roomLabel||null,product:this.property.product,sourceUrl:this.property.sourceUrl},referenceStatus:this.referenceReady?'official_reference_approximation':'missing_corresponding_floorplan',configuration:this.configuration,scenario:this.scenario,telemetryConnected:false,deviceStates:(this.result.devices||[]).map(({mesh,position,...device})=>device),source:CONFIG_SOURCE};
+    return {schemaVersion:1,property:{id:this.property.id,name:this.property.name,bedrooms:this.property.bedrooms,areaScope:this.property.areaScope||null,roomLabel:this.property.roomLabel||null,product:this.property.product,sourceUrl:this.property.sourceUrl},referenceStatus:this.referenceReady?'official_reference_approximation':this.property.publicFloorplanUrl?'official_floorplan_available':'missing_corresponding_floorplan',configuration:this.configuration,scenario:this.scenario,telemetryConnected:false,deviceStates:(this.result.devices||[]).map(({mesh,position,...device})=>device),source:CONFIG_SOURCE};
   }
 }
 

@@ -8,6 +8,12 @@ const compare = (left, right) => text(left).localeCompare(text(right), 'zh-CN');
 const normalizeCity = value => text(value).replace(/市$/, '') || '北京';
 const normalizeDistrict = value => text(value).replace(/^北京市/, '').replace(/[区县]$/, '');
 
+export function lingzhiEvidence(property) {
+  if (property.lingzhiLabelVisible === true) return '本套挂牌明示灵之智能';
+  if (property.lingzhiFilterReturned === true) return '灵之筛选返回，本套未见明示标签';
+  return property.lingzhiLabelVisible === false ? '本套未见公开灵之标签' : '';
+}
+
 function indexedRows(document) {
   const byId = new Map(), byRealId = new Map();
   for (const row of list(document?.properties)) {
@@ -31,6 +37,28 @@ function detailIdentity(value) {
   return url ? new URL(url).pathname.match(/^\/x\/(\d+)\.html$/)?.[1] || null : null;
 }
 
+function officialImage(value) {
+  const candidate = officialUrl(value);
+  if (!candidate) return null;
+  const url = new URL(candidate);
+  const imageHosts = ['imgpro.ziroom.com','smsimg.ziroom.com','home-decoration-cdn.ziroom.com'];
+  return imageHosts.includes(url.hostname) && !url.port && /\.(jpe?g|png|webp)$/i.test(url.pathname) ? candidate : null;
+}
+
+function verifiedPublicMedia(property, realId) {
+  if (!realId || !/^BJZRGZ\d+$/.test(text(property.businessId)) ||
+      property.imported || detailIdentity(property.sourceUrl) !== realId) return {};
+  const vr = officialUrl(property.publicVrUrl);
+  const vrUrl = vr ? new URL(vr) : null;
+  const listingIds = vrUrl?.searchParams.getAll('inv_no') || [];
+  return {
+    publicFloorplanUrl: officialImage(property.publicFloorplanUrl),
+    publicPhotoUrls: [...new Set(list(property.publicPhotoUrls).map(officialImage).filter(Boolean))],
+    publicVrUrl: vrUrl?.hostname === 'metaverse.ziroom.com' && vrUrl.pathname === '/pano-vr' &&
+      vrUrl.searchParams.has('zrVrId') && listingIds.length && listingIds.every(id => id === realId) ? vr : null
+  };
+}
+
 /** References stay bound to their own confirmed listing; no generic model fallback. */
 function referenceEvidence(property, reference, realId) {
   const identityMatches = Boolean(realId && reference && listingIdentity(reference) === realId &&
@@ -47,8 +75,13 @@ function referenceEvidence(property, reference, realId) {
   const vr = reference?.vr;
   const vrIdentity = text(vr?.realListingId || vr?.listingId || reference?.realListingId);
   const vrCandidate = vr?.verified === true ? vr.url : reference?.vrVerified === true ? reference.vrUrl : null;
-  const vrUrl = identityMatches && vrIdentity === realId ? officialUrl(vrCandidate) : null;
-  return { referenceReady, floorplanCount, interiorPhotoCount, vrUrl, vrVerified: Boolean(vrUrl) };
+  const publicMedia = verifiedPublicMedia(property, realId);
+  const vrUrl = publicMedia.publicVrUrl || (identityMatches && vrIdentity === realId ? officialUrl(vrCandidate) : null);
+  return { referenceReady, localFloorplanCount:floorplanCount, localInteriorPhotoCount:interiorPhotoCount,
+    floorplanCount:Math.max(floorplanCount, publicMedia.publicFloorplanUrl ? 1 : 0),
+    interiorPhotoCount:Math.max(interiorPhotoCount, publicMedia.publicPhotoUrls?.length || 0),
+    publicFloorplanUrl:publicMedia.publicFloorplanUrl || null, publicPhotoUrls:publicMedia.publicPhotoUrls || [],
+    vrUrl, vrVerified:Boolean(vrUrl) };
 }
 
 function communityGroups(rows) {

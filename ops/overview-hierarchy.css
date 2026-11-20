@@ -15,8 +15,3 @@
 @media(max-width:1000px){#inventory-source-status{display:flex;flex-wrap:wrap}.inventory-dimensions>.metric{padding-right:22px;padding-left:22px}.inventory-dimensions>.metric:first-child{padding-left:0}.inventory-dimensions>.metric:last-child{padding-right:0}}
 @media(max-width:640px){.inventory-dimensions{grid-template-columns:1fr;margin-bottom:22px}.inventory-dimensions>.metric{display:grid;grid-template-columns:minmax(0,1fr)auto;column-gap:18px;padding:18px 0!important;border-left:0;border-bottom:1px solid #e0e5eb}.inventory-dimensions .metric-name{margin-bottom:0;font-size:16px}.inventory-dimensions>.metric>strong{grid-column:2;grid-row:1/3;font-size:46px;align-self:center}.inventory-dimensions .metric-foot{grid-column:1;min-height:0;margin-top:6px}.inventory-dimensions .metric-action{grid-column:1/-1;margin-top:8px}#overview-inventory{scroll-margin-top:86px;margin-bottom:34px}#modal.property-detail-modal{width:calc(100vw - 20px)}}
 @media(prefers-reduced-motion:reduce){.inventory-dimensions>.metric{transition:none}}
-
-body:not([data-page="overview"]):not([data-page="properties"]) #public-inventory { display: none; }
-#public-inventory { min-width: 0; scroll-margin-top: 100px; }
-.historic-samples { margin: 24px 0; border-top: 1px solid #d7dce4; }
-.historic-samples > summary { cursor: pointer; padding: 18px 4px; font-weight: 600; }

@@ -3,12 +3,11 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>灵之智能 · 远程运维中心</title>
-  <meta name="description" content="灵之数字员工远程运维演示：北京官网挂牌、编号与户型 VR 核验、三维样板和设备排障。">
+  <meta name="description" content="灵之数字员工远程运维演示：北京房源分布、参考图三维重建、设备核验和工单闭环。">
   <link rel="icon" type="image/png" sizes="736x736" href="./ops/assets/logo-icon-blue.png?v=20261120-blue">
   <link rel="icon" type="image/svg+xml" sizes="any" href="./favicon.svg?v=20261120-blue">
   <link rel="apple-touch-icon" href="./ops/assets/logo-icon-blue.png?v=20261120-blue">
   <link rel="stylesheet" href="./ops/assets/vendor/maplibre/maplibre-gl.css"><link rel="stylesheet" href="./ops/assets/vendor/leaflet/leaflet.css"><link rel="stylesheet" href="./ops/style.css"><link rel="stylesheet" href="./ops/twin.css"><link rel="stylesheet" href="./ops/monitor-map.css"><link rel="stylesheet" href="./ops/household.css"><link rel="stylesheet" href="./ops/diagnostic-workspace.css"><link rel="stylesheet" href="./ops/reference-gallery.css"><link rel="stylesheet" href="./ops/inventory-explorer.css"><link rel="stylesheet" href="./ops/property-detail.css"><link rel="stylesheet" href="./ops/overview-hierarchy.css">
-  <link rel="stylesheet" href="./ops/public-inventory.css">
   <script type="importmap">{"imports":{"three":"./ops/assets/vendor/three.module.js","three/addons/controls/OrbitControls.js":"./ops/assets/vendor/OrbitControls.js"}}</script>
 </head>
 <body class="header-scrolled" data-page="overview" data-scene="city">
@@ -24,13 +23,12 @@
     <button class="nav-item" data-page="devices"><span data-icon="devices"></span><span>设备监控</span></button>
     <button class="nav-item" data-page="agents"><span data-icon="agent"></span><span>数字员工</span></button>
     <button class="nav-item" data-page="tickets"><span data-icon="ticket"></span><span>事件工单</span><b id="nav-ticket-count">0</b></button>
-    <div class="nav-bottom"><button class="nav-item" id="nav-data"><span data-icon="layers"></span><span>来源</span></button><span class="version">DEMO 1.8</span></div>
+    <div class="nav-bottom"><button class="nav-item" id="nav-data"><span data-icon="layers"></span><span>来源</span></button><span class="version">DEMO 1.9</span></div>
   </aside>
   <main id="app">
-    <section class="page-heading"><div><div class="eyebrow">Z-LINK OPERATIONS</div><h1 id="page-title">家庭智能运维管家</h1><p id="page-description">查北京房源、核对户型与 VR，进入家庭运行看板跟进设备异常。</p></div><div class="heading-actions"><span class="city-chip" data-icon="pin">北京</span><button class="button" id="show-apartment-btn" data-icon="cube">三维设备运维</button><button class="button primary" id="tour-btn" data-icon="play">演示异常闭环</button></div></section>
-    <div id="public-inventory" aria-label="北京官网房源台账"><p role="status">正在读取北京官网房源台账…</p></div>
+    <section class="page-heading"><div><div class="eyebrow">Z-LINK OPERATIONS</div><h1 id="page-title">家庭智能运维管家</h1><p id="page-description">一个入口，两个能力：
+让「用得怎么样」看得见，让「怎么办」问得到。</p></div><div class="heading-actions"><span class="city-chip" data-icon="pin">北京</span><button class="button" id="show-apartment-btn" data-icon="cube">三维设备运维</button><button class="button primary" id="tour-btn" data-icon="play">演示异常闭环</button></div></section>
     <section id="overview-page" class="page active">
-      <details id="historical-overview" class="historic-samples"><summary>历史地图样本与三维演示台账</summary>
       <p id="inventory-source-status" class="inventory-source-status" aria-live="polite"><span class="inventory-scope">北京 · 灵之智能筛选结果</span><span class="inventory-source-detail">累计已采集房源 · 最近新增独立展示</span></p>
       <div class="metrics inventory-metrics inventory-dimensions" aria-label="按房源、商圈或小区查看已采集数据">
         <button type="button" class="metric" data-inventory-view="properties" aria-controls="overview-inventory"><span class="metric-name">运维中房源<span data-icon="building"></span></span><strong id="metric-properties">—</strong><span class="metric-foot"><span id="metric-properties-note">已采集收录的全部房源 · 按记录去重</span></span><span class="metric-action">查看全部房源</span></button>
@@ -39,14 +37,13 @@
       </div>
       <section id="bedroom-summary" class="bedroom-summary" aria-label="居室分类" aria-live="polite"><div class="bedroom-stat"><span>1居</span><strong>—</strong></div><div class="bedroom-stat"><span>2居</span><strong>—</strong></div><div class="bedroom-stat"><span>3居及以上</span><strong>—</strong></div><div class="bedroom-stat"><span>合租单间</span><strong>—</strong></div><div class="bedroom-stat"><span>待分类</span><strong>—</strong></div></section>
       <section id="overview-inventory" aria-label="房源、商圈与小区分级台账"></section>
-      </details>
       <section id="household-entry" class="house-entry" aria-label="家庭运行入口"></section>
-      <div class="section-intro"><div><p class="eyebrow">OPERATIONS MAP</p><h2>地图与运维待办</h2></div><p>地图展示有位置依据的历史样本，<br>选择房源查看演示事件与处理记录。</p></div>
+      <div class="section-intro"><div><p class="eyebrow">OPERATIONS MAP</p><h2>看清分布，聚焦待办。</h2></div><p>从城市分布定位房源，<br>从待办优先级进入处理。</p></div>
       <div id="inventory-return-bar" class="inventory-return-bar" hidden><button type="button" class="button" id="return-to-inventory">返回当前分级台账</button><span>保留所选商圈、小区与居室筛选</span></div>
       <section id="twin-controls" class="twin-controls" aria-label="三维设备配置与异常演示" hidden></section>
       <div class="command-grid">
         <section class="panel map-panel">
-          <div class="panel-heading"><div><h2 id="scene-title">北京 · 房源运行态势</h2><p id="scene-subtitle">房源分布 · 演示待办 · 分级跟进</p></div><div class="map-heading-controls"><select id="map-inventory-scope" aria-label="地图房源数据范围"><option value="collected" selected>全部地图样本</option><option value="model">有三维参考</option></select><div class="segmented" id="scene-tabs"><button class="selected" data-scene="city">城市</button><button data-scene="apartment">房源</button></div></div></div>
+          <div class="panel-heading"><div><h2 id="scene-title">北京 · 房源运行态势</h2><p id="scene-subtitle">房源分布 · 演示待办 · 分级跟进</p></div><div class="map-heading-controls"><select id="map-inventory-scope" aria-label="地图房源数据范围"><option value="collected" selected>全部采集房源</option><option value="model">有三维参考</option></select><div class="segmented" id="scene-tabs"><button class="selected" data-scene="city">城市</button><button data-scene="apartment">房源</button></div></div></div>
           <div id="geo-monitor-summary" class="geo-monitor-summary" aria-label="当前地图运维摘要" aria-live="polite"></div>
           <div class="geo-filters" id="geo-filters" aria-label="地图房源筛选">
             <label><span>区域</span><select id="geo-district-filter" aria-label="按区域筛选地图房源"><option value="">全部区域</option></select></label>
@@ -72,7 +69,7 @@
       </div>
     </section>
     <section id="household-page" class="page"><div id="household-workspace"></div></section>
-    <section id="properties-page" class="page"><details id="historical-assets" class="historic-samples"><summary>历史样本、设备配置与本地导入</summary><div class="panel asset-panel"><div class="asset-toolbar"><label class="search-field"><span data-icon="search"></span><input id="property-search" placeholder="搜索小区、房源、地铁或产品" aria-label="搜索房源"></label><select id="inventory-view" aria-label="房源列表数据范围"><option value="collected" selected>全部采集房源</option><option value="model">有三维参考</option><option value="imported">本地导入</option></select><select id="district-select" aria-label="筛选区域"><option value="">全部区域</option></select><select id="business-select" aria-label="筛选商圈"><option value="">全部商圈</option></select><select id="bedroom-select" aria-label="筛选居室"><option value="">全部居室</option><option value="1">1居</option><option value="2">2居</option><option value="3+">3居及以上</option><option value="shared">合租单间</option><option value="unknown">待分类</option></select><button class="button" id="crawl-status-btn" data-icon="database">查看采集状态</button><button class="button" id="import-btn" data-icon="upload">导入房源 CSV</button><button class="button" id="export-sample-btn" data-icon="download">下载导入模板</button></div><div class="dataset-banner"><span class="tag blue" id="property-dataset-tag">全部采集房源</span><span id="property-scope">北京 · 灵之智能筛选结果；全部已采集收录房源合并展示。</span></div><div id="inventory-ledger" class="inventory-ledger"></div><section id="collection-leads" class="collection-leads" aria-label="房源补采线索" hidden></section><div id="model-coverage" class="model-coverage" aria-live="polite"></div><p class="small-note" style="padding:0 22px">CSV 导入更新本地房源台账。地图只显示已核验的地理匹配结果；新增地址需核验后布点，三维重建需补齐对应户型、照片和尺寸。</p><div id="property-list"></div><div id="property-pagination" class="property-pagination" aria-label="房源列表分页"></div><input type="file" id="import-file" accept=".csv,text/csv" hidden></div></details></section>
+    <section id="properties-page" class="page"><div class="panel asset-panel"><div class="asset-toolbar"><label class="search-field"><span data-icon="search"></span><input id="property-search" placeholder="搜索小区、房源、地铁或产品" aria-label="搜索房源"></label><select id="inventory-view" aria-label="房源列表数据范围"><option value="collected" selected>全部采集房源</option><option value="model">有三维参考</option><option value="imported">本地导入</option></select><select id="district-select" aria-label="筛选区域"><option value="">全部区域</option></select><select id="business-select" aria-label="筛选商圈"><option value="">全部商圈</option></select><select id="bedroom-select" aria-label="筛选居室"><option value="">全部居室</option><option value="1">1居</option><option value="2">2居</option><option value="3+">3居及以上</option><option value="shared">合租单间</option><option value="unknown">待分类</option></select><button class="button" id="crawl-status-btn" data-icon="database">查看采集状态</button><button class="button" id="import-btn" data-icon="upload">导入房源 CSV</button><button class="button" id="export-sample-btn" data-icon="download">下载导入模板</button></div><div class="dataset-banner"><span class="tag blue" id="property-dataset-tag">全部采集房源</span><span id="property-scope">北京 · 灵之智能筛选结果；全部已采集收录房源合并展示。</span></div><div id="inventory-ledger" class="inventory-ledger"></div><section id="collection-leads" class="collection-leads" aria-label="房源补采线索" hidden></section><div id="model-coverage" class="model-coverage" aria-live="polite"></div><p class="small-note" style="padding:0 22px">CSV 导入更新本地房源台账。地图只显示已核验的地理匹配结果；新增地址需核验后布点，三维重建需补齐对应户型、照片和尺寸。</p><div id="property-list"></div><div id="property-pagination" class="property-pagination" aria-label="房源列表分页"></div><input type="file" id="import-file" accept=".csv,text/csv" hidden></div></section>
     <section id="devices-page" class="page"><section class="panel configuration-intro"><div><p class="eyebrow">DEVICE CONFIGURATION</p><h2>按型号建立配置，按房间追踪状态。</h2><p>心舍3.0.1配置规则已归档；实际设备以逐套安装清单和平台绑定为准。</p></div><div><button class="button primary" id="device-twin-entry">查看三维设备</button><button class="button" id="device-catalog-entry">设备配置目录</button></div></section><div class="dataset-banner"><span class="tag blue">用户提供运维快照</span><span>采样日期未知，范围为截图可见行；不同城市的历史记录不与北京在租房源直接关联。</span></div><section class="panel"><div class="panel-heading"><div><h2>型号在线率</h2><p>仅统计 ≥50 台的型号 · 按在线率升序 · 截图可见 7 行</p></div><span class="tag">非实时数据</span></div><div id="model-full-table" class="table-wrap"></div></section><section class="panel spaced"><div class="panel-heading"><div><h2>长期离线与未上报设备</h2><p>保留原报告描述；“从未上报在线”先核对资产与上报链路</p></div></div><div id="offline-table" class="table-wrap"></div></section></section>
     <section id="agents-page" class="page">
       <section class="agent-product-intro" aria-labelledby="agent-product-title">
@@ -88,10 +85,6 @@
   <aside id="event-drawer" class="drawer" aria-modal="true" role="dialog" aria-labelledby="drawer-title" hidden><div class="drawer-top"><div><div class="eyebrow">EVENT WORKSPACE</div><h2 id="drawer-title">事件工作台</h2></div><button class="icon-btn close-drawer" aria-label="关闭事件工作台" data-icon="close"></button></div><div id="drawer-body"></div></aside>
   <dialog id="modal"><div class="modal-top"><h2 id="modal-title"></h2><button class="icon-btn" id="modal-close" aria-label="关闭弹窗" data-icon="close"></button></div><div id="modal-body"></div></dialog>
   <div id="toast" role="status"></div>
-  <script type="module">
-    import { mountPublicInventory } from './ops/public-inventory.js';
-    mountPublicInventory(document.getElementById('public-inventory'));
-  </script>
   <script type="module" src="./ops/app.js"></script>
 </body>
 </html>

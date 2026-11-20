@@ -1,5 +1,8 @@
 import { mountDiagnosticWorkspace, verificationResult } from './diagnostic-workspace.js';
 import { mountReferenceGallery } from './reference-gallery.js';
+import { buildInventoryHierarchy } from './inventory-hierarchy.js';
+import { InventoryExplorer } from './inventory-explorer.js';
+import { mountPropertyDetail } from './property-detail.js';
 import { mountCollectionLeads } from './collection-leads.js';
 import { SceneViewer } from './scene-viewer.js';
 import { PropertyMapWorkspace } from './property-map-workspace.js';
@@ -79,6 +82,7 @@ let state={page:'overview',scene:'city',eventFilter:'all',events:structuredClone
 state.page='overview';state.scene='city';state.activeEvent=null;state.propertyPage=1;
 let data,ops,geo,viewer,mapWorkspace,geography,mapSources,householdWorkspace,modelCoverage,listingInventory,twinWorkspace,inventoryRegistry;let diagnosisTimer=null;
 let activeTwinPropertyId=MODEL_PROPERTY_ID;
+let inventoryExplorer=null,propertyDetailController=null,inventoryRefreshRunning=false;
 let mapInventoryScope='collected';
 let crawlStatus=null,crawlSource={},historicalProperties=[],crawledProperties=[],crawledIsCurrent=false;
 function initializePropertyData(base,report,dataset){
@@ -100,18 +104,43 @@ function fullInventoryVerified(){return !!(crawledIsCurrent&&crawlStatus?.status
 function crawlLabel(){if(!crawlStatus)return '采集状态未提供';if(crawlStatus.status==='blocked')return '采集受阻';if(fullInventoryVerified())return '本批次采集完成';if(crawlStatus.status==='partial'&&currentCrawlCount())return '部分采集';return '采集待核验';}
 function activeImportedCount(){const ids=new Set((data?.properties||[]).map(p=>p.id));return state.imported.filter(p=>!ids.has(p.id)).length;}
 function collectedStats(){return inventoryStatistics(data?.properties||[],listingInventory,geography);}
+function currentInventoryHierarchy(){return buildInventoryHierarchy({properties:data?.properties||[],report:listingInventory,geography,coverage:modelCoverage,source:data?.source,events:state.events});}
+function syncInventoryExplorer(){
+ if(!data)return;
+ const hierarchy=currentInventoryHierarchy();
+ if(inventoryExplorer)inventoryExplorer.update(hierarchy);
+ else if($('#overview-inventory'))inventoryExplorer=new InventoryExplorer($('#overview-inventory'),{hierarchy,onProperty:showProperty,onTwin:openTwin,onHousehold:openHousehold,onReferences:showReferences});
+}
+function openInventoryLevel(options={}){
+ if(!data||!inventoryExplorer){toast('房源台账正在加载，请稍后。');return;}
+ showPage('overview',false);inventoryExplorer.open(options);$('#overview-inventory').scrollIntoView({behavior:motionBehavior(),block:'start'});
+}
+async function refreshCollectedInventory(){
+ if(inventoryRefreshRunning)return;
+ inventoryRefreshRunning=true;const button=$('#inventory-refresh');if(button){button.disabled=true;button.textContent='正在刷新';}
+ try{
+  const names=['properties.json','crawl-status.json','crawled-properties.json','property-geography.json','three-source-coverage.json','listing-inventory.json','inventory-registry.json'];
+  const [base,report,dataset,locationData,coverageData,inventoryData,registryData]=await Promise.all(names.map(async name=>{const r=await fetch('./ops/assets/'+name,{cache:'no-store'});if(!r.ok)throw Error('读取失败');return r.json();}));
+  geography=locationData;modelCoverage=coverageData;listingInventory=inventoryData;inventoryRegistry=registryData;initializePropertyData(base,report,dataset);if(mapWorkspace)mapWorkspace.geography=geography;if(twinWorkspace){twinWorkspace.geography=geography;twinWorkspace.coverage=modelCoverage;}
+  renderAll();renderInventoryLedger();syncInventoryExplorer();
+  toast(`已刷新 ${collectedStats().count} 条已收录房源及分级统计。来源采样时间：${formatObservedAt(currentInventoryHierarchy().observedAt)}。`);
+ }catch{toast('台账刷新未完成，已保留当前数据。');}
+ finally{inventoryRefreshRunning=false;const current=$('#inventory-refresh');if(current){current.disabled=false;current.textContent='刷新已收录数据';}}
+}
 function mapLastAttempt(){return modelCoverage?.verification||{};}
 function mapAddedCount(){const count=mapLastAttempt().newVerifiedListings;return Number.isInteger(count)?count:null;}
 function renderInventorySummary(){
  if(!data)return;
  const stats=collectedStats(),verification=mapLastAttempt(),fetched=mapAddedCount();
- const metrics=[['properties',stats.count,'已采集收录的全部房源 · 按记录去重'],['businesses',stats.businesses,`已确认商圈 · ${stats.businessUnknown} 条房源待核验`],['communities',stats.communities,'按已采集小区名称去重'],['districts',stats.districts,`${stats.confirmedDistricts} 个已确认 · ${stats.pendingDistricts} 个归属待核验`]];
+ const totals=currentInventoryHierarchy().totals;
+ const metrics=[['properties',totals.properties,'已采集收录的全部房源 · 按记录去重'],['businesses',totals.businesses,`已确认商圈 · ${totals.pendingBusinessRecords} 条房源待核验`],['communities',totals.communities,'按行政区与小区名称去重']];
  for(const [key,number,note] of metrics){$('#metric-'+key).textContent=number;$('#metric-'+key+'-note').textContent=note;}
  const sourceUrl=safeUrl(data.source.url),status=verification.status==='blocked'?'最近补采受阻':'已收录采集结果';
- $('#inventory-source-status').innerHTML=`<span><strong>北京 · 灵之智能筛选结果</strong><span class="tag ${verification.status==='blocked'?'amber':'neutral'}">${esc(status)}</span></span><span>累计收录 ${stats.count} 条 · 最近补采新增 ${fetched===null?'—':fetched} 条 · 非北京全量</span><button class="text-btn" id="inventory-audit">统计口径</button>${sourceUrl?`<a class="text-btn" href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">自如地图 ↗</a>`:''}`;
+ $('#inventory-source-status').innerHTML=`<span><strong>北京 · 灵之智能筛选结果</strong><span class="tag ${verification.status==='blocked'?'amber':'neutral'}">${esc(status)}</span></span><span>累计收录 ${stats.count} 条 · 最近补采新增 ${fetched===null?'—':fetched} 条 · 非北京全量</span><button class="text-btn" id="inventory-refresh" ${inventoryRefreshRunning?'disabled':''}>${inventoryRefreshRunning?'正在刷新':'刷新已收录数据'}</button><button class="text-btn" id="inventory-audit">统计口径</button>${sourceUrl?`<a class="text-btn" href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">自如地图</a>`:''}`;
+ $('#inventory-refresh').onclick=refreshCollectedInventory;
  $('#inventory-audit').onclick=showInventoryAudit;
  $('#bedroom-summary').innerHTML=[['1','1 居'],['2','2 居'],['3+','3 居及以上'],['shared','合租单间'],['unknown','待分类']].map(([key,label])=>`<button type="button" class="bedroom-stat" data-bedroom-group="${key}" aria-label="查看${label}采集房源"><span>${label}</span><strong>${stats.bedrooms[key]}</strong><small>${key==='shared'?'按出租卧室计':'条房源记录'}</small></button>`).join('');
- $$('[data-bedroom-group]').forEach(button=>button.onclick=()=>{showPage('properties');$('#inventory-view').value='collected';$('#business-select').value='';$('#bedroom-select').value=button.dataset.bedroomGroup;$('#district-select').value='';$('#property-search').value='';state.propertyPage=1;renderProperties();});
+ $$('[data-bedroom-group]').forEach(button=>button.onclick=()=>openInventoryLevel({view:'properties',businessKey:'',communityKey:'',bedroomGroup:button.dataset.bedroomGroup}));
 }
 function persist(){try{localStorage.setItem('lingzhi-demo-v1',JSON.stringify({events:state.events,tickets:state.tickets,activities:state.activities,diagnosticProgress:state.diagnosticProgress,imported:state.imported}));}catch{}}
 function addActivity(title,body,kind='agent'){state.activities.unshift({title,body,kind,time:timeNow()});state.activities=state.activities.slice(0,20);persist();renderActivity();}
@@ -220,7 +249,7 @@ async function showScene(mode){
  showPage('overview',false);
  state.scene=mode;document.body.dataset.scene=mode;state.activeDevice=null;$$('button[data-scene]').forEach(b=>b.classList.toggle('selected',b.dataset.scene===mode));$('#rotate-btn').classList.remove('active');$('#top-view-btn').classList.remove('active');$('#scene-detail').hidden=true;
  const property=allProperties().find(p=>p.id===activeTwinPropertyId)||allProperties().find(p=>p.id===MODEL_PROPERTY_ID),referenceReady=canOpenModel(property);
- twinWorkspace?.setVisible(mode==='apartment');$('.geo-panel').hidden=mode!=='city';
+ twinWorkspace?.setVisible(mode==='apartment');$('.geo-panel').hidden=mode!=='city';$('#inventory-return-bar').hidden=mode!=='apartment';
  mapWorkspace.setVisible(mode==='city');viewer?.setActive(false);
  $('#geo-filters').hidden=mode!=='city';$('#geo-map-status').hidden=mode!=='city';$('#geo-terrain-btn').hidden=mode!=='city';
  $('#scene-labels').hidden=mode!=='apartment'||!referenceReady;$('.scene-orientation').hidden=mode!=='apartment'||!referenceReady;
@@ -270,7 +299,7 @@ function renderEvents(){
  const events=open.filter(e=>state.eventFilter==='all'||e.priority===state.eventFilter);
  $('#event-list').innerHTML=events.length?events.map(e=>`<button class="event-item" data-event="${e.id}"><div class="event-item-top"><span class="priority ${e.priority.toLowerCase()}">${e.priority}</span><strong>${esc(e.title)}</strong></div><div class="event-item-meta"><span>${esc(e.property)}</span><span>${esc(e.age)}</span></div><div class="event-item-bottom">${icon('agent')}<span>${esc(e.status==='ticketed'?'已生成工单草稿':e.status==='diagnosed'?'诊断建议待核验':e.agent.split(' ')[1])}</span></div></button>`).join(''):`<div class="empty-state">${icon('check')}<h3>当前筛选无待办</h3><p>演示流程可以在工单中心查看。</p></div>`;
  $$('[data-event]').forEach(el=>el.onclick=()=>openEvent(el.dataset.event));
- mapWorkspace?.update(mapProperties(),state.events);syncHousehold();
+ mapWorkspace?.update(mapProperties(),state.events);syncHousehold();if(inventoryExplorer)syncInventoryExplorer();
 }
 function renderActivity(){
  const rows=state.activities.slice(0,3);$('#activity-feed').innerHTML=rows.map(a=>`<div class="activity"><div class="activity-icon">${icon(a.kind)}</div><div class="activity-main"><div class="activity-head"><b>${esc(a.title)}</b><time>${esc(a.time)}</time></div><p>${esc(a.body)}</p></div></div>`).join('');
@@ -284,13 +313,13 @@ function renderModelTables(){
 function renderProperties(){
  const current=$('#district-select').value,all=inventoryProperties($('#inventory-view').value),names=new Set(all.map(p=>p.district).filter(Boolean));
  $('#district-select').innerHTML='<option value="">全部区域</option>'+[...names].sort((a,b)=>a.localeCompare(b,'zh-CN')).map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join('')+(all.some(p=>!p.district)?'<option value="__unknown__">区域待确认</option>':'');
- $('#district-select').value=names.has(current)||current==='__unknown__'?current:'';renderBusinessOptions(all);renderInventorySummary();renderPropertiesList();
- mapWorkspace?.update(mapProperties(),state.events);syncHousehold();
+ $('#district-select').value=names.has(current)||current==='__unknown__'?current:'';renderBusinessOptions(all);renderInventorySummary();renderPropertiesList();syncInventoryExplorer();
+ mapWorkspace?.update(mapProperties(),state.events);syncHousehold();twinWorkspace?.updateProperties(allProperties());
 }
 function propertyBusiness(property){
  const audit=listingInventory?.properties?.find(row=>row.id===property.id)?.fields?.businessArea;
  const location=geography?.properties?.find(row=>row.id===property.id)?.businessDistrict;
- const name=audit?.verified===true?audit.value:location?.status==='confirmed_existing_detail_read'?location.name:null;
+ const name=audit?.verified===true?audit.value:['confirmed','confirmed_existing_detail_read'].includes(location?.status)?location.name:null;
  return name?{key:name,label:name,verified:true}:{key:'__unknown__',label:'商圈待核验',verified:false,candidate:location?.candidate||null};
 }
 function renderBusinessOptions(rows){
@@ -322,16 +351,17 @@ function renderPropertiesList(){
  if($('#clear-property-search'))$('#clear-property-search').onclick=()=>{$('#property-search').value='';$('#district-select').value='';$('#business-select').value='';$('#bedroom-select').value='';state.propertyPage=1;renderPropertiesList();};
 }
 function showProperty(id){
- const p=allProperties().find(p=>p.id===String(id));if(!p)return;
- const location=(geography?.properties||[]).find(row=>String(row.id)===p.id),business=location?.businessDistrict;
- const audit=listingInventory?.properties?.find(row=>String(row.id)===p.id),references=modelCoverage?.properties?.find(row=>String(row.id)===p.id);
- const sourceName=p.imported?'本地 CSV 台账':'自如地图已采集 · 已计入运维中房源';
- const businessText=business?.status==='confirmed_existing_detail_read'?`${business.name} · 历史详情已确认`:business?.candidate?`${business.candidate} · 待核验候选`:'商圈待核验';
- const rows=[['记录身份',audit?.realListingId?'自如房源 ID '+audit.realListingId:p.imported?'本地导入 ID '+p.id:'本地索引 '+p.id+'；真实房源 ID 待核验'],['资料补充',audit?inventoryMissing(audit):'详细字段待补'],['行政区',p.district||'待核验'],[p.areaScope==='listed_bedroom'?'卧室面积':'房源面积',`${p.area??'—'}㎡`],['居室与楼层',`${p.bedrooms??'—'}居 · ${p.floor??'—'}/${p.totalFloors??'—'}层`],['产品标签',p.product||'待补'],['商圈',businessText],['地图位置',location?.label||'尚未取得核验位置'],['真实设备状态','未接入'],['三维参考',references?`户型图 ${references.floorplanCount} 张 · 室内照片 ${references.interiorPhotoCount} 张`:'尚未提供对应素材']];
- showModal(p.name,`<div class="source-state"><span class="tag blue">${esc(sourceName)}</span><span>${esc(formatObservedAt(p.observedAt))} · 非实时库存</span></div><table><tbody>${rows.map(([key,value])=>`<tr><td>${esc(key)}</td><td>${esc(value)}</td></tr>`).join('')}</tbody></table>${location?`<p class="small-note">${esc(location.matchBasis)}；小区和地铁参考点不代表房间精确位置。</p>`:''}<h3>${canOpenModel(p)?'三维样板资料已具备':'待补三维资料'}</h3><p>${canOpenModel(p)?'本样板按对应户型图和室内照片近似重建，实测尺寸与现场设备配置仍待补齐。':esc(references?.missing?.join('、')||'对应真实房源身份、户型图、主要房间照片与必要尺寸。')}</p><div class="view-menu"><button class="button primary" id="property-running">查看家庭运行</button><button class="button" id="property-model">${canOpenModel(p)?'进入三维运维':'查看设备配置'}</button>${location?.coordinate?'<button class="button" id="property-on-map">在地图中查看</button>':''}${p.sourceUrl?`<a class="button" href="${esc(p.sourceUrl)}" target="_blank" rel="noopener noreferrer">查看房源来源</a>`:''}</div>`);
- $('#property-running').onclick=()=>{$('#modal').close();openHousehold(p.id);};
- if($('#property-model'))$('#property-model').onclick=()=>{$('#modal').close();openTwin(p.id);};
- if($('#property-on-map'))$('#property-on-map').onclick=async()=>{$('#modal').close();setMapScope('collected');await showScene('city');mapWorkspace?.focusProperty(p.id);};
+ const property=allProperties().find(p=>p.id===String(id));if(!property)return;
+ const coverageRecord=modelCoverage?.properties?.find(record=>String(record.id)===property.id);
+ const row=currentInventoryHierarchy().rows.find(record=>record.id===property.id)||{id:property.id,property,city:'北京',district:property.district,businessKey:'__unknown__',businessName:'商圈待核验',businessVerified:false,businessCandidate:null,communityName:property.name,bedroomGroup:housingGroup(property),realListingId:listingIdentity(property),referenceReady:false,floorplanCount:0,interiorPhotoCount:0,vrUrl:null,vrVerified:false,deviceInstallationVerified:false,telemetryConnected:false,pendingEvents:state.events.filter(event=>event.propertyId===property.id&&event.status!=='resolved'),observedAt:property.observedAt};
+ showModal(property.name+' · 房源详情','<div id="property-detail-root" class="property-detail-shell"></div>');
+ $('#modal').classList.add('property-detail-modal');
+ propertyDetailController=mountPropertyDetail($('#property-detail-root'),{row,coverageRecord,
+  onTwin:propertyId=>{$('#modal').close();openTwin(propertyId);},
+  onHousehold:propertyId=>{$('#modal').close();openHousehold(propertyId);},
+  onReferences:propertyId=>showReferences(propertyId),
+  onMap:async propertyId=>{$('#modal').close();setMapScope('collected');await showScene('city');mapWorkspace?.focusProperty(propertyId);}
+ });
 }
 function renderAgents(){$('#agent-grid').innerHTML=agentRoles.map(a=>`<article class="agent-card"><div class="agent-symbol">${icon(a.icon)}</div><span class="eyebrow">${a.id}</span><h2>${a.name}</h2><p>${a.task}</p><dl><dt>主要交付成果</dt><dd>${a.result}</dd><dt>真人管理责任</dt><dd>${a.owner}</dd></dl><span class="tag blue">${a.state}</span></article>`).join('');}
 function renderTickets(){
@@ -388,7 +418,7 @@ function verifyEvent(id){
  addActivity('监控与调度 · 逐项复验通过',e.property+'：本轮模拟复验条件已通过，保留证据及技能版本供专家复核。','check');
  toast('逐项模拟复验通过，演示事件已闭环。');
 }
-function showModal(title,body){$('#modal-title').textContent=title;$('#modal-body').innerHTML=body;$('#modal').showModal();hydrateIcons($('#modal'));}
+function showModal(title,body){propertyDetailController?.destroy?.();propertyDetailController=null;$('#modal').classList.remove('property-detail-modal');$('#modal-title').textContent=title;$('#modal-body').innerHTML=body;$('#modal').showModal();hydrateIcons($('#modal'));}
 function showCrawlStatus(){
  if(!data){toast('采集记录仍在加载。');return;}
  const verification=mapLastAttempt(),stats=collectedStats(),url=safeUrl(data.source.url);
@@ -425,6 +455,8 @@ $('.footer-brand').onclick=$('#brand-home').onclick;
 $('#menu-toggle').onclick=()=>{if(window.matchMedia('(max-width:640px)').matches){const open=document.body.classList.toggle('menu-open');$('#menu-toggle').setAttribute('aria-expanded',String(open));}else{$('#app').scrollIntoView({behavior:motionBehavior(),block:'start'});}};
 syncHeader();
 $$('.nav-item[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));$$('[data-go]').forEach(b=>b.onclick=()=>showPage(b.dataset.go));
+$$('[data-inventory-view]').forEach(button=>button.onclick=()=>openInventoryLevel({view:button.dataset.inventoryView,businessKey:'',communityKey:'',bedroomGroup:''}));
+$('#return-to-inventory').onclick=()=>{$('#overview-inventory').scrollIntoView({behavior:motionBehavior(),block:'start'});};
 $$('[data-event-filter]').forEach(b=>b.onclick=()=>{state.eventFilter=b.dataset.eventFilter;$$('[data-event-filter]').forEach(v=>v.classList.toggle('selected',v===b));renderEvents();});
 $$('button[data-scene]').forEach(b=>b.onclick=()=>showScene(b.dataset.scene));
 $('#show-apartment-btn').onclick=()=>openTwin(MODEL_PROPERTY_ID);$('#tour-btn').onclick=async()=>{await openTwin(MODEL_PROPERTY_ID);twinWorkspace?.setScenario('gateway-offline');openEvent('EVT-DEMO-001');};

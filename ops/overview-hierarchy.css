@@ -1,0 +1,17 @@
+.inventory-dimensions{grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-bottom:30px}
+.inventory-dimensions>.metric{text-align:left;font:inherit;border-radius:0;cursor:pointer;padding-top:12px;padding-bottom:12px;transition:background .15s ease}
+.inventory-dimensions>.metric:hover{background:#f4f8fd}
+.inventory-dimensions>.metric:focus-visible{outline:2px solid #0678f9;outline-offset:4px}
+.inventory-dimensions .metric-foot{font-size:14px;line-height:1.65;min-height:44px;margin-top:12px}
+.inventory-dimensions .metric-action{display:block;font-size:14px;color:#086dce;margin-top:13px}
+#overview-inventory{min-width:0;margin:0 0 52px;scroll-margin-top:155px}
+.inventory-return-bar{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 18px;color:#5a6573;font-size:14px}
+.inventory-return-bar[hidden]{display:none}
+#inventory-refresh{white-space:nowrap}
+#inventory-refresh:disabled{opacity:.55;cursor:wait}
+#inventory-source-status{grid-template-columns:max-content minmax(0,1fr)max-content max-content max-content}
+.property-detail-shell{width:100%;min-width:0}
+#modal.property-detail-modal{width:min(960px,calc(100vw - 40px))}
+@media(max-width:1000px){#inventory-source-status{display:flex;flex-wrap:wrap}.inventory-dimensions>.metric{padding-right:22px;padding-left:22px}.inventory-dimensions>.metric:first-child{padding-left:0}.inventory-dimensions>.metric:last-child{padding-right:0}}
+@media(max-width:640px){.inventory-dimensions{grid-template-columns:1fr;margin-bottom:22px}.inventory-dimensions>.metric{display:grid;grid-template-columns:minmax(0,1fr)auto;column-gap:18px;padding:18px 0!important;border-left:0;border-bottom:1px solid #e0e5eb}.inventory-dimensions .metric-name{margin-bottom:0;font-size:16px}.inventory-dimensions>.metric>strong{grid-column:2;grid-row:1/3;font-size:46px;align-self:center}.inventory-dimensions .metric-foot{grid-column:1;min-height:0;margin-top:6px}.inventory-dimensions .metric-action{grid-column:1/-1;margin-top:8px}#overview-inventory{scroll-margin-top:86px;margin-bottom:34px}#modal.property-detail-modal{width:calc(100vw - 20px)}}
+@media(prefers-reduced-motion:reduce){.inventory-dimensions>.metric{transition:none}}

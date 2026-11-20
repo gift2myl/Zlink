@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" sizes="736x736" href="./ops/assets/logo-icon-blue.png?v=20261120-blue">
   <link rel="icon" type="image/svg+xml" sizes="any" href="./favicon.svg?v=20261120-blue">
   <link rel="apple-touch-icon" href="./ops/assets/logo-icon-blue.png?v=20261120-blue">
-  <link rel="stylesheet" href="./ops/assets/vendor/maplibre/maplibre-gl.css"><link rel="stylesheet" href="./ops/assets/vendor/leaflet/leaflet.css"><link rel="stylesheet" href="./ops/style.css"><link rel="stylesheet" href="./ops/twin.css"><link rel="stylesheet" href="./ops/monitor-map.css"><link rel="stylesheet" href="./ops/household.css"><link rel="stylesheet" href="./ops/diagnostic-workspace.css"><link rel="stylesheet" href="./ops/reference-gallery.css">
+  <link rel="stylesheet" href="./ops/assets/vendor/maplibre/maplibre-gl.css"><link rel="stylesheet" href="./ops/assets/vendor/leaflet/leaflet.css"><link rel="stylesheet" href="./ops/style.css"><link rel="stylesheet" href="./ops/twin.css"><link rel="stylesheet" href="./ops/monitor-map.css"><link rel="stylesheet" href="./ops/household.css"><link rel="stylesheet" href="./ops/diagnostic-workspace.css"><link rel="stylesheet" href="./ops/reference-gallery.css"><link rel="stylesheet" href="./ops/inventory-explorer.css"><link rel="stylesheet" href="./ops/property-detail.css"><link rel="stylesheet" href="./ops/overview-hierarchy.css">
   <script type="importmap">{"imports":{"three":"./ops/assets/vendor/three.module.js","three/addons/controls/OrbitControls.js":"./ops/assets/vendor/OrbitControls.js"}}</script>
 </head>
 <body class="header-scrolled" data-page="overview" data-scene="city">
@@ -23,22 +23,23 @@
     <button class="nav-item" data-page="devices"><span data-icon="devices"></span><span>设备监控</span></button>
     <button class="nav-item" data-page="agents"><span data-icon="agent"></span><span>数字员工</span></button>
     <button class="nav-item" data-page="tickets"><span data-icon="ticket"></span><span>事件工单</span><b id="nav-ticket-count">0</b></button>
-    <div class="nav-bottom"><button class="nav-item" id="nav-data"><span data-icon="layers"></span><span>来源</span></button><span class="version">DEMO 1.6</span></div>
+    <div class="nav-bottom"><button class="nav-item" id="nav-data"><span data-icon="layers"></span><span>来源</span></button><span class="version">DEMO 1.7</span></div>
   </aside>
   <main id="app">
     <section class="page-heading"><div><div class="eyebrow">Z-LINK OPERATIONS</div><h1 id="page-title">家庭智能运维管家</h1><p id="page-description">一个入口，两个能力：
 让「用得怎么样」看得见，让「怎么办」问得到。</p></div><div class="heading-actions"><span class="city-chip" data-icon="pin">北京</span><button class="button" id="show-apartment-btn" data-icon="cube">三维设备运维</button><button class="button primary" id="tour-btn" data-icon="play">演示异常闭环</button></div></section>
     <section id="overview-page" class="page active">
       <p id="inventory-source-status" class="inventory-source-status" aria-live="polite"><span class="inventory-scope">北京 · 灵之智能筛选结果</span><span class="inventory-source-detail">累计已采集房源 · 最近新增独立展示</span></p>
-      <div class="metrics inventory-metrics">
-        <article class="metric"><div class="metric-name">运维中房源<span data-icon="building"></span></div><strong id="metric-properties">—</strong><div class="metric-foot"><span id="metric-properties-note">已采集收录的全部房源 · 按记录去重</span></div></article>
-        <article class="metric"><div class="metric-name">覆盖商圈数<span data-icon="pin"></span></div><strong id="metric-businesses">—</strong><div class="metric-foot"><span id="metric-businesses-note">仅统计已核验商圈</span></div></article>
-        <article class="metric"><div class="metric-name">覆盖楼盘 / 小区数<span data-icon="layers"></span></div><strong id="metric-communities">—</strong><div class="metric-foot"><span id="metric-communities-note">等待小区名称核验</span></div></article>
-        <article class="metric"><div class="metric-name">覆盖行政区数<span data-icon="map"></span></div><strong id="metric-districts">—</strong><div class="metric-foot"><span id="metric-districts-note">等待行政区核验</span></div></article>
+      <div class="metrics inventory-metrics inventory-dimensions" aria-label="按房源、商圈或小区查看已采集数据">
+        <button type="button" class="metric" data-inventory-view="properties" aria-controls="overview-inventory"><span class="metric-name">运维中房源<span data-icon="building"></span></span><strong id="metric-properties">—</strong><span class="metric-foot"><span id="metric-properties-note">已采集收录的全部房源 · 按记录去重</span></span><span class="metric-action">查看全部房源</span></button>
+        <button type="button" class="metric" data-inventory-view="businesses" aria-controls="overview-inventory"><span class="metric-name">覆盖商圈<span data-icon="pin"></span></span><strong id="metric-businesses">—</strong><span class="metric-foot"><span id="metric-businesses-note">已确认商圈与待核验房源分别展示</span></span><span class="metric-action">按商圈分级查看</span></button>
+        <button type="button" class="metric" data-inventory-view="communities" aria-controls="overview-inventory"><span class="metric-name">覆盖小区 / 楼盘<span data-icon="layers"></span></span><strong id="metric-communities">—</strong><span class="metric-foot"><span id="metric-communities-note">按行政区与小区名称去重</span></span><span class="metric-action">按小区查看房源</span></button>
       </div>
       <section id="bedroom-summary" class="bedroom-summary" aria-label="居室分类" aria-live="polite"><div class="bedroom-stat"><span>1居</span><strong>—</strong></div><div class="bedroom-stat"><span>2居</span><strong>—</strong></div><div class="bedroom-stat"><span>3居及以上</span><strong>—</strong></div><div class="bedroom-stat"><span>合租单间</span><strong>—</strong></div><div class="bedroom-stat"><span>待分类</span><strong>—</strong></div></section>
+      <section id="overview-inventory" aria-label="房源、商圈与小区分级台账"></section>
       <section id="household-entry" class="house-entry" aria-label="家庭运行入口"></section>
       <div class="section-intro"><div><p class="eyebrow">OPERATIONS MAP</p><h2>看清分布，聚焦待办。</h2></div><p>从城市分布定位房源，<br>从待办优先级进入处理。</p></div>
+      <div id="inventory-return-bar" class="inventory-return-bar" hidden><button type="button" class="button" id="return-to-inventory">返回当前分级台账</button><span>保留所选商圈、小区与居室筛选</span></div>
       <section id="twin-controls" class="twin-controls" aria-label="三维设备配置与异常演示" hidden></section>
       <div class="command-grid">
         <section class="panel map-panel">

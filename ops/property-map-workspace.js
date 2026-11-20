@@ -1,4 +1,5 @@
 import { GeographicMap } from './geo-map-viewer.js';
+import { mapGroupKeys, mapGroups, combineMapPoints } from './map-hierarchy.js';
 
 const MODEL_PROPERTY_ID = '810151211';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
@@ -26,8 +27,15 @@ function businessInfo(record) {
   const business = record?.businessDistrict || {};
   const confirmed = ['confirmed', 'confirmed_existing_detail_read'].includes(business.status) && string(business.name);
   if (confirmed) return { key: `confirmed:${string(business.name)}`, label: `${string(business.name)}（已确认）`, confirmed: true };
-  if (string(business.candidate)) return { key: `candidate:${string(business.candidate)}`, label: `${string(business.candidate)}（候选）`, confirmed: false };
   return { key: 'unverified', label: '商圈待核验', confirmed: false };
+}
+
+function positionLabel(entry) {
+  if (entry.matchType === 'station_proxy') return '地铁参考';
+  if (entry.matchType !== 'community') return '待定位';
+  return entry.geography?.precision === 'city_registered_community_estimate' ? '官网小区 · 市域配准估算'
+    : entry.geography?.precision === 'registered_community_estimate' ? '官网小区 · 邻域配准估算'
+    : entry.geography?.precision === 'osm_residential_reference' ? 'OSM 住宅参考点' : '小区参考';
 }
 
 function propertyFacts(property) {
@@ -41,28 +49,30 @@ function propertyFacts(property) {
 export class PropertyMapWorkspace {
   constructor(container, {
     properties = [], events = [], geography = {}, sources = {},
-    onOpenProperty, onOpenModel, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap
+    onOpenProperty, onOpenModel, onOpenPlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap
   } = {}) {
     this.container = container;
     this.geography = geography || {};
     this.sources = sources || {};
-    this.callbacks = { onOpenProperty, onOpenModel, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap };
+    this.callbacks = { onOpenProperty, onOpenModel, onOpenPlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap };
     this.active = true;
+    this.communityKey = '';
     this.selectedId = null;
     this.indices = new Map();
     this.nextIndex = 1;
     this.filters = { district: '', business: '', status: 'all' };
     this.elements = Object.fromEntries([
       'geo-filters', 'geo-district-filter', 'geo-business-filter', 'geo-status-filter', 'geo-property-list',
-      'geo-coverage-summary', 'geo-monitor-summary', 'geo-map-status', 'scene-detail', 'scene-breadcrumb',
+      'geo-coverage-summary', 'geo-panel-title', 'geo-monitor-summary', 'geo-map-status', 'scene-detail', 'scene-breadcrumb',
       'geo-terrain-btn', 'top-view-btn', 'rotate-btn'
     ].map(id => [id, document.getElementById(id)]));
     this.originalTitles = new Map(['geo-terrain-btn', 'top-view-btn', 'rotate-btn'].map(id => [id, this.elements[id]?.title || '']));
     this.listeners = [];
     this.updateData(properties, events);
     this.viewer = new GeographicMap(container, {
-      entries: this.entries, sources: this.sources,
-      onProperty: id => this.focusProperty(id),
+      entries: [], sources: this.sources,
+      onProperty: id => this.openMarker(id),
+      onNearby: entries => this.showPointChoices(entries,'附近位置'),
       onStatus: status => this.receiveStatus(status)
     });
     this.visibilityObserver = new IntersectionObserver(records => {
@@ -80,6 +90,17 @@ export class PropertyMapWorkspace {
     this.properties = list(properties);
     this.events = Array.isArray(events) ? events : [];
     const geographyById = new Map(list(this.geography).filter(record => record && typeof record === 'object').map(record => [string(record.id), record]));
+    const knownCommunities = new Map();
+    for (const property of this.properties) {
+      if (!property) continue;
+      const geographic = geographyById.get(string(property.id));
+      const code = string(geographic?.communityId || property.communityId);
+      if (!code) continue;
+      const district = districtName(property.district) || districtName(geographic?.district) || '区域待核验';
+      const key = JSON.stringify([district, string(property.name)]);
+      if (!knownCommunities.has(key)) knownCommunities.set(key, new Set());
+      knownCommunities.get(key).add(code);
+    }
     const seen = new Set();
     this.entries = this.properties.flatMap(property => {
       if (!property || typeof property !== 'object') return [];
@@ -90,6 +111,11 @@ export class PropertyMapWorkspace {
       const geographicRecord = geographyById.get(id) || null;
       const position = verifiedPosition(geographicRecord);
       const business = businessInfo(geographicRecord);
+      const district = districtName(property.district) || districtName(geographicRecord?.district) || '区域待核验';
+      const name = string(property.name) || '小区待核验';
+      const possible = knownCommunities.get(JSON.stringify([district, name]));
+      const code = string(geographicRecord?.communityId || property.communityId) || (possible?.size === 1 ? [...possible][0] : '');
+      const keys = mapGroupKeys(district, business.key, code || name);
       const seenEvents = new Set();
       const pending = this.pendingEvents(id).filter(event => {
         const eventId = string(event.id);
@@ -101,15 +127,14 @@ export class PropertyMapWorkspace {
       const pendingP1Count = pending.filter(event => event.priority === 'P1').length;
       const pendingP2Count = pending.filter(event => event.priority === 'P2').length;
       return [{
-        id, name: string(property.name) || '未命名房源',
-        district: districtName(property.district) || districtName(geographicRecord?.district) || '区域待核验',
+        id, name, district, ...keys,
         mapIndex: this.indices.get(id), position,
         matchType: position ? geographicRecord.matchType : 'unmatched',
         hasPending: pending.length > 0,
         pendingCount: pending.length, pendingP1Count, pendingP2Count,
         priority: pendingP1Count > 0 ? 'P1' : pendingP2Count > 0 ? 'P2' : null,
         property, geography: geographicRecord, businessLabel: business.label,
-        businessKey: business.key, businessConfirmed: business.confirmed
+        businessConfirmed: business.confirmed
       }];
     });
   }
@@ -128,15 +153,35 @@ export class PropertyMapWorkspace {
     for (const [key, id] of [['district', 'geo-district-filter'], ['business', 'geo-business-filter'], ['status', 'geo-status-filter']]) {
       this.listen(this.elements[id], 'change', event => {
         this.filters[key] = event.target.value;
+        if (key !== 'status') this.communityKey = '';
+        this.closeDetail();
         if (key === 'district') { this.filters.business = ''; this.renderBusinessFilter(); }
         this.applyFilters(true);
       });
     }
     this.listen(this.elements['geo-property-list'], 'click', event => {
+      const group = event.target.closest?.('[data-geo-group]');
+      if (group) { this.openGroup(group.dataset.geoGroup); return; }
       const button = event.target.closest?.('[data-geo-property-id]');
       if (button && this.elements['geo-property-list'].contains(button)) this.focusProperty(button.dataset.geoPropertyId);
     });
+    const list = this.elements['geo-property-list'];
+    const highlight = event => {
+      const control = event.target.closest?.('[data-geo-group],[data-geo-property-id]');
+      if (control) this.viewer.select(this.selectedPin(control.dataset.geoGroup || control.dataset.geoPropertyId)?.id || null);
+    };
+    for (const event of ['pointerover','focusin']) this.listen(list, event, highlight);
+    const restore = () => this.viewer.select(this.selectedPin(this.selectedId)?.id || null);
+    this.listen(list, 'pointerleave', restore);
+    this.listen(list, 'focusout', event => { if (!list.contains(event.relatedTarget)) restore(); });
     this.listen(this.elements['scene-detail'], 'click', event => {
+      const option = event.target.closest?.('[data-geo-option]');
+      if (option && this.active) {
+        const id = option.dataset.geoOption;
+        if (this.pins.some(pin => pin.id === id)) this.openMarker(id);
+        else this.openEntry(id);
+        return;
+      }
       const button = event.target.closest?.('[data-geo-action]');
       if (!button || !this.active) return;
       const entry = this.entries.find(item => item.id === this.selectedId);
@@ -144,6 +189,7 @@ export class PropertyMapWorkspace {
       if (!entry) return;
       if (button.dataset.geoAction === 'property') this.callbacks.onOpenProperty?.(entry.id);
       if (button.dataset.geoAction === 'operations') this.callbacks.onOpenOperations?.(entry.id);
+      if (button.dataset.geoAction === 'plan') this.callbacks.onOpenPlan?.(entry.id);
       if (button.dataset.geoAction === 'model') this.callbacks.onOpenModel?.(entry.id);
       if (button.dataset.geoAction === 'inventory') this.callbacks.onViewInventory?.(entry.district);
       if (button.dataset.geoAction === 'event') {
@@ -152,7 +198,12 @@ export class PropertyMapWorkspace {
       }
     });
     this.listen(this.elements['scene-breadcrumb'], 'click', event => {
-      if (this.active && event.target.closest?.('[data-geo-reset]')) this.reset();
+      const crumb = event.target.closest?.('[data-geo-crumb]');
+      if (!this.active || !crumb) return;
+      this.closeDetail();
+      if (crumb.dataset.geoCrumb !== 'community') this.communityKey = '';
+      if (crumb.dataset.geoCrumb === 'city') this.filters.business = '';
+      this.renderBusinessFilter(); this.applyFilters(true);
     });
   }
 
@@ -176,40 +227,59 @@ export class PropertyMapWorkspace {
     if (!select) return;
     const options = confirmed => choices.filter(entry => entry.businessConfirmed === confirmed)
       .sort((a, b) => a.businessLabel.localeCompare(b.businessLabel, 'zh-CN'))
-      .map(entry => `<option value="${esc(entry.businessKey)}">${esc(entry.businessLabel)}</option>`).join('');
+      .map(entry => `<option value="${esc(entry.businessKey)}">${esc(entry.district)} · ${esc(entry.businessLabel)}</option>`).join('');
     const confirmed = options(true), candidatesHtml = options(false);
-    select.innerHTML = '<option value="">全部商圈</option>' + (confirmed ? `<optgroup label="已确认商圈">${confirmed}</optgroup>` : '') + (candidatesHtml ? `<optgroup label="候选 / 待核验">${candidatesHtml}</optgroup>` : '');
+    select.innerHTML = '<option value="">全部商圈</option>' + (confirmed ? `<optgroup label="已确认商圈">${confirmed}</optgroup>` : '') + (candidatesHtml ? `<optgroup label="待核验">${candidatesHtml}</optgroup>` : '');
     select.value = this.filters.business;
   }
 
+  matchesStatus(entry) {
+    return ({pending: entry.hasPending, p1: entry.pendingP1Count > 0,
+      p2: entry.pendingP2Count > 0, unconnected: !entry.hasPending})[this.filters.status] ?? true;
+  }
+
   applyFilters(fit = true) {
-    this.filteredEntries = this.entries.filter(entry =>
+    const scoped = this.entries.filter(entry =>
       (!this.filters.district || entry.district === this.filters.district) &&
       (!this.filters.business || entry.businessKey === this.filters.business) &&
-      (this.filters.status !== 'pending' || entry.hasPending) &&
-      (this.filters.status !== 'p1' || entry.pendingP1Count > 0) &&
-      (this.filters.status !== 'p2' || entry.pendingP2Count > 0) &&
-      (this.filters.status !== 'unconnected' || !entry.hasPending)
+      this.matchesStatus(entry)
     );
+    if (this.communityKey && !this.entries.some(e => e.businessKey === this.filters.business && e.communityKey === this.communityKey)) this.communityKey = '';
+    const detail = this.elements['scene-detail'];
+    if (this.active && detail?.querySelector('.geo-point-options')) detail.hidden = true;
+    this.filteredEntries = this.communityKey ? scoped.filter(e => e.communityKey === this.communityKey) : scoped;
+    this.level = this.communityKey ? 'property' : this.filters.business ? 'community' : 'business';
+    this.groups = this.level === 'property' ? [] : mapGroups(this.filteredEntries, this.level);
+    this.pins = combineMapPoints(this.level === 'property' ? this.filteredEntries : this.groups);
     if (this.selectedId && !this.filteredEntries.some(entry => entry.id === this.selectedId)) this.closeDetail();
-    this.viewer?.setEntries(this.filteredEntries);
+    this.viewer?.setEntries(this.pins);
+    this.viewer?.select(this.selectedPin(this.selectedId)?.id || null);
     this.renderList();
     this.renderCoverage();
     this.renderMonitorSummary();
     this.renderBreadcrumb();
-    if (fit) { this.viewer?.setRotate(false); this.viewer?.fitAll(); this.syncControls(); }
+    if (fit) { this.viewer?.setRotate(false); this.viewer?.fitAll(true, this.level === 'business' ? 12 : 15); this.syncControls(); }
   }
 
   renderList() {
     const element = this.elements['geo-property-list'];
     if (!element) return;
-    element.innerHTML = this.filteredEntries.length ? this.filteredEntries.map(entry => {
-      const precision = entry.matchType === 'community' ? '小区参考' : entry.matchType === 'station_proxy' ? '地铁参考 · 非房屋' : '待定位';
+    const title = this.elements['geo-panel-title'];
+    if (title) title.textContent = {business:'按商圈查看房源',community:'楼盘 / 小区',property:'小区内房源'}[this.level] || '房源监控清单';
+    if (this.groups?.length) {
+      element.innerHTML = this.groups.map(group => {
+        const placed = group.members.filter(e => e.matchType === 'community').length;
+        return `<button type="button" class="geo-property-item geo-group-item" data-geo-group="${esc(group.id)}"><span class="geo-property-index">${group.members.length}</span><span class="geo-property-main"><strong>${esc(group.name)}</strong><span class="geo-property-region">${esc(group.district)} · ${group.members.length} 条房源 · ${placed ? placed + ' 条有小区位置' : '小区位置待核验'}</span></span><span aria-hidden="true">›</span></button>`;
+      }).join('');
+      return;
+    }
+    element.innerHTML = this.filteredEntries?.length ? this.filteredEntries.map(entry => {
+      const precision = positionLabel(entry);
       const priorityClass = entry.priority === 'P1' ? ' is-p1' : entry.priority === 'P2' ? ' is-p2' : '';
       const pendingLabel = entry.hasPending ? `${entry.priority ? entry.priority + ' ' : ''}演示待办 · ${entry.pendingCount}条` : '暂无演示待办';
       const pendingTag = entry.priority === 'P1' ? 'red' : entry.hasPending ? 'amber' : 'neutral';
       return `<button type="button" class="geo-property-item${priorityClass}${entry.id === this.selectedId ? ' is-selected' : ''}" data-geo-property-id="${esc(entry.id)}" aria-pressed="${entry.id === this.selectedId}">
-        <span class="geo-property-index">${entry.mapIndex}</span><span class="geo-property-main"><strong>${esc(entry.name)}</strong>
+        <span class="geo-property-index">${entry.mapIndex}</span><span class="geo-property-main"><strong>${esc(entry.property.realListingId || entry.id)}</strong><span class="geo-property-region">${esc(entry.name)}${entry.property.businessId ? " · "+esc(entry.property.businessId) : ""}</span>
         <span class="geo-property-region" style="display:block">${esc(entry.district)} · ${esc(entry.businessLabel)}</span>
         <span class="geo-property-region" style="display:block">${esc(propertyFacts(entry.property))}</span>
         <span class="geo-property-status"><span class="tag neutral">${precision}</span><span class="tag ${pendingTag}">${pendingLabel}</span></span>
@@ -223,7 +293,20 @@ export class PropertyMapWorkspace {
     const community = this.entries.filter(entry => entry.matchType === 'community').length;
     const proxy = this.entries.filter(entry => entry.matchType === 'station_proxy').length;
     const unmatched = this.entries.length - community - proxy;
-    element.innerHTML = `已采集 ${this.entries.length} 条 · 小区参考 ${community} · 地铁参考 ${proxy} · 待定位 ${unmatched}<br>当前筛选 ${this.filteredEntries.length} 条 · 非北京全量 · 真实设备状态未接入`;
+    const kinds = [
+      ['osm_residential_reference','OSM 住宅范围参考点'],
+      ['registered_community_estimate','官网小区 · 邻域配准估算'],
+      ['city_registered_community_estimate','官网小区 · 市域配准估算'],
+    ];
+    const legendOpen = element.querySelector('details')?.open || false;
+    const legend = kinds.map(([kind, label]) => {
+      const members = this.entries.filter(e => e.position && e.geography?.precision === kind);
+      const stat = members[0]?.geography;
+      const test = stat?.validationP90Metres != null ? `；交叉验证 ${stat.holdoutCount} 个小区，中位 ${stat.validationMedianMetres} 米，P90 ${stat.validationP90Metres} 米` : '';
+      return members.length ? `<div><i class="geo-precision-symbol" data-position-kind="${kind}" aria-hidden="true"></i><span>${label} · ${members.length} 条${test}</span></div>` : '';
+    }).join('');
+    element.innerHTML = `已采集 ${this.entries.length} 条 · 小区参考 ${community} · 地铁参考 ${proxy} · 待定位 ${unmatched}<br>当前范围 ${this.filteredEntries.length} 条 · 非北京全量 · 真实设备状态未接入` +
+      (legend ? `<details class="geo-precision-legend" ${legendOpen ? 'open' : ''}><summary>定位图例与误差</summary>${legend}</details>` : '');
   }
 
   renderMonitorSummary() {
@@ -244,7 +327,49 @@ export class PropertyMapWorkspace {
 
   renderBreadcrumb() {
     if (!this.active || !this.elements['scene-breadcrumb']) return;
-    this.elements['scene-breadcrumb'].innerHTML = `<button type="button" class="text-btn" data-geo-reset>北京</button><span class="crumb-divider">/</span><strong>${esc(this.filters.district || '全部区域')}</strong>`;
+    const current = this.communityKey && this.entries.find(e => e.businessKey === this.filters.business && e.communityKey === this.communityKey);
+    const parts = ['<button type="button" class="text-btn" data-geo-crumb="city">北京</button>'];
+    if (this.filters.district) parts.push(esc(this.filters.district));
+    if (this.filters.business) {
+      const business = this.entries.find(e => e.businessKey === this.filters.business);
+      if (business) parts.push(`<button type="button" class="text-btn" data-geo-crumb="business">${esc(business.businessLabel)}</button>`);
+    }
+    if (this.communityKey && current) parts.push(`<button type="button" class="text-btn" data-geo-crumb="community">${esc(current.name)}</button>`);
+    if (this.selectedId) parts.push(esc(this.selectedId));
+    this.elements['scene-breadcrumb'].innerHTML = parts.join('<span class="crumb-divider">/</span>');
+  }
+
+  openGroup(id) {
+    const group = this.groups.find(item => item.id === id);
+    if (!group) return;
+    this.closeDetail();
+    if (group.type === 'business') this.filters.business = id;
+    else this.communityKey = id;
+    this.renderBusinessFilter(); this.applyFilters(true);
+  }
+
+  openEntry(id) {
+    if (this.groups.some(item => item.id === id)) this.openGroup(id);
+    else this.focusProperty(id);
+  }
+
+  openMarker(id) {
+    const pin = this.pins.find(item => item.id === id);
+    if (!pin) return;
+    if (!pin.options) { this.openEntry(id); return; }
+    this.showPointChoices(pin.options,'同一参考位置',id);
+  }
+
+  showPointChoices(options, heading, pinId = null) {
+    this.closeDetail();
+    this.viewer.select(pinId);
+    const box = this.elements['scene-detail'];
+    box.hidden = false;
+    box.innerHTML = `<button type="button" class="icon-btn close-scene-detail" data-geo-action="close" aria-label="关闭选择">×</button><h3>${esc(heading)}</h3><div class="geo-point-options">${options.map(e => `<button type="button" class="button" data-geo-option="${esc(e.id)}">${esc(e.type ? e.name + ' · ' + e.district : e.property.realListingId || e.id)}</button>`).join('')}</div>`;
+  }
+
+  selectedPin(id) {
+    return this.pins.find(pin => pin.id === id || pin.options?.some(item => item.id === id));
   }
 
   canOpenModel(entry) {
@@ -256,14 +381,12 @@ export class PropertyMapWorkspace {
     const entry = this.entries.find(item => item.id === id);
     if (!entry) return false;
     if (!this.active && this.callbacks.onActivateMap) await this.callbacks.onActivateMap();
-    if (!this.filteredEntries.some(item => item.id === id)) {
-      this.filters = { district: '', business: '', status: 'all' };
-      this.renderFilters(); this.applyFilters(false);
-    }
-    this.selectedId = id;
-    this.deferredFocusId = null;
-    this.viewer.select(id);
-    this.renderList();
+    if (this.filters.district && this.filters.district !== entry.district) this.filters.district = '';
+    if (!this.matchesStatus(entry)) this.filters.status = 'all';
+    this.filters.business = entry.businessKey; this.communityKey = entry.communityKey;
+    this.selectedId = id; this.deferredFocusId = null;
+    this.renderFilters(); this.applyFilters(false);
+    this.viewer.select(this.selectedPin(id)?.id || null);
     this.renderDetail(entry);
     this.viewer.setRotate(false);
     this.syncControls();
@@ -278,7 +401,7 @@ export class PropertyMapWorkspace {
     const id = this.deferredFocusId;
     if (!id || !this.active || !(this.inViewport || this.viewer.inViewport)) return false;
     this.deferredFocusId = null;
-    try { return await this.viewer.focusProperty(id); }
+    try { return await this.viewer.focusProperty(this.selectedPin(id)?.id); }
     catch { return false; }
   }
 
@@ -290,7 +413,7 @@ export class PropertyMapWorkspace {
     const businessUrl = safeUrl(geographicRecord?.businessDistrict?.sourceUrl);
     const sourceUrl = safeUrl(entry.property.sourceUrl);
     const pending = this.pendingEvents(entry.id);
-    const precision = entry.matchType === 'community' ? '小区参考位置；未定位楼栋、房间或设备。'
+    const precision = entry.matchType === 'community' ? positionLabel(entry) + '，仅供小区级定位。'
       : entry.matchType === 'station_proxy' ? '地铁站代理参考位置；房屋和小区尚未定位。'
       : '尚无经核验的 WGS84 定位；地图不放置推测点。';
     const links = [osmUrl && `<a href="${esc(osmUrl)}" target="_blank" rel="noopener noreferrer">OSM 对象</a>`,
@@ -300,16 +423,17 @@ export class PropertyMapWorkspace {
     element.style.maxHeight = 'calc(100% - 80px)';
     element.style.overflowY = 'auto';
     element.innerHTML = `<button type="button" class="icon-btn close-scene-detail" data-geo-action="close" aria-label="关闭房源地图详情">×</button>
-      <h3>${esc(entry.name)}</h3><p>${esc(entry.district)} · ${esc(propertyFacts(entry.property))}</p>
+      <h3>${esc(entry.name)}</h3><p>${entry.property.realListingId ? '挂牌号' : '记录号'} ${esc(entry.id)}${entry.property.businessId ? ' · ' + esc(entry.property.businessId) : ''}</p><p>${esc(entry.district)} · ${esc(propertyFacts(entry.property))}</p>
       <p><strong>定位</strong> · ${esc(precision)}<br><strong>商圈</strong> · ${esc(entry.businessLabel)}</p>
       <details><summary style="font-size:13px;cursor:pointer">地址与匹配来源</summary>
-        <p>OSM 地址：${esc(geographicRecord?.osm?.displayName || '尚无匹配地址')}<br>${esc(geographicRecord?.matchBasis || '仅有房源列表信息，等待地址核验。')}</p>
+        <p>${geographicRecord?.osm?.displayName ? 'OSM 地址：' + esc(geographicRecord.osm.displayName) + '<br>' : ''}${esc(geographicRecord?.positionBasis || geographicRecord?.matchBasis || '仅有房源列表信息，等待地址核验。')}</p>
         ${geographicRecord?.businessDistrict?.basis ? `<p>${esc(geographicRecord.businessDistrict.basis)}</p>` : ''}
         ${links.length ? `<p style="display:flex;flex-wrap:wrap;gap:10px;color:#fff">${links.join('')}</p>` : ''}
         ${geographicRecord?.reviewedAt ? `<p>定位核验记录：${esc(string(geographicRecord.reviewedAt).slice(0, 10))}</p>` : ''}
       </details>
       <p>${pending.length ? `演示待办 ${pending.length} 条；` : '无未闭环演示待办；'}真实设备状态未接入。</p>
       <div style="display:grid;gap:8px">
+        ${this.callbacks.onOpenPlan ? '<button type="button" class="button" data-geo-action="plan">查看户型 / 3D</button>' : ''}
         <button type="button" class="button" data-geo-action="operations">查看家庭运行</button>
         <button type="button" class="button" data-geo-action="property">查看房源详情</button>
         <button type="button" class="button" data-geo-action="model">${this.canOpenModel(entry) ? '进入三维运维' : '查看设备配置'}</button>
@@ -323,7 +447,7 @@ export class PropertyMapWorkspace {
     this.deferredFocusId = null;
     this.viewer?.select(null);
     if (this.active && this.elements['scene-detail']) this.elements['scene-detail'].hidden = true;
-    this.renderList();
+    this.renderList(); this.renderBreadcrumb();
   }
 
   receiveStatus(status) {
@@ -356,7 +480,7 @@ export class PropertyMapWorkspace {
     if (selected) this.renderDetail(selected);
   }
 
-  resize() { this.viewer.resize(); }
+  resize() { if (this.active) this.renderBreadcrumb(); this.viewer.resize(); }
 
   setVisible(visible) {
     this.active = Boolean(visible);
@@ -378,6 +502,7 @@ export class PropertyMapWorkspace {
   }
 
   reset() {
+    this.communityKey = '';
     this.filters = { district: '', business: '', status: 'all' };
     this.closeDetail(); this.renderFilters(); this.applyFilters(false);
     this.viewer.setRotate(false); this.viewer.reset(); this.syncControls();
@@ -385,7 +510,7 @@ export class PropertyMapWorkspace {
 
   focusDistrict(id) {
     const district = districtName(id);
-    this.filters = { district, business: '', status: 'all' };
+    this.filters = { district, business: '', status: 'all' }; this.communityKey = '';
     const select = this.elements['geo-district-filter'];
     if (select) {
       if (district && !this.entries.some(entry => entry.district === district)) {

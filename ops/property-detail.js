@@ -34,7 +34,7 @@ function roomLabel(property, row) {
 function fact(label, value) { return `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`; }
 
 /** A per-record view. No fetch, device command, inferred installed inventory or fallback floorplan. */
-export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onHousehold, onReferences, onMap} = {}) {
+export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onHousehold, onReferences, onMap, onPlan} = {}) {
   if (!container || !row?.property) return {destroy() {}};
   const property = row.property, id = text(row.id || property.id), uid = `pd-${++detailSequence}`;
   const source = sourceUrl(property.sourceUrl);
@@ -48,7 +48,7 @@ export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onH
   const photos = Math.max(count(references?.interiorPhotoCount), count(row.interiorPhotoCount), publicPhotos.length);
   const canViewReferences = Boolean(references && Array.isArray(references.assets) && references.assets.length && (floorplans || photos));
   const referenceReady = row.referenceReady === true && Boolean(references?.modelReady || references?.status === 'reference_ready');
-  const mediaStatus = referenceReady ? '有对应三维参考' : publicPlan ? '有官网户型图 · 尚未建模' : '户型资料待补';
+  const mediaStatus = referenceReady ? '有对应三维参考' : publicPlan ? '有本套官网户型图' : '户型资料待补';
   const missingMaterials = publicPlan
     ? [publicPhotos.length ? '建模所需的实测尺寸与照片对照核验' : '建模所需的对照照片与实测尺寸','该套房的设备实装清单与型号']
     : references?.missing?.length ? references.missing : [
@@ -88,9 +88,9 @@ export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onH
       <div class="pd-foot-links">${!officialDetail && source ? `<a href="${esc(source)}" target="_blank" rel="noopener noreferrer">查看原采集来源</a>` : ''}<span>真实设备状态：${row.telemetryConnected === true ? '请进入家庭运行核对' : '未接入'}</span></div>
     </section>
     <section class="pd-panel" id="${uid}-panel-references" role="tabpanel" aria-labelledby="${uid}-tab-references" data-pd-panel="references" hidden>
-      <div class="pd-reference-grid"><article class="pd-reference-card"><span class="pd-eyebrow">3D FLOORPLAN</span><h4>${referenceReady ? '本套户型参考已具备' : publicPlan ? '本套官网户型图' : '本套三维资料待补'}</h4><p>${referenceReady ? '使用该房源的官方户型图与室内照片近似重建，可进入三维查看设备配置点位。' : publicPlan ? '可打开本套原始户型图。三维模型和设备安装点位尚待核验。' : '设备配置可以查看；对应户型图、室内照片与必要尺寸补齐后，再建立这套房的三维空间。'}</p><div class="pd-reference-counts"><span><strong>${floorplans}</strong> 张户型图</span><span><strong>${photos}</strong> 张实景照片</span></div>${publicPlan ? `<a class="pd-button" href="${esc(publicPlan)}" target="_blank" rel="noopener noreferrer">查看官网户型图</a>` : ''}${canViewReferences ? '<button type="button" class="pd-button" data-pd-action="references">查看原始户型与照片</button>' : publicPlan ? '' : '<span class="pd-muted">尚无本套可查看的原始图片</span>'}</article><article class="pd-reference-card"><span class="pd-eyebrow">OFFICIAL VR</span><h4>${vrUrl ? '已核验原始 VR' : '原始 VR 待补'}</h4><p>${vrUrl ? '打开与本条房源对应的已核验官网 VR 链接。' : '当前没有与本条房源对应的已核验官网 VR 链接。三维参考模型与原始 VR 分别记录。'}</p>${vrUrl ? `<a class="pd-button" href="${esc(vrUrl)}" target="_blank" rel="noopener noreferrer">查看官网 VR</a>` : '<span class="pd-badge">尚未取得</span>'}</article></div>
+      <div class="pd-reference-grid"><article class="pd-reference-card"><span class="pd-eyebrow">3D FLOORPLAN</span><h4>${referenceReady ? '本套户型参考已具备' : publicPlan ? '本套官网户型图' : '本套三维资料待补'}</h4><p>${referenceReady ? '使用该房源的官方户型图与室内照片近似重建，可进入三维查看设备配置点位。' : publicPlan ? '可对照本套原图查看户型与方案配置，实测尺寸和安装位置待核验。' : '设备配置可以查看；对应户型图、室内照片与必要尺寸补齐后，再建立这套房的三维空间。'}</p><div class="pd-reference-counts"><span><strong>${floorplans}</strong> 张户型图</span><span><strong>${photos}</strong> 张实景照片</span></div>${publicPlan && (typeof onPlan === 'function' || typeof onTwin === 'function') ? '<button type="button" class="pd-button pd-button-primary" data-pd-action="plan">查看本套户型与方案点位</button>' : ''}${publicPlan ? `<a class="pd-button" href="${esc(publicPlan)}" target="_blank" rel="noopener noreferrer">查看官网户型图</a>` : ''}${canViewReferences ? '<button type="button" class="pd-button" data-pd-action="references">查看原始户型与照片</button>' : publicPlan ? '' : '<span class="pd-muted">尚无本套可查看的原始图片</span>'}</article><article class="pd-reference-card"><span class="pd-eyebrow">OFFICIAL VR</span><h4>${vrUrl ? '已核验原始 VR' : '原始 VR 待补'}</h4><p>${vrUrl ? '打开与本条房源对应的已核验官网 VR 链接。' : '当前没有与本条房源对应的已核验官网 VR 链接。三维参考模型与原始 VR 分别记录。'}</p>${vrUrl ? `<a class="pd-button" href="${esc(vrUrl)}" target="_blank" rel="noopener noreferrer">查看官网 VR</a>` : '<span class="pd-badge">尚未取得</span>'}</article></div>
       ${publicPhotos.length ? `<details class="pd-missing"><summary>官网室内照片 · ${publicPhotos.length} 张</summary><div class="pd-foot-links">${publicPhotos.map((url,index) => `<a class="pd-button" href="${esc(url)}" target="_blank" rel="noopener noreferrer">照片 ${index+1}</a>`).join('')}</div></details>` : ''}
-      ${referenceReady ? '<p class="pd-muted">参考重建用于空间与设备展示；实测尺寸、安装位置和真实设备状态仍需现场资料确认。</p>' : `<details class="pd-missing"><summary>本套建模待补资料</summary><ul>${missingMaterials.map(item => `<li>${esc(item)}</li>`).join('')}</ul></details>`}
+      ${referenceReady ? '<p class="pd-muted">参考重建用于空间与设备展示；实测尺寸、安装位置和真实设备状态仍需现场资料确认。</p>' : `<details class="pd-missing"><summary>本套尺寸与实装核验资料</summary><ul>${missingMaterials.map(item => `<li>${esc(item)}</li>`).join('')}</ul></details>`}
     </section>
     <section class="pd-panel" id="${uid}-panel-devices" role="tabpanel" aria-labelledby="${uid}-tab-devices" data-pd-panel="devices" hidden><div class="pd-device-toolbar"><div><h4>按房源居室匹配设备方案</h4><p class="pd-muted">配置来源：${esc(CONFIG_SOURCE.title)} · ${esc(CONFIG_SOURCE.version)}</p></div><label class="pd-profile-label" for="${uid}-profile"><span>配置方案</span><select id="${uid}-profile" data-pd-profile aria-label="房源详情设备配置方案">${CONFIG_PROFILES.filter(item => ['base','plus','upgrade'].includes(item.id)).map(item => `<option value="${esc(item.id)}">${esc(item.label)}</option>`).join('')}</select></label></div><div data-pd-config></div></section>
   </div>`;
@@ -116,7 +116,8 @@ export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onH
     if (!button || !container.contains(button) || button.disabled || destroyed) return;
     if (button.dataset.pdTab) {selectTab(button.dataset.pdTab);return;}
     const action = button.dataset.pdAction;
-    if (action === 'twin') onTwin?.(id);
+    if (action === 'plan') (onPlan || onTwin)?.(id, selectedProfile);
+    else if (action === 'twin') onTwin?.(id);
     else if (action === 'household') onHousehold?.(id);
     else if (action === 'references' && canViewReferences) onReferences?.(id);
     else if (action === 'map') onMap?.(id);

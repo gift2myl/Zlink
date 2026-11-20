@@ -135,11 +135,12 @@ function createPropertyLayer(maplibre, entries) {
 }
 
 export class GeographicMap {
-  constructor(container, { entries = [], sources = {}, onProperty, onStatus } = {}) {
+  constructor(container, { entries = [], sources = {}, onProperty, onNearby, onStatus } = {}) {
     this.container = container;
     this.entries = entries;
     this.sources = sources;
     this.onProperty = onProperty;
+    this.onNearby = onNearby;
     this.onStatus = onStatus;
     this.mode = 'pending';
     this.active = true;
@@ -361,6 +362,9 @@ export class GeographicMap {
     if (this.map !== map) throw new InitializationPaused('Map was replaced');
     this.propertyLayer = createPropertyLayer(maplibre, this.entries);
     map.addLayer(this.propertyLayer);
+    map.on('moveend', () => {
+      if (this.map === map && !this.rotating) this.refreshMarkers(false);
+    });
     this.refreshMarkers();
     this.fitAll(false);
     this.emitStatus();
@@ -383,6 +387,9 @@ export class GeographicMap {
     }).addTo(map);
     tiles.on('tileerror', () => { this.tileError = true; this.emitStatus(); });
     tiles.on('load', () => this.emitStatus());
+    map.on('moveend', () => {
+      if (this.map === map && !this.rotating) this.refreshMarkers(false);
+    });
     this.refreshMarkers();
     this.fitAll(false);
     this.emitStatus();
@@ -393,21 +400,67 @@ export class GeographicMap {
     button.type = 'button';
     button.className = 'geo-map-marker' + (entry.matchType === 'station_proxy' ? ' is-proxy' : '') + (entry.hasPending ? ' is-alert' : '') + (entry.priority === 'P1' ? ' is-p1' : entry.priority === 'P2' ? ' is-p2' : '') + (entry.id === this.selectedId ? ' is-selected' : '');
     button.dataset.propertyId = entry.id;
+    button.dataset.geoLevel = entry.type || 'property';
+    button.dataset.positionKind = entry.positionPrecision || entry.geography?.precision || '';
     button.innerHTML = '<span class="geo-marker-number">' + escapeHtml(entry.mapIndex) + '</span>' + (entry.priority ? '<span class="geo-marker-priority" aria-hidden="true">' + escapeHtml(entry.priority) + '</span>' : '') + '<span class="geo-marker-caption" aria-hidden="true">' + escapeHtml(entry.name) + '</span>';
-    const precision = entry.matchType === 'station_proxy' ? '地铁参考点，非房源位置' : '小区级参考位置';
+    const precision = entry.type === 'nearby' ? '相邻分组 · 点击放大，或选择房源'
+      : entry.type === 'business' ? '按商圈聚合 · 已定位小区参考点'
+      : entry.type === 'point' ? '同一参考位置 · 点击选择'
+      : entry.matchType === 'station_proxy' ? '地铁参考点，非房源位置' : '小区级参考位置';
+    const label = entry.type ? (entry.type === 'business' ? entry.district + ' · ' : '') + entry.name + ' · ' + entry.mapIndex + (['point','nearby'].includes(entry.type) ? ' 项' : ' 条房源') : entry.name + ' · ' + entry.id;
     const status = entry.hasPending ? (entry.priority || '') + ' 演示待办 ' + (entry.pendingCount || 1) + ' 条' : '暂无演示待办 · 真实状态未接入';
-    button.setAttribute('aria-label', entry.name + ' · ' + precision + ' · ' + status);
+    button.setAttribute('aria-label', label + ' · ' + precision + ' · ' + status);
     button.setAttribute('aria-pressed', String(entry.id === this.selectedId));
-    button.title = entry.name + ' · ' + precision + ' · ' + status;
-    button.addEventListener('click', event => { event.stopPropagation(); this.onProperty?.(entry.id); });
+    button.title = label + ' · ' + precision + ' · ' + status;
+    button.addEventListener('click', event => { event.stopPropagation(); if (entry.type === 'nearby') this.expandNearby(entry); else this.onProperty?.(entry.id); });
     return button;
   }
 
-  refreshMarkers() {
+  visibleGroups() {
+    const pins = this.entries.filter(hasPoint);
+    if (pins.length < 2) return pins;
+    // Choose real anchors and merge markers whose 40px hit areas would overlap at this camera angle.
+    const batches = [];
+    for (const pin of pins) {
+      const px = this.mode === 'webgl' ? this.map.project(pin.position)
+        : this.map.latLngToContainerPoint([pin.position[1],pin.position[0]]);
+      const existing = batches.find(g => Math.abs(g.px.x - px.x) < 43 && Math.abs(g.px.y - px.y) < 43);
+      if (existing) existing.pins.push(pin);
+      else batches.push({px,pins:[pin]});
+    }
+    return batches.map(({pins:members}) => {
+      const anchor = members[0];
+      if (members.length === 1) return anchor;
+      const priority = members.some(e => e.priority === 'P1') ? 'P1'
+        : members.some(e => e.priority === 'P2') ? 'P2' : null;
+      const kind = members.every(e => e.type === 'business') ? '商圈' : members.every(e => e.type === 'community') ? '小区' : '位置';
+      return {id:'nearby:' + anchor.id, type:'nearby',name:'相邻' + kind, position:anchor.position,
+        mapIndex:members.length, members, matchType:'community', hasPending:Boolean(priority), priority,
+        pendingCount:members.reduce((sum,entry) => sum + (entry.pendingCount || 0),0)};
+    });
+  }
+
+  expandNearby(entry) {
+    const positions = entry.members.map(e => e.position);
+    const zoom = this.map.getZoom();
+    if (zoom >= 16) { this.onNearby?.(entry.members); return; }
+    const lng = positions.map(p => p[0]), lat = positions.map(p => p[1]);
+    const west = Math.min(...lng), east = Math.max(...lng), south = Math.min(...lat), north = Math.max(...lat);
+    const maxZoom = Math.min(zoom + 3,17);
+    if (this.mode === 'webgl') this.map.fitBounds([[west,south],[east,north]],
+      {padding:65,maxZoom,duration:this.motionDuration()});
+    else this.map.fitBounds([[south,west],[north,east]],{padding:[65,65],maxZoom:Math.ceil(maxZoom),animate:this.motionDuration()>0});
+  }
+
+  refreshMarkers(force = true) {
     if (this.disposed || !this.map || !['webgl','leaflet'].includes(this.mode)) return;
+    const display = this.visibleGroups();
+    const signature = JSON.stringify(display.map(e => e.type === 'nearby' ? e.members.map(m => m.id) : e.id));
+    if (!force && signature === this.markerSignature) return;
+    this.markerSignature = signature;
     for (const record of this.markerRecords) record.marker.remove();
     this.markerRecords = [];
-    for (const entry of this.entries.filter(hasPoint)) {
+    for (const entry of display) {
       const element = this.markerElement(entry);
       let marker;
       if (this.mode === 'webgl') {
@@ -418,7 +471,8 @@ export class GeographicMap {
       }
       this.markerRecords.push({ marker, element, entry });
     }
-    if (this.mode === 'webgl') this.propertyLayer?.rebuild(this.entries);
+    if (this.mode === 'webgl') this.propertyLayer?.rebuild(display);
+    this.select(this.selectedId);
   }
 
   setEntries(entries) {
@@ -429,8 +483,9 @@ export class GeographicMap {
   select(id) {
     this.selectedId = id;
     for (const record of this.markerRecords) {
-      record.element.classList.toggle('is-selected', record.entry.id === id);
-      record.element.setAttribute('aria-pressed', String(record.entry.id === id));
+      const selected = record.entry.id === id || (record.entry.type === 'nearby' && record.entry.members.some(item => item.id === id));
+      record.element.classList.toggle('is-selected', selected);
+      record.element.setAttribute('aria-pressed', String(selected));
     }
   }
 
@@ -445,7 +500,7 @@ export class GeographicMap {
     return true;
   }
 
-  fitAll(animate = true) {
+  fitAll(animate = true, maximumZoom = 12.5) {
     if (!this.canInitialize() || !this.map) return;
     this.setRotate(false);
     const points = this.entries.filter(hasPoint).map(entry => entry.position);
@@ -456,8 +511,8 @@ export class GeographicMap {
     }
     const west = Math.min(...points.map(point => point[0])), east = Math.max(...points.map(point => point[0]));
     const south = Math.min(...points.map(point => point[1])), north = Math.max(...points.map(point => point[1]));
-    if (this.mode === 'webgl') this.map.fitBounds([[west,south],[east,north]], { padding: {top:85,bottom:65,left:65,right:65}, maxZoom: 12.5, duration: animate ? this.motionDuration() : 0, pitch: this.topView ? 0 : 48, bearing: -12 });
-    else if (this.mode === 'leaflet') this.map.fitBounds([[south,west],[north,east]], { paddingTopLeft: [55,65], paddingBottomRight: [55,55], maxZoom: 12, animate: animate && this.motionDuration() > 0 });
+    if (this.mode === 'webgl') this.map.fitBounds([[west,south],[east,north]], { padding: {top:85,bottom:65,left:65,right:65}, maxZoom: maximumZoom, duration: animate ? this.motionDuration() : 0, pitch: this.topView ? 0 : 48, bearing: -12 });
+    else if (this.mode === 'leaflet') this.map.fitBounds([[south,west],[north,east]], { paddingTopLeft: [55,65], paddingBottomRight: [55,55], maxZoom: Math.floor(maximumZoom), animate: animate && this.motionDuration() > 0 });
   }
 
   reset() { this.select(null); this.topView = false; this.fitAll(); }

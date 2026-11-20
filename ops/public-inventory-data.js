@@ -93,7 +93,7 @@ function referenceRow(p) {
 }
 
 /** Join the official filtered list and the supplied identifier checks on the public detail-page identity. */
-export function projectPublicInventory(snapshot) {
+export function projectPublicInventory(snapshot, communityMap = {}, availability = {}) {
   const publicationDate = text(snapshot?.date) || null;
   const listings = new Map();
   for (const row of rows(snapshot?.listings)) {
@@ -111,14 +111,38 @@ export function projectPublicInventory(snapshot) {
   const verified = [...checks.values()].filter(row => row.status === 'verified');
   const byId = new Map(verified.map(row => [row.id, row]));
   const allIds = new Set([...listings.keys(), ...byId.keys()]);
-  const properties = [...allIds].map(id => listingProperty(id, listings.get(id), byId.get(id), publicationDate));
-
-  // The detail pages use a Baidu map. Their community points have no verified WGS84 coordinates.
-  const locations = properties.filter(p => p.businessArea).map(p => ({
-    id: p.id, realListingId: p.id, name: p.name, district: p.district, coordinate: null,
-    matchType: 'unmatched', isExactPropertyLocation: false, reviewedAt: publicationDate,
-    businessDistrict: { status: 'confirmed', name: p.businessArea, sourceUrl: p.sourceUrl }
-  }));
+  const unavailable = new Map(rows(availability?.unavailable).map(row => [String(row.id),row.url]));
+  const mapped = new Map(rows(communityMap.properties).map(row => [String(row.id), row]));
+  const properties = [...allIds].map(id => {
+    const p = listingProperty(id, listings.get(id), byId.get(id), publicationDate);
+    const geo = mapped.get(id);
+    if (!geo) {
+      if (unavailable.get(id) === p.publicFloorplanUrl) p.publicFloorplanUrl = null;
+      return p;
+    }
+    const bound = geo.publicDetailVerified === true && identity({id,detailUrl:geo.sourceUrl}) === id;
+    if (bound) {
+      p.publicDetailVerified = true;
+      p.name = text(geo.name) || p.name;
+      p.publicFloorplanUrl = officialUrl(geo.publicFloorplanUrl)?.href || p.publicFloorplanUrl;
+      p.publicVrUrl ||= checkedVr({vrUrl:geo.publicVrUrl}, id);
+    }
+    if (unavailable.get(id) === p.publicFloorplanUrl) p.publicFloorplanUrl = null;
+    p.communityId = text(geo.communityId);
+    if (text(geo.district)) {
+      p.district = text(geo.district).replace(/区$/, '');
+      p.districtConfidence = 'confirmed';
+    }
+    if (geo.businessDistrict?.status === 'confirmed') p.businessArea = text(geo.businessDistrict.name) || p.businessArea;
+    return p;
+  });
+  const locations = properties.flatMap(p => {
+    const geo = mapped.get(p.id);
+    if (geo) return [{...geo, id:p.id, realListingId:p.id}];
+    return p.businessArea ? [{id:p.id,realListingId:p.id,name:p.name,district:p.district,coordinate:null,
+      matchType:'unmatched',isExactPropertyLocation:false,reviewedAt:publicationDate,
+      businessDistrict:{status:'confirmed',name:p.businessArea,sourceUrl:p.sourceUrl}}] : [];
+  });
   return {
     properties, audits: properties.map(auditRow), references: properties.map(referenceRow), locations,
     source: {

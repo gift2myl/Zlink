@@ -46,7 +46,7 @@ function officialImage(value) {
 }
 
 function verifiedPublicMedia(property, realId) {
-  if (!realId || !/^BJZRGZ\d+$/.test(text(property.businessId)) ||
+  if (!realId || (!property.publicDetailVerified && !/^BJZRGZ\d+$/.test(text(property.businessId))) ||
       property.imported || detailIdentity(property.sourceUrl) !== realId) return {};
   const vr = officialUrl(property.publicVrUrl);
   const vrUrl = vr ? new URL(vr) : null;

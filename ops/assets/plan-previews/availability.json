@@ -1,0 +1,148 @@
+{
+  "availableCount": 508,
+  "reviewedCount": 20,
+  "inputWithPlanUrl": 554,
+  "withoutPlanUrl": 3,
+  "replacements": [
+    {
+      "id": "810948252",
+      "primaryUrl": "https://home-decoration-cdn.ziroom.com/007qc/b41f04a9da084fe8a7962cc7f3825d67.jpg_C_800_600_Q90.jpg",
+      "sourceUrl": "https://home-decoration-cdn.ziroom.com/007qc/b41f04a9da084fe8a7962cc7f3825d67.jpg_C_380_285_Q80.jpg"
+    }
+  ],
+  "unavailable": [
+    {
+      "id": "810528770",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810923570",
+      "url": "https://home-decoration-cdn.ziroom.com/007qc/d3770092eeb7469bbd93ad73e7520c40.jpg_C_800_600_Q90.jpg",
+      "reason": "error"
+    },
+    {
+      "id": "810935295",
+      "url": "https://imgpro.ziroom.com/99e31fa7-709b-44d7-8d11-4257ddbfbc94.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810937353",
+      "url": "https://home-decoration-cdn.ziroom.com/007qc/4a7142edbbef45df824a4ccc8609735d.jpg_C_800_600_Q90.jpg",
+      "reason": "error"
+    },
+    {
+      "id": "810938781",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810943198",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810944150",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810944423",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810944808",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810944864",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810945158",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810947055",
+      "url": "https://home-decoration-cdn.ziroom.com/007qc/985bfb0e93664d27839e2411494111d8.jpg_C_800_600_Q90.jpg",
+      "reason": "error"
+    },
+    {
+      "id": "810948280",
+      "url": "https://imgpro.ziroom.com/f6ff5fcd-0d65-46e5-a464-4bc23de2a7a1.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810948336",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810948588",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810948602",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810948763",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810948770",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810948819",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810948945",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810949099",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810949281",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810949421",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810949638",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810950009",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    },
+    {
+      "id": "810950576",
+      "url": "https://imgpro.ziroom.com/c24571d8-78b6-4923-bab5-37306d463dad.png_C_800_600_Q100.png",
+      "reason": "placeholder"
+    }
+  ],
+  "threeDimensionalCount": 528,
+  "reviewedGeometryCount": 36,
+  "automaticGeometryCount": 492
+}

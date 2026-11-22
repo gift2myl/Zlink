@@ -517,13 +517,14 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
     ui.layer.setAttribute('aria-busy','true');
     shell.dataset.viewMode=next;
     if(ui.roomControls)ui.roomControls.hidden=next!=='room';
+    if(ui.walkButtons)ui.walkButtons.disabled=true;
     if(ui.mini)ui.mini.hidden=next!=='room';
     for(const button of shell.querySelectorAll('[data-mode]')) {
       button.setAttribute('aria-pressed',String(button.dataset.mode===mode));
       button.disabled=(failed3d || imageOnly) && button.dataset.mode!=='2d';
     }
     ui.top.disabled=mode!=='3d';
-    ui.hint.textContent=next==='room'?'拖动环视 · 可用方向键或下方前进、后退':next==='3d'?'拖动旋转 · 滚轮或双指缩放':imageOnly?'拖动平移 · 滚轮或双指缩放':failed3d?'当前设备使用二维户型，可选择方案点位。':'点击图中点位查看设备';
+    ui.hint.textContent=next==='room'?'拖动可环视，聚焦画面后可用方向键漫游。':next==='3d'?'拖动旋转 · 滚轮或双指缩放':imageOnly?'拖动平移 · 滚轮或双指缩放':failed3d?'当前设备使用二维户型，可选择方案点位。':'点击图中点位查看设备';
     let candidate;
     try {
       if(roomScene){
@@ -543,6 +544,7 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
       canvas.addEventListener('webglcontextlost',resourceLost);
     }
     resize();renderOperations();
+    if(ui.walkButtons)ui.walkButtons.disabled=next!=='room';
     ui.layer.setAttribute('aria-busy','false');
     return true;
   }
@@ -607,13 +609,13 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
       shell.innerHTML=`<header class="lpv-heading"><div><h3>${title} · 户型与设备</h3><p>${escape([plan.layout,plan.area ? String(plan.area).replace(/\s*㎡$/,'')+' ㎡':'','挂牌号 '+id,geometryStatus].filter(Boolean).join(' · '))}</p></div><div class="lpv-sources">${sourceLinks(media)}</div></header>
         <div class="lpv-toolbar"><div class="lpv-switch" role="group" aria-label="查看方式"><button type="button" data-mode="3d">整屋三维</button>${canEnter?'<button type="button" data-mode="room">进入房间</button>':''}<button type="button" data-mode="2d">二维对照</button></div>
         <div class="lpv-navigation"><button type="button" data-action="top">俯视</button><button type="button" data-action="reset">复位</button><button type="button" data-action="out" aria-label="缩小">−</button><button type="button" data-action="in" aria-label="放大">＋</button></div></div>
-        ${canEnter?`<div class="lpv-room-controls" hidden><label>当前房间<select data-room-select aria-label="当前房间">${plan.anchors.map((a,i)=>{const same=plan.anchors.filter(r=>r.room===a.room);return `<option value="${i}" ${i===roomIndex?'selected':''}>${escape(a.room)}${same.length>1?' '+(same.indexOf(a)+1):''}</option>`;}).join('')}</select></label>
-        <div><button type="button" data-walk-step="back">后退</button><button type="button" data-walk-step="forward">前进</button></div></div>`:''}
+        ${canEnter?`<div class="lpv-room-controls" hidden><label>房间<select data-room-select aria-label="当前房间">${plan.anchors.map((a,i)=>{const same=plan.anchors.filter(r=>r.room===a.room);return `<option value="${i}" ${i===roomIndex?'selected':''}>${escape(a.room)}${same.length>1?' '+(same.indexOf(a)+1):''}</option>`;}).join('')}</select></label>
+        <fieldset class="lpv-walk-buttons" aria-label="室内漫游" disabled><button type="button" data-walk-turn="left">左转</button><button type="button" data-walk-turn="right">右转</button><button type="button" data-walk-step="back">后退</button><button type="button" data-walk-step="forward">前进</button></fieldset></div>`:''}
         <div class="lpv-stage"><div class="lpv-canvas"></div>${canEnter?'<canvas class="lpv-floor-inset" width="145" height="113" aria-label="本套户型中的当前位置和朝向" hidden></canvas>':''}<svg class="lpv-lines" aria-hidden="true"></svg><div class="lpv-marks" role="group" aria-label="房间方案点位"></div></div><div class="lpv-key"><div class="lpv-legend"></div><span class="lpv-hint"></span></div>
         <div class="lpv-config"><label>配置方案<select data-profile>${CONFIG_PROFILES.filter(p=>['base','plus','upgrade'].includes(p.id)).map(p=>`<option value="${p.id}">${escape(p.label)}</option>`).join('')}</select></label>
         <label>方案设备<select data-devices></select></label><span class="lpv-count"></span></div>
         <div class="lpv-info" aria-live="polite"></div><p class="lpv-note"></p>`;
-      ui={roomControls:find('.lpv-room-controls'),roomChoice:find('[data-room-select]'),mini:find('.lpv-floor-inset'),stage:find('.lpv-stage'),layer:find('.lpv-canvas'),marks:find('.lpv-marks'),lines:find('.lpv-lines'),legend:find('.lpv-legend'),hint:find('.lpv-hint'),top:find('[data-action=top]'),select:find('[data-devices]'),count:find('.lpv-count'),info:find('.lpv-info'),note:find('.lpv-note')};
+      ui={roomControls:find('.lpv-room-controls'),walkButtons:find('.lpv-walk-buttons'),roomChoice:find('[data-room-select]'),mini:find('.lpv-floor-inset'),stage:find('.lpv-stage'),layer:find('.lpv-canvas'),marks:find('.lpv-marks'),lines:find('.lpv-lines'),legend:find('.lpv-legend'),hint:find('.lpv-hint'),top:find('[data-action=top]'),select:find('[data-devices]'),count:find('.lpv-count'),info:find('.lpv-info'),note:find('.lpv-note')};
       ui.roomChoice?.addEventListener('change',()=>{
         const index=Number(ui.roomChoice.value);
         if(mode!=='room' || !plan.anchors[index])return;
@@ -630,6 +632,7 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
         const button=event.target.closest('button');
         if(!button || !shell.contains(button) || button.disabled)return;
         if(button.hasAttribute('data-group')){const group=groups[Number(button.dataset.group)];if(group)pickDevice(group.item.id);return;}
+        if(button.dataset.walkTurn){engine?.turn?.(button.dataset.walkTurn==='left'?Math.PI/12:-Math.PI/12);return;}
         if(button.dataset.walkStep){engine?.step(button.dataset.walkStep==='forward'?.3:-.3);return;}
         if(button.dataset.mode && mode!==button.dataset.mode){void setMode(button.dataset.mode);return;}
         if(button.dataset.action==='top')engine?.reset(true);

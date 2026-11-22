@@ -87,6 +87,12 @@ export class PropertyMapWorkspace {
     ].map(id => [id, document.getElementById(id)]));
     this.originalTitles = new Map(['geo-terrain-btn', 'top-view-btn', 'rotate-btn'].map(id => [id, this.elements[id]?.title || '']));
     this.listeners = [];
+    this.listBack = document.createElement('button');
+    this.listBack.type = 'button';
+    this.listBack.setAttribute('data-geo-list-back', '');
+    this.listBack.setAttribute('aria-controls', 'geo-property-list');
+    this.listBack.hidden = true;
+    this.elements['geo-property-list']?.before(this.listBack);
     this.mapCard=document.createElement('section');
     this.mapCard.id='geo-listing-card';
     this.mapCard.className='geo-listing-card';
@@ -186,11 +192,21 @@ export class PropertyMapWorkspace {
     }
     this.listen(this.elements['geo-property-list'], 'click', event => {
       const group = event.target.closest?.('[data-geo-group]');
-      if (group) { this.openGroup(group.dataset.geoGroup); return; }
+      if (group) {
+        this.openGroup(group.dataset.geoGroup);
+        this.elements['geo-property-list'].scrollTop = 0;
+        this.elements['geo-property-list'].querySelector('button')?.focus();
+        return;
+      }
       const button = event.target.closest?.('[data-geo-property-id]');
       if (button && this.elements['geo-property-list'].contains(button)) this.focusProperty(button.dataset.geoPropertyId);
     });
     const list = this.elements['geo-property-list'];
+    this.listen(this.listBack, 'click', () => {
+      const previous = this.communityKey || this.filters.business;
+      this.returnToLevel(this.communityKey ? 'business' : 'city');
+      list?.querySelector(`[data-geo-group="${CSS.escape(previous)}"]`)?.focus();
+    });
     const highlight = event => {
       const control = event.target.closest?.('[data-geo-group],[data-geo-property-id]');
       if (control) this.viewer.select(this.selectedPin(control.dataset.geoGroup || control.dataset.geoPropertyId)?.id || null);
@@ -226,7 +242,11 @@ export class PropertyMapWorkspace {
       const button = event.target.closest?.('[data-geo-action]');
       if (!button || !this.active) return;
       const entry = this.entries.find(item => item.id === this.selectedId);
-      if (button.dataset.geoAction === 'close') { this.closeDetail(); return; }
+      if (button.dataset.geoAction === 'close') {
+        this.closeDetail();
+        if (entry) list?.querySelector(`[data-geo-property-id="${CSS.escape(entry.id)}"]`)?.focus();
+        return;
+      }
       if (!entry) return;
       if (button.dataset.geoAction === 'property') this.callbacks.onOpenProperty?.(entry.id);
       if (button.dataset.geoAction === 'operations') this.callbacks.onOpenOperations?.(entry.id);
@@ -242,10 +262,9 @@ export class PropertyMapWorkspace {
     this.listen(this.elements['scene-breadcrumb'], 'click', event => {
       const crumb = event.target.closest?.('[data-geo-crumb]');
       if (!this.active || !crumb) return;
-      this.closeDetail();
-      if (crumb.dataset.geoCrumb !== 'community') this.communityKey = '';
-      if (crumb.dataset.geoCrumb === 'city') this.filters.business = '';
-      this.renderBusinessFilter(); this.applyFilters(true);
+      const level = crumb.dataset.geoCrumb;
+      this.returnToLevel(level);
+      this.elements['scene-breadcrumb'].querySelector(`[data-geo-crumb="${level}"]`)?.focus({preventScroll:true});
     });
   }
 
@@ -305,6 +324,8 @@ export class PropertyMapWorkspace {
   renderList() {
     const element = this.elements['geo-property-list'];
     if (!element) return;
+    this.listBack.hidden = this.level === 'business';
+    this.listBack.textContent = this.level === 'property' ? '返回小区列表' : '返回商圈列表';
     const title = this.elements['geo-panel-title'];
     if (title) title.textContent = {business:'按商圈查看房源',community:'楼盘 / 小区',property:'小区内房源'}[this.level] || '房源监控清单';
     if (this.groups?.length) {
@@ -377,7 +398,17 @@ export class PropertyMapWorkspace {
     }
     if (this.communityKey && current) parts.push(`<button type="button" class="text-btn" data-geo-crumb="community">${esc(current.name)}</button>`);
     if (this.selectedId) parts.push(esc(this.selectedId));
-    this.elements['scene-breadcrumb'].innerHTML = parts.join('<span class="crumb-divider">/</span>');
+    const breadcrumb = this.elements['scene-breadcrumb'];
+    const content = parts.join('<span class="crumb-divider">/</span>');
+    if (breadcrumb.innerHTML !== content) breadcrumb.innerHTML = content;
+  }
+
+  returnToLevel(level) {
+    this.closeDetail();
+    if (level !== 'community') this.communityKey = '';
+    if (level === 'city') this.filters.business = '';
+    this.renderBusinessFilter();
+    this.applyFilters(true);
   }
 
   openGroup(id) {
@@ -519,7 +550,7 @@ export class PropertyMapWorkspace {
       <div class="geo-detail-heading"><h3>${esc(entry.name)}</h3><p>${entry.property.realListingId ? '挂牌号' : '记录号'} ${esc(entry.id)}${(entry.property.officialHouseCode || entry.property.businessId) ? ' · ' + esc(entry.property.officialHouseCode || entry.property.businessId) : ''}</p><p>${esc(entry.district)} · ${esc(entry.businessLabel)} · ${esc(propertyFacts(entry.property))}</p></div>
       <div class="geo-detail-actions">
         ${entry.property.reviewedRoomDemo?'<button class="button primary" type="button" data-geo-action="room">进入房间三维</button>':''}
-        ${this.callbacks.onOpenPlan ? `<button type="button" class="button primary" data-geo-action="plan" aria-controls="overview-plan-pane" aria-expanded="${document.getElementById('overview-plan-pane')?.hidden === false}">${entry.property.publicFloorplanUrl ? '查看户型与设备点位' : '查看本套配置方案'}</button>` : ''}
+        ${this.callbacks.onOpenPlan ? `<button type="button" class="button${entry.property.reviewedRoomDemo ? '' : ' primary'}" data-geo-action="plan" aria-controls="overview-plan-pane" aria-expanded="${document.getElementById('overview-plan-pane')?.hidden === false}">${entry.property.publicFloorplanUrl ? '查看户型与设备点位' : '查看本套配置方案'}</button>` : ''}
         <button type="button" class="button" data-geo-action="operations">查看家庭运行</button>
         <button type="button" class="button" data-geo-action="property">查看房源详情</button>
         <button type="button" class="button" data-geo-action="model">${this.canOpenModel(entry) ? '进入三维运维' : '设备配置推演'}</button>
@@ -640,6 +671,7 @@ export class PropertyMapWorkspace {
     this.listeners = [];
     this.visibilityObserver.disconnect();
     this.mapCard.remove();
+    this.listBack.remove();
     this.viewer.dispose();
   }
 }

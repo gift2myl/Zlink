@@ -268,6 +268,10 @@ export function createListingRoomScene(canvas,{plan,bounds,initialRoom,interior,
   function look(){
     camera.rotation.set(pitch,yaw,0,'YXZ');draw();
   }
+  function turn(angle){
+    if(!interior)return;
+    yaw+=angle;look();
+  }
   function goRoom(index) {
     const target=g.rooms[index];if(!target)return false;
     let x=target.x,z=target.z;
@@ -326,7 +330,7 @@ export function createListingRoomScene(canvas,{plan,bounds,initialRoom,interior,
     draw();
   }
   let start=null,prev=null,moved=false;
-  canvas.tabIndex=0;
+  canvas.tabIndex=interior?0:-1;
   canvas.addEventListener('pointerdown',e=>{
     if(e.button!==0)return;start=prev=[e.clientX,e.clientY];moved=false;
     canvas.focus({preventScroll:true});if(interior)canvas.setPointerCapture(e.pointerId);
@@ -352,7 +356,7 @@ export function createListingRoomScene(canvas,{plan,bounds,initialRoom,interior,
     const key=e.key.toLowerCase();
     if(!['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].includes(key))return;
     e.preventDefault();
-    if(key==='arrowleft'||key==='arrowright'){yaw+=(key==='arrowleft'?1:-1)*.12;look();}
+    if(key==='arrowleft'||key==='arrowright')turn(key==='arrowleft'?.12:-.12);
     else if(key==='a'||key==='d')step(0,key==='a'?-.22:.22);
     else step(key==='w'||key==='arrowup'?.25:-.25);
   },opts);
@@ -459,7 +463,7 @@ export function createListingRoomScene(canvas,{plan,bounds,initialRoom,interior,
     daylight.shadow.dispose();freeResources(scene);renderer.dispose();renderer.forceContextLoss();
     records=[];labels.replaceChildren();
   }
-  return {draw,resize,goRoom,step,reset,setDevices,focusDevice,setRotate,destroy,
+  return {draw,resize,goRoom,step,turn,reset,setDevices,focusDevice,setRotate,destroy,
     toggleTop(){if(interior)return false;reset(!overviewTop);return overviewTop;},
     toggleWalls(){if(interior)return true;fullHeight=!fullHeight;walls.scale.y=fullHeight?1:.35;draw();return fullHeight;},
     zoom(f){if(interior)step(f>1?.28:-.28);else {camera.position.sub(orbit.target).multiplyScalar(1/f).add(orbit.target);orbit.update();}}

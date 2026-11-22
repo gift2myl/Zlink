@@ -254,6 +254,7 @@ function renderRoomDirectory(){
  const box=$('#room-demo-directory');
  const rows=(data?.properties||[]).filter(p=>p.reviewedRoomDemo).sort((a,b)=>a.name.localeCompare(b.name,'zh-CN'));
  box.hidden=!rows.length;
+ $('#open-room-directory').hidden=!rows.length;
  box.querySelector('summary').textContent=rows.length+' 套三维设备运维';
  box.querySelector('.room-demo-rows').innerHTML=rows.map(p=>`<a href="#room-${esc(p.id)}" data-room-demo-id="${esc(p.id)}"><span><strong>${esc(p.name)}</strong><small>${esc(p.layout)} · ${esc(p.area)}㎡ · 挂牌 ${esc(p.id)}</small></span><span>进入房间 ›</span></a>`).join('');
 }
@@ -337,6 +338,7 @@ async function showScene(mode,initialMode='3d'){
  state.scene=mode;document.body.dataset.scene=mode;state.activeDevice=null;$$('button[data-scene]').forEach(b=>b.classList.toggle('selected',b.dataset.scene===mode));$('#rotate-btn').classList.remove('active');$('#top-view-btn').classList.remove('active');$('#scene-detail').hidden=true;
  const property=allProperties().find(p=>p.id===activeTwinPropertyId)||allProperties().find(p=>p.id===MODEL_PROPERTY_ID),referenceReady=canOpenModel(property);
  const reviewed=mode==='apartment' && property?.reviewedRoomDemo===true;
+ $('#jump-to-room-devices').hidden=mode!=='apartment';
  if(!reviewed || reviewedId!==property.id)closeReviewedView();
  twinWorkspace?.setVisible(mode==='apartment');$('.geo-panel').hidden=mode!=='city';$('#inventory-return-bar').hidden=mode!=='apartment';
  mapWorkspace.setVisible(mode==='city');viewer?.setActive(false);
@@ -599,6 +601,27 @@ async function importCsv(file){
  try{const rows=parseCsv((await file.text()).replace(/^\uFEFF/,''));if(rows.length<2)throw Error('文件中没有房源数据');const headers=rows.shift().map(v=>v.trim());for(const k of ['id','name'])if(!headers.includes(k))throw Error('缺少必填列 '+k);const imported=[];for(const [index,values]of rows.entries()){const o=Object.fromEntries(headers.map((h,i)=>[h,values[i]?.trim()||'']));if(!o.id||!o.name)throw Error(`第 ${index+2} 行缺少 id 或 name`);if(data.properties.some(p=>p.id===o.id))throw Error(`第 ${index+2} 行 ID 与已验证公开样本重复，请使用独立 ID 保存导入记录`);const lon=o.longitude||o.lng,lat=o.latitude||o.lat;let coordinate=null;if(lon||lat){if(!lon||!lat||!Number.isFinite(+lon)||!Number.isFinite(+lat)||+lon<115||+lon>118||+lat<39||+lat>42)throw Error(`第 ${index+2} 行坐标不符合北京范围`);coordinate=[+lon,+lat];}const num=k=>o[k]&&Number.isFinite(+o[k])?+o[k]:null;imported.push({id:o.id,name:o.name,district:o.district||null,area:num('area'),bedrooms:num('bedrooms'),floor:num('floor'),totalFloors:num('totalFloors'),orientation:o.orientation||null,station:o.station||null,distance:num('distance'),product:o.product||'用户导入',modelReady:false,sourceUrl:null,coordinate,imported:true,importedAt:new Date().toISOString()});}if(imported.length>10000)throw Error('单次导入最多 10,000 条房源');const m=new Map(state.imported.map(p=>[p.id,p]));for(const p of imported)m.set(p.id,p);state.imported=normalizeProperties([...m.values()],'imported');state.propertyPage=1;persist();renderProperties();addActivity('房源资料 · 已导入',`${imported.length} 条台账已更新；未自动地图布点或三维建模。`,'database');toast(`成功导入 ${imported.length} 条房源，未自动生成未经验证的模型。`);}catch(e){toast('导入失败：'+e.message);}finally{$('#import-file').value='';}
 }
 function resetDemo(){showModal('重置演示记录',`<p>重置 4 条演示事件、诊断进度与本地演示工单。已导入的房源台账保留。</p><button class="button primary" id="confirm-reset">重置事件与工单</button>`);$('#confirm-reset').onclick=()=>{clearInterval(diagnosisTimer);diagnosisTimer=null;state.events=structuredClone(initialEvents);state.tickets=[];state.diagnosticProgress={};state.activities=[];persist();renderAll();$('#modal').close();renderSceneLegend();twinWorkspace?.setScenario('unknown');if(state.activeDevice==='gateway'&&!$('#scene-detail').hidden)showDevice('gateway');toast('演示事件与工单已重置。');};}
+
+async function focusOverviewTarget(target, region=target){
+ if(!target)return;
+ if(document.fullscreenElement && !document.fullscreenElement.contains(target)){
+  await document.exitFullscreen();
+ }
+ target.focus({preventScroll:true});
+ region.scrollIntoView({block:'start',behavior:motionBehavior()});
+}
+$('#open-room-directory').onclick=()=>{
+ const directory=$('#room-demo-directory');
+ directory.open=true;
+ void focusOverviewTarget(directory.querySelector('summary'));
+};
+$('#jump-to-room-devices').onclick=()=>{
+ const heading=$('#twin-device-heading');
+ if(heading)void focusOverviewTarget(heading,heading.parentElement);
+};
+$('#twin-panel').addEventListener('click',event=>{
+ if(event.target.closest('#return-to-room-scene'))void focusOverviewTarget($('#scene-title'));
+});
 
 $('#room-demo-directory').addEventListener('click',event=>{
  const link=event.target.closest('[data-room-demo-id]');

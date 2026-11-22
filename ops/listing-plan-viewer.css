@@ -14,6 +14,7 @@
 .lpv .lpv-stage{isolation:isolate;position:relative;overflow:hidden;width:100%;height:clamp(280px,42vw,560px);min-height:250px;border:1px solid var(--lp-line);border-radius:6px;background:radial-gradient(ellipse at 50% 55%,#f7fafb 15%,#eaf0f2 100%)}
 .lpv .lpv-canvas,.lpv .lpv-marks,.lpv .lpv-lines{position:absolute;inset:0;width:100%;height:100%}
 .lpv .lpv-canvas canvas{width:100%;height:100%;display:block;touch-action:none}
+.lpv .lpv-canvas canvas:focus-visible{outline:3px solid var(--lp-blue);outline-offset:-5px}
 .lpv .lpv-marks,.lpv .lpv-lines{pointer-events:none}
 .lpv .lpv-lines line{stroke:#52616b;stroke-width:1.1;opacity:.7}
 .lpv .lpv-point{pointer-events:auto;position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:26px;height:26px;padding:0;border:2px solid white;border-radius:50%;color:white;background:var(--point-color);font:600 13px/1 Arial,"PingFang SC","Microsoft YaHei",sans-serif;cursor:pointer;box-shadow:0 1px 4px #27384866}
@@ -36,8 +37,12 @@
 @media(max-width:620px){.lpv .lpv-stage{height:360px}.lpv .lpv-config{display:grid;grid-template-columns:minmax(85px,.7fr) minmax(0,1.3fr)}.lpv .lpv-count{grid-column:1/-1}.lpv .lpv-heading{gap:2px}.lpv .lpv-toolbar{gap:5px}.lpv .lpv-toolbar button{padding:6px 8px}.lpv .lpv-point{width:26px;height:26px}}
 @media(prefers-reduced-motion:reduce){.lpv *{scroll-behavior:auto}}
 .lpv [hidden]{display:none!important}
-.lpv .lpv-room-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0}
-.lpv-room-controls label,.lpv-room-controls>div{display:flex;align-items:center;gap:7px}
+.lpv .lpv-room-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin:8px 0}
+.lpv-room-controls label,.lpv-walk-buttons{display:flex;align-items:center;gap:7px}
+.lpv-walk-buttons{min-width:0;margin:0 0 0 auto;border:0;padding:0}
+.lpv-walk-buttons:disabled{opacity:.48}
+.lpv-walk-buttons button:enabled{cursor:pointer}
+.lpv-walk-buttons button:enabled:active{background:#e8f2f8;border-color:var(--lp-blue)}
 .lpv-room-controls label{font-size:14px;color:var(--lp-ink)}
 .lpv-room-controls select,.lpv-room-controls button{font:inherit;font-size:14px;color:var(--lp-ink);background:white;border:1px solid #bdcdd6;border-radius:5px;min-height:37px;padding:5px 10px}
 .lpv .lpv-floor-inset,#scene-container .lpv canvas.lpv-floor-inset{position:absolute;right:10px;top:10px;width:111px;height:86px;background:#fffffff0;border:1px solid #a1b6bd;border-radius:5px;box-shadow:0 2px 9px #1e35441c;pointer-events:none;z-index:2}
@@ -52,6 +57,16 @@
 .lpv-native .lpv-toolbar{margin:2px 0 6px}
 .lpv-native .lpv-key{margin:4px 0}
 .lpv-native .lpv-note{margin:0;line-height:1.35;font-size:12px}
-@media(max-width:600px){.lpv .lpv-floor-inset,#scene-container .lpv canvas.lpv-floor-inset{right:6px;top:6px;width:80px;height:63px}.lpv .lpv-device-pin{font-size:10px}.lpv-room-controls button{min-width:43px}.lpv.lpv-native{padding:6px}}
+@media(max-width:600px),(pointer:coarse){
+  .lpv .lpv-device-pin{font-size:12px;min-height:24px}
+  .lpv .lpv-toolbar button,.lpv .lpv-room-controls :is(button,select){min-height:44px;min-width:44px}
+  .lpv .lpv-switch,.lpv .lpv-navigation,.lpv-walk-buttons{gap:4px}
+  .lpv .lpv-room-controls button{padding:6px}
+  .lpv .lpv-room-controls select{font-size:16px;padding:5px 7px}
+}
+@media(max-width:600px){
+  .lpv .lpv-floor-inset,#scene-container .lpv canvas.lpv-floor-inset{right:6px;top:6px;width:80px;height:63px}
+  .lpv.lpv-native{padding:6px}
+}
 
 #scene-container .lpv canvas.lpv-floor-inset[hidden]{display:none!important}

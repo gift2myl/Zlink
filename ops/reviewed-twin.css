@@ -12,3 +12,75 @@
 .room-demo-rows small{font-size:12px;color:#bdd0df;margin-top:2px;}
 #reviewed-source-vr{text-decoration:none}
 @media(max-width:640px){#reviewed-twin-stage .lpv-stage{height:clamp(300px,46svh,430px);}}
+
+.scene-shortcut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 5px 10px;
+  border: 1px solid #466178;
+  border-radius: 4px;
+  background: #152b3e;
+  color: #d4ebff;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.3;
+  cursor: pointer;
+}
+.scene-shortcut:hover { background: #223d52; }
+.scene-shortcut:active { background: #1a3348; }
+.scene-shortcut[hidden],
+#open-room-directory { display: none; }
+#return-to-room-scene {
+  margin-left: auto;
+  border-color: #bacbd8;
+  background: white;
+  color: #21587e;
+}
+#return-to-room-scene:hover { background: #eef5fa; }
+.twin-device-section .twin-section-heading { align-items: center; flex-wrap: wrap; }
+.twin-device-section #twin-device-heading { margin: 0; }
+#overview-page :is(.scene-shortcut, #scene-title, #twin-device-heading, #room-demo-directory summary):focus-visible {
+  outline: 2px solid #278bd1;
+  outline-offset: 2px;
+}
+#overview-page .map-panel:has(#reviewed-twin-stage:not([hidden]) .lpv[data-view-mode="room"])
+  :is(#top-view-btn, #rotate-btn, #reset-camera, #cutaway-btn, .apartment-actions > span) { display: none; }
+
+@media (max-width: 1100px) {
+  body[data-scene="city"] .map-panel > .panel-heading { flex-wrap: wrap; }
+  body[data-scene="city"] .scene-heading-copy {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto;
+    align-items: center;
+    column-gap: 8px;
+    width: 100%;
+  }
+  body[data-scene="city"] .scene-heading-copy > p { grid-column: 1; }
+  body[data-scene="city"] #open-room-directory:not([hidden]) {
+    display: inline-flex;
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
+}
+@media (max-width: 640px) {
+  #overview-page .scene-shortcut,
+  #overview-page .map-panel .scene-tools .icon-btn,
+  #overview-page .map-panel .scene-tools .geo-terrain-button,
+  #overview-page #scene-detail .close-scene-detail,
+  #overview-page #apartment-actions .button,
+  #overview-page #room-demo-directory summary {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  body[data-scene="apartment"] #overview-page .map-heading-controls {
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  #overview-page .map-panel .scene-breadcrumb { min-width: 0; overflow-wrap: anywhere; }
+  #overview-page .scene-toolbar { flex-wrap: wrap; }
+  #overview-page .scene-tools { margin-left: auto; }
+}

@@ -370,7 +370,7 @@ async function showScene(mode,initialMode='3d'){
  $('#scene-labels').hidden=mode!=='apartment'||!referenceReady;$('.scene-orientation').hidden=mode!=='apartment'||!referenceReady;
  $('.render-mode-note')?.toggleAttribute('hidden',mode!=='apartment'||!originalTwin(property));
  if(reviewed){$('#scene-labels').hidden=true;$('.scene-orientation').hidden=true;}
- $('#scene-title').textContent=mode==='city'?'北京 · 房源运行态势':property.name+' · '+(referenceReady?'三维设备运维':'设备配置');
+ $('#scene-title').textContent=mode==='city'?'灵之房源运维监控大盘':property.name+' · '+(referenceReady?'三维设备运维':'设备配置');
  $('#scene-subtitle').textContent=mode==='city'?(mapInventoryScope==='model'?'已取得对应户型与照片 · 房源参考位置':'房源分布 · 演示待办 · 分级跟进'):`${property.areaScope==='listed_bedroom'?'卧室 ':''}${property.area??'—'}㎡ · ${property.areaScope==='listed_bedroom'?'合租单间（所属'+(property.bedrooms??'—')+'居）':(property.bedrooms??'—')+'居'} · ${referenceReady?'官方户型 / 照片近似重建':property.publicFloorplanUrl?'已有本套户型与配置方案':'户型图待补 · 可查看配置方案'}`;
  $('#scene-breadcrumb').innerHTML=mode==='city'?'<span>北京</span><span class="crumb-divider">/</span><strong>全部区域</strong>':`<button class="text-btn" id="back-city">北京</button><span class="crumb-divider">/</span><span>${esc(property.district||'区域待确认')}</span><span class="crumb-divider">/</span><strong>${esc(property.name)}</strong>`;
  if($('#back-city'))$('#back-city').onclick=()=>showScene('city');

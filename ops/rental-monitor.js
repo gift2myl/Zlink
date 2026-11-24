@@ -75,11 +75,14 @@ export function mountRentalMonitor(root, { onSelect } = {}) {
   root.classList.add('rental-monitor');
   root.setAttribute('aria-label', '待租房源监控');
   root.innerHTML = `<header class="rental-monitor-head">
-    <h2>当前监控待租房源 <span><strong data-rental-total>—</strong> 套</span></h2>
-    <dl class="rental-monitor-metrics">${levels.slice(0, 3).map((level, i) =>
-      `<div><dt>${labels[i]}</dt><dd data-rental-metric="${level}">—</dd></div>`).join('')}</dl>
+    <h2>北京 · 待租房源监控</h2>
     <span class="rental-monitor-date"></span>
   </header>
+  <dl class="rental-monitor-metrics">
+    <div><dt>当前监控待租房源</dt><dd><strong data-rental-total>—</strong><span>套</span></dd></div>
+    ${levels.slice(0, 3).map((level, i) =>
+      `<div><dt>覆盖${labels[i]}</dt><dd><strong data-rental-metric="${level}">—</strong><span>${i === 0 ? '个行政区' : '个'}</span></dd></div>`).join('')}
+  </dl>
   <div class="rental-monitor-drill">
     <nav aria-label="待租房源分级路径"></nav>
     <div class="rental-monitor-rail">

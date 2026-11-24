@@ -1,3 +1,4 @@
+import { listingBasics, renderListingTitle, renderListingOfferAndFacts } from './listing-basics.js';
 import { verifiedVrUrl } from './official-vr.js';
 import { buildDeviceConfiguration, CONFIG_SOURCE, CONFIG_PROFILES } from './device-configuration.js';
 import { lingzhiEvidence } from './inventory-hierarchy.js';
@@ -59,7 +60,7 @@ export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onH
     ];
   const shared = row.bedroomGroup === 'shared' || property.areaScope === 'listed_bedroom' || Boolean(property.roomLabel);
   const observed = observedDate(row.observedAt || property.observedAt || references?.sourceObservedAt);
-  const propertyName = valueOr(property.listingLabel, valueOr(row.communityName || property.name, '房源记录'));
+  const basics = listingBasics(property);
   const captureScope = property.currentFilteredListing === true ? '本次北京官网筛选命中'+(property.listObservedAt ? ' · '+observedDate(property.listObservedAt) : '') : property.currentFilteredListing === false ? '本次筛选未列出 · 已收录记录' : '已收录记录';
   const cardAvailability = property.currentFilteredListing && Array.isArray(property.availability) ? property.availability.filter(Boolean).join('、') : '';
   const availability = property.currentAvailabilityVerified === true && text(property.currentAvailabilityLabel) ? property.currentAvailabilityLabel
@@ -67,7 +68,8 @@ export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onH
   let selectedTab = 'overview', selectedProfile = 'base', destroyed = false;
 
   container.innerHTML = `<div class="pd" data-property-id="${esc(id)}">
-    <header class="pd-header"><div><span class="pd-eyebrow">PROPERTY WORKSPACE</span><h3 class="pd-title">${esc(propertyName)}</h3><p class="pd-subtitle">北京 · ${esc(valueOr(row.district, '行政区待核验'))} · ${esc(valueOr(row.businessName, '商圈待核验'))}</p></div><span class="pd-badge${referenceReady ? ' pd-badge-blue' : ''}">${esc(mediaStatus)}</span></header>
+    <header class="pd-header"><div><h3 class="pd-title">${renderListingTitle(basics)}</h3><p class="pd-subtitle">北京 · ${esc(valueOr(row.district, '行政区待核验'))} · ${esc(valueOr(row.businessName, '商圈待核验'))}</p></div><span class="pd-badge${referenceReady ? ' pd-badge-blue' : ''}">${esc(mediaStatus)}</span></header>
+    <div class="pd-listing-basics listing-basics-light">${renderListingOfferAndFacts(basics)}</div>
     <div class="pd-actions">${vrEntry}<button type="button" class="pd-button${vrUrl?'':' pd-button-primary'}" data-pd-action="twin" ${typeof onTwin !== 'function' ? 'disabled' : ''}>三维设备运维</button><button type="button" class="pd-button" data-pd-action="household" ${typeof onHousehold !== 'function' ? 'disabled' : ''}>家庭运行</button>${typeof onMap === 'function' ? '<button type="button" class="pd-button" data-pd-action="map">地图定位</button>' : ''}${officialDetail ? `<a class="pd-button" href="${esc(officialDetail)}" target="_blank" rel="noopener noreferrer">自如房源原页</a>` : ''}</div>
     <p class="pd-scope">资料观察：${esc(observed)} · ${esc(availability)}${property.imported ? ' · 本地导入记录' : ' · '+esc(captureScope)}</p>
     <div class="pd-tabs" role="tablist" aria-label="房源详情维度">${[['overview','房源信息'],['references','3D 与 VR'],['devices','设备配置']].map(([key,label]) => `<button type="button" role="tab" id="${uid}-tab-${key}" aria-controls="${uid}-panel-${key}" aria-selected="${key === selectedTab}" tabindex="${key === selectedTab ? '0' : '-1'}" data-pd-tab="${key}">${label}</button>`).join('')}</div>
@@ -76,21 +78,15 @@ export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onH
         ['小区', valueOr(row.communityName || property.name)],
         ['商圈', row.businessVerified ? valueOr(row.businessName) + ' · 已确认' : '待核验'],
         ['行政区', valueOr(row.district) + (row.districtVerified === false ? ' · 归属待核验' : '')],
-        [text(property.areaLabel) || (shared ? '出租卧室面积' : '房源面积'), text(property.areaDisplay) || (finite(property.area) ? property.area + ' ㎡' : '待补')],
         ...(property.officialMoveInEvidence ? [['官网可入住日期', text(property.officialMoveInLabel) || '官网未标注']] : []),
-        ['租金', text(property.rentText) || '见官网'],
         ...[['电梯','elevator'],['建成年代','built'],['供暖','heating'],['绿化率','greenery']].flatMap(([label,key])=>text(property.detailFields?.[key]) ? [[label,text(property.detailFields[key])]] : []),
         ['居室分类', roomLabel(property, row)],
-        ['楼层', finite(property.floor) && finite(property.totalFloors) ? `${property.floor} / ${property.totalFloors} 层` : '待补'],
-        ['房源朝向', valueOr(property.orientation)],
         ['产品标签', valueOr(property.product)],
         ['附近地铁', text(property.detailFields?.transit) || (property.station ? property.station + '站' + (finite(property.distance) ? ` · 原页约 ${property.distance} m` : '') : '待补')],
-        ['记录身份', row.realListingId ? `自如挂牌号 ${row.realListingId}` : `本地记录 ${id}`],
-        ...((property.officialHouseCode || property.businessId) ? [['房源编号', property.officialHouseCode || property.businessId]] : []),
         ...(lingzhiEvidence(property) ? [['灵之标签证据', lingzhiEvidence(property)]] : [])
       ].map(([label,value]) => fact(label,value)).join('')}</dl>
       ${!row.businessVerified && row.businessCandidate ? `<div class="pd-note"><strong>商圈归属待核验</strong><p>现有位置线索：${esc(row.businessCandidate)}。该线索不计入已确认商圈数量。</p></div>` : ''}
-      ${!row.realListingId ? '<p class="pd-muted">本条保留原采集字段；对应自如真实房源 ID 与独立详情链接尚待补齐。</p>' : ''}
+      ${!row.realListingId ? '<p class="pd-muted">本条保留原采集资料，官网详情链接待核验。</p>' : ''}
       ${property.labelNote ? `<p class="pd-muted">${esc(property.labelNote)}</p>` : ''}
       ${shared ? '<p class="pd-muted">面积对应出租卧室，居室数描述所属整套房屋；设备规划仅计该卧室范围。</p>' : ''}
       <div class="pd-foot-links">${!officialDetail && source ? `<a href="${esc(source)}" target="_blank" rel="noopener noreferrer">查看原采集来源</a>` : ''}<span>真实设备状态：${row.telemetryConnected === true ? '请进入家庭运行核对' : '未接入'}</span></div>

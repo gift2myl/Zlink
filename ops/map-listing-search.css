@@ -3,7 +3,7 @@
   z-index:9;
   flex:none;
   margin:0 clamp(13px,2vw,24px) 12px;
-  color:#e3eff8;
+  color:var(--map-ink);
 }
 body:not([data-scene="city"]) .map-listing-search,
 .map-listing-search [hidden] {display:none!important}
@@ -13,44 +13,43 @@ body:not([data-scene="city"]) .map-listing-search,
   gap:12px;
   min-height:40px;
   padding:0 11px;
-  background:#102437;
-  border:1px solid #3a546b;
+  background:var(--map-surface);
+  border:1px solid var(--map-border);
   border-radius:5px;
 }
-.map-find-field:focus-within {border-color:#79c6f5;box-shadow:0 0 0 1px #79c6f5}
-.map-find-field label {flex:none;font-size:14px;font-weight:500;color:#d8e7f2;cursor:text}
+.map-find-field:focus-within {border-color:var(--map-accent);box-shadow:0 0 0 1px var(--map-accent)}
+.map-find-field label {flex:none;font-size:14px;font-weight:500;color:var(--map-ink);cursor:text}
 .map-find-field input[type="search"] {
   appearance:none;flex:1;min-width:0;width:auto;min-height:38px;padding:0 2px;margin:0;
-  background:transparent;color:#eff7fe;
+  background:transparent;color:var(--map-ink);
   border:0;outline:0;box-shadow:none;font-family:inherit;font-size:14px;
 }
-.map-find-field input::placeholder {color:#a2b7c9;opacity:1}
+.map-find-field input::placeholder {color:var(--map-muted);opacity:1}
 .map-find-field input::-webkit-search-cancel-button {display:none}
 .map-find-clear,.map-find-paging button {
-  color:#9bd6fe;background:transparent;border:0;font:inherit;font-size:13px;cursor:pointer;
+  color:var(--map-accent);background:transparent;border:0;font:inherit;font-size:13px;cursor:pointer;
 }
 .map-find-clear {flex:none;min-height:34px;padding:4px}
 .map-find-menu {
   position:absolute;top:calc(100% + 4px);left:0;right:0;
-  padding:5px 0 6px;background:#102335;border:1px solid #48677f;
-  border-radius:6px;box-shadow:0 9px 22px #04111e55;
+  padding:5px 0 6px;background:var(--map-surface);border:1px solid var(--map-border);
+  border-radius:6px;box-shadow:0 9px 22px #29415826;
 }
-.map-find-status {padding:6px 12px;color:#aac0d3;font-size:12px;line-height:1.4}
+.map-find-status {padding:6px 12px;color:var(--map-muted);font-size:12px;line-height:1.4}
 .map-find-list {max-height:min(350px,39vh);overflow:auto;overscroll-behavior:contain}
 .map-find-list:empty {display:none}
 .map-find-list button {
-  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;gap:3px 12px;
+  display:grid;grid-template-columns:minmax(0,1fr);align-items:baseline;gap:3px;
   width:100%;min-height:48px;padding:7px 12px;background:transparent;
-  color:#d7e8f6;text-align:left;font:inherit;border:0;border-top:1px solid #263d50;cursor:pointer;
+  color:var(--map-ink);text-align:left;font:inherit;border:0;border-top:1px solid var(--map-border);cursor:pointer;
 }
-.map-find-list button:is(:hover,[aria-selected="true"]) {background:#1b435e}
-.map-find-list strong {font-size:14px;color:#f1f7fb;font-weight:600;overflow-wrap:anywhere}
-.map-find-list .map-find-id {font-size:13px;color:#a7d9f9;font-variant-numeric:tabular-nums}
-.map-find-list small {grid-column:1/-1;font-size:12px;color:#b1c6d6;line-height:1.5;overflow-wrap:anywhere}
-.map-find-paging {display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #294157;padding:4px 12px 0}
+.map-find-list button:is(:hover,[aria-selected="true"]) {background:var(--map-tint)}
+.map-find-list strong {font-size:14px;color:var(--map-ink);font-weight:600;overflow-wrap:anywhere}
+.map-find-list small {grid-column:1/-1;font-size:12px;color:var(--map-muted);line-height:1.5;overflow-wrap:anywhere}
+.map-find-paging {display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--map-border);padding:4px 12px 0}
 .map-find-paging button {min-height:32px;padding:3px 8px}
-.map-find-paging button:disabled {color:#8597a8;cursor:default}
-.map-listing-search button:focus-visible {outline:2px solid #9cd7ff;outline-offset:-3px}
+.map-find-paging button:disabled {color:var(--map-muted);cursor:default}
+.map-listing-search button:focus-visible {outline:2px solid var(--map-accent);outline-offset:-3px}
 @media(max-width:640px) {
   .map-listing-search {margin-bottom:8px}
   .map-find-field {gap:8px;padding:0 8px;min-height:37px}

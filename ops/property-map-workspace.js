@@ -1,4 +1,5 @@
 import { verifiedVrUrl } from './official-vr.js';
+import { listingBasics, renderListingOfferAndFacts, renderListingTitle } from './listing-basics.js';
 import { GeographicMap } from './geo-map-viewer.js';
 import { mapGroupKeys, mapGroups, combineMapPoints } from './map-hierarchy.js';
 import { buildDeviceConfiguration, CONFIG_PROFILES } from './device-configuration.js';
@@ -39,14 +40,6 @@ function positionLabel(entry) {
   return entry.geography?.precision === 'city_registered_community_estimate' ? '官网小区 · 市域配准估算'
     : entry.geography?.precision === 'registered_community_estimate' ? '官网小区 · 邻域配准估算'
     : entry.geography?.precision === 'osm_residential_reference' ? 'OSM 住宅参考点' : '小区参考';
-}
-
-function propertyFacts(property) {
-  const area = finite(property.area) && property.area > 0 ? `${property.areaDisplay || property.area+'㎡'}${property.areaScope === 'listed_bedroom' ? '（该卧室）' : ''}` : '面积待核验';
-  const layout = string(property.layout) || (finite(property.bedrooms) && property.bedrooms > 0 ? `${property.bedrooms}居` : '');
-  const room = string(property.roomLabel);
-  const floor = finite(property.floor) ? (finite(property.totalFloors) ? `${property.floor}/${property.totalFloors}层` : `${property.floor}层`) : '';
-  return [area,layout || (room?'':'户型待核验'),room!==layout?room:'',floor].filter(Boolean).join(' · ');
 }
 
 function devicePlan(property, profile) {
@@ -214,7 +207,7 @@ export class PropertyMapWorkspace {
       if (control) this.viewer.select(this.selectedPin(control.dataset.geoGroup || control.dataset.geoPropertyId)?.id || null);
     };
     for (const event of ['pointerover','focusin']) this.listen(list, event, highlight);
-    const restore = () => this.viewer.select(this.selectedPin(this.selectedId)?.id || null,this.selectedId);
+    const restore = () => this.viewer.select(this.selectedPin(this.selectedId)?.id || null);
     this.listen(list, 'pointerleave', restore);
     this.listen(list, 'focusout', event => { if (!list.contains(event.relatedTarget)) restore(); });
     this.listen(this.mapCard,'click',event=>{
@@ -315,7 +308,7 @@ export class PropertyMapWorkspace {
     this.pins = this.level === 'property' ? listingPins : combineMapPoints(this.groups);
     if (this.selectedId && !this.filteredEntries.some(entry => entry.id === this.selectedId)) this.closeDetail();
     this.viewer?.setEntries(this.pins, listingPins);
-    this.viewer?.select(this.selectedPin(this.selectedId)?.id || null,this.selectedId);
+    this.viewer?.select(this.selectedPin(this.selectedId)?.id || null);
     this.renderList();
     this.renderCoverage();
     this.renderMonitorSummary();
@@ -346,14 +339,15 @@ export class PropertyMapWorkspace {
       return;
     }
     element.innerHTML = this.filteredEntries?.length ? this.filteredEntries.map(entry => {
+      const basics = listingBasics(entry.property);
       const precision = positionLabel(entry);
       const priorityClass = entry.priority === 'P1' ? ' is-p1' : entry.priority === 'P2' ? ' is-p2' : '';
       const pendingLabel = entry.hasPending ? `${entry.priority ? entry.priority + ' ' : ''}演示待办 · ${entry.pendingCount}条` : '暂无演示待办';
       const pendingTag = entry.priority === 'P1' ? 'red' : entry.hasPending ? 'amber' : 'neutral';
       return `<button type="button" class="geo-property-item${priorityClass}${entry.id === this.selectedId ? ' is-selected' : ''}" data-geo-property-id="${esc(entry.id)}" aria-pressed="${entry.id === this.selectedId}">
-        <span class="geo-property-index">${entry.mapIndex}</span><span class="geo-property-main"><strong>${esc(entry.property.realListingId || entry.id)}</strong><span class="geo-property-region">${esc(entry.name)}${(entry.property.officialHouseCode || entry.property.businessId) ? ' · '+esc(entry.property.officialHouseCode || entry.property.businessId) : ''}</span>
+        <span class="geo-property-index">${entry.mapIndex}</span><span class="geo-property-main">
+        <strong>${renderListingTitle(basics)}</strong>${renderListingOfferAndFacts(basics,{inButton:true})}
         <span class="geo-property-region" style="display:block">${esc(entry.district)} · ${esc(entry.businessLabel)}</span>
-        <span class="geo-property-region" style="display:block">${esc(propertyFacts(entry.property))}</span>
         <span class="geo-property-status"><span class="tag neutral">${precision}</span><span class="tag ${pendingTag}">${pendingLabel}</span></span>
         </span></button>`;
     }).join('') : `<p class="geo-list-empty">${this.entries.length ? '当前筛选没有房源记录，请调整区域、商圈或状态。' : '当前范围暂无已收录房源。可查看采集状态，或切换为全部采集房源。'}</p>`;
@@ -408,7 +402,8 @@ export class PropertyMapWorkspace {
       if (business) parts.push(`<button type="button" class="text-btn" data-geo-crumb="business">${esc(business.businessLabel)}</button>`);
     }
     if (this.communityKey && current) parts.push(`<button type="button" class="text-btn" data-geo-crumb="community">${esc(current.name)}</button>`);
-    if (this.selectedId) parts.push(esc(this.selectedId));
+    const selected = this.selectedId && this.entries.find(entry => entry.id === this.selectedId);
+    if (selected) parts.push(esc(listingBasics(selected.property).title));
     const breadcrumb = this.elements['scene-breadcrumb'];
     const content = parts.join('<span class="crumb-divider">/</span>');
     if (breadcrumb.innerHTML !== content) breadcrumb.innerHTML = content;
@@ -456,30 +451,31 @@ export class PropertyMapWorkspace {
     const names = new Set(listings.map(entry=>entry.name));
     const heading = names.size===1 ? listings[0].name : '附近房源';
     const choices = listings.map(entry=>{
-      const id=entry.property.realListingId || entry.id;
+      const basics = listingBasics(entry.property);
       return `<button type="button" class="geo-listing-choice" data-geo-pick="${esc(entry.id)}" aria-pressed="${entry.id===this.selectedId}">
-        <strong>${names.size===1?'':esc(entry.name)+' · '}${entry.property.realListingId?'挂牌':'记录'} ${esc(id)}</strong>
-        <span>${esc(propertyFacts(entry.property))}</span></button>`;
+        <strong>${renderListingTitle(basics)}</strong>${renderListingOfferAndFacts(basics,{inButton:true})}</button>`;
     }).join('');
     this.setMapCard(heading+' · '+listings.length+' 套',`<div class="geo-listing-choices">${choices}</div>`,true);
   }
 
-  setMapCard(title,html,focus=false) {
+  setMapCard(title,html,focus=false,signBadge=false) {
     this.mapCard.hidden=false;
-    this.mapCard.innerHTML=`<div class="geo-listing-card-head"><h3 tabindex="-1">${esc(title)}</h3>
+    this.mapCard.innerHTML=`<div class="geo-listing-card-head"><h3 tabindex="-1">${renderListingTitle({title,signBadge})}</h3>
       <button type="button" data-geo-card-close aria-label="收起地图房源信息">×</button></div>${html}`;
     if(focus)this.mapCard.querySelector('h3').focus({preventScroll:true});
   }
 
   showSelectedListing(entry,focus=false) {
-    const id=entry.property.realListingId || entry.id;
-    const hasVr=Boolean(verifiedVrUrl(entry.property));
-    this.setMapCard(entry.name,`<p><strong>${entry.property.realListingId?'挂牌号':'记录号'} ${esc(id)}</strong> · ${esc(positionLabel(entry))}</p>
-      <p>${esc(propertyFacts(entry.property))}</p><div class="geo-listing-actions">
-      ${hasVr?`<a class="geo-vr-entry" href="#vr-${esc(id)}" data-official-vr="${esc(id)}">看官网 VR</a>`:''}
-      ${entry.property.reviewedRoomDemo?'<button type="button" data-geo-card-room>进入房间三维</button>':''}<button type="button" data-geo-card-detail>设备详情</button>
+    const property = entry.property;
+    const id = property.realListingId || entry.id;
+    const basics = listingBasics(property);
+    const sourceLink = basics.sourceUrl ? `<a class="geo-listing-id" href="${esc(basics.sourceUrl)}" target="_blank" rel="noopener noreferrer" aria-label="在官网查看${esc(basics.title)}">官网房源 ↗</a>` : '';
+    this.setMapCard(basics.title,`${renderListingOfferAndFacts(basics)}
+      <div class="geo-listing-actions">
+      ${verifiedVrUrl(property)?`<a class="geo-vr-entry" href="#vr-${esc(id)}" data-official-vr="${esc(id)}">看官网 VR</a>`:''}
+      ${property.reviewedRoomDemo?'<button type="button" data-geo-card-room>进入房间三维</button>':''}<button type="button" data-geo-card-detail>设备详情</button>
       ${this.filteredEntries.length>1?`<button type="button" data-geo-card-siblings>本小区 ${this.filteredEntries.length} 套</button>`:''}
-      <button type="button" data-geo-card-city>返回北京地图</button></div>`,focus);
+      <button type="button" data-geo-card-city>返回北京地图</button></div>${sourceLink}`,focus,basics.signBadge);
   }
 
   dismissCard() {
@@ -523,7 +519,7 @@ export class PropertyMapWorkspace {
     }
     this.selectedId = id; this.deferredFocusId = null;
     this.renderFilters(); this.applyFilters(false);
-    this.viewer.select(this.selectedPin(id)?.id || null,id);
+    this.viewer.select(this.selectedPin(id)?.id || null);
     this.renderDetail(entry);
     this.showSelectedListing(entry,!reveal);
     if (reveal) this.revealDetail();
@@ -548,6 +544,7 @@ export class PropertyMapWorkspace {
     const element = this.elements['scene-detail'];
     if (!element || !this.active) return;
     const geographicRecord = entry.geography;
+    const basics = listingBasics(entry.property);
     const hasVr=Boolean(verifiedVrUrl(entry.property));
     const osmUrl = safeUrl(geographicRecord?.osm?.objectUrl);
     const businessUrl = safeUrl(geographicRecord?.businessDistrict?.sourceUrl);
@@ -561,7 +558,7 @@ export class PropertyMapWorkspace {
       sourceUrl && `<a href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">房源来源</a>`].filter(Boolean);
     element.hidden = false;
     element.innerHTML = `<button type="button" class="icon-btn close-scene-detail" data-geo-action="close" aria-label="关闭房源地图详情">×</button>
-      <div class="geo-detail-heading"><h3>${esc(entry.name)}</h3><p>${entry.property.realListingId ? '挂牌号' : '记录号'} ${esc(entry.id)}${(entry.property.officialHouseCode || entry.property.businessId) ? ' · ' + esc(entry.property.officialHouseCode || entry.property.businessId) : ''}</p><p>${esc(entry.district)} · ${esc(entry.businessLabel)} · ${esc(propertyFacts(entry.property))}</p></div>
+      <div class="geo-detail-heading"><h3>${renderListingTitle(basics)}</h3>${renderListingOfferAndFacts(basics)}<p>${esc(entry.district)} · ${esc(entry.businessLabel)}</p></div>
       <div class="geo-detail-actions">
         ${hasVr?`<a class="button primary" href="#vr-${esc(entry.id)}" data-official-vr="${esc(entry.id)}">看官网 VR</a>`:''}
         ${entry.property.reviewedRoomDemo?`<button class="button${hasVr?'':' primary'}" type="button" data-geo-action="room">进入房间三维</button>`:''}

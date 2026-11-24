@@ -1,3 +1,5 @@
+import { listingBasics } from './listing-basics.js';
+
 const pageSize = 5;
 const collator = new Intl.Collator('zh-CN', {numeric:true});
 
@@ -59,7 +61,7 @@ export function mountMapListingSearch(container, {getEntries,onLocate}) {
     <div class="map-find-field">
       <label for="${prefix}-input">地图找房</label>
       <input id="${prefix}-input" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false"
-        aria-controls="${prefix}-list" autocomplete="off" spellcheck="false" placeholder="输入挂牌号、业务编号、小区或商圈">
+        aria-controls="${prefix}-list" autocomplete="off" spellcheck="false" placeholder="输入小区、商圈或户型">
       <button type="button" class="map-find-clear" aria-label="清除找房关键词" hidden>清除</button>
     </div>
     <div class="map-find-menu" hidden>
@@ -99,7 +101,7 @@ export function mountMapListingSearch(container, {getEntries,onLocate}) {
     const end=Math.min(offset+pageSize,total);
     status.textContent=total ? (total>pageSize ? `共 ${total} 套，显示第 ${offset+1}–${end} 套` : `找到 ${total} 套房源`) : '没有匹配的房源，请调整关键词或地图数据范围。';
     for(let item=offset;item<end;item++){
-      const {id,name,district,businessLabel,property:p}=results[item];
+      const {id,district,businessLabel,property:p}=results[item];
       const button=document.createElement('button');
       button.type='button';
       button.tabIndex=-1;
@@ -108,14 +110,10 @@ export function mountMapListingSearch(container, {getEntries,onLocate}) {
       button.setAttribute('role','option');
       button.setAttribute('aria-selected',String(item===active));
       const title=document.createElement('strong');
-      title.textContent=name;
-      const code=document.createElement('span');
-      code.className='map-find-id';
-      code.textContent=(p.realListingId ? '挂牌 ' : '记录 ')+(p.realListingId || id);
+      title.textContent=listingBasics(p).title;
       const details=document.createElement('small');
-      const codes=[...new Set([p.officialHouseCode,p.businessId].filter(Boolean))].join(' · ');
-      details.textContent=joinFacts([district,p.businessArea || (businessLabel || '').split('（')[0],listingFacts(p),codes]);
-      button.append(title,code,details);
+      details.textContent=joinFacts([district,p.businessArea || (businessLabel || '').split('（')[0],listingFacts(p)]);
+      button.append(title,details);
       list.append(button);
     }
     paging.hidden=total<=pageSize;

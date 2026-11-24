@@ -583,7 +583,7 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
       }
       if(signal.aborted)return;
       if(!original){
-        if(!directSource){fallback('尚无与本套挂牌对应的可查看户型图。可查阅已有官网资料。');return;}
+        if(!directSource){fallback('尚无与本套房源对应的可查看户型图。可查阅已有官网资料。');return;}
         const preview=await matchedPreview(property,directSource,signal);
         if(preview)original=await decodeSource(preview.data,signal);
         if(!original)original=await decodeSource(directSource,signal);
@@ -606,7 +606,7 @@ export function mountListingPlanViewer(container,{property,plan:givenPlan,profil
         roomIndex=Math.max(0,plan.anchors.findIndex(a=>featured?a.room===featured.room:/客厅|起居/.test(a.room)));
       }
       const geometryStatus=imageOnly?'官网原图 · 三维墙线待核验':plan.reviewed===true?'已对照原图复核墙线':automatic?'原图自动提取 · 待复核':'已对照原图复核墙线';
-      shell.innerHTML=`<header class="lpv-heading"><div><h3>${title} · 户型与设备</h3><p>${escape([plan.layout,plan.area ? String(plan.area).replace(/\s*㎡$/,'')+' ㎡':'','挂牌号 '+id,geometryStatus].filter(Boolean).join(' · '))}</p></div><div class="lpv-sources">${sourceLinks(media)}</div></header>
+      shell.innerHTML=`<header class="lpv-heading"><div><h3>${title} · 户型与设备</h3><p>${escape([plan.layout,plan.area ? String(plan.area).replace(/\s*㎡$/,'')+' ㎡':'',geometryStatus].filter(Boolean).join(' · '))}</p></div><div class="lpv-sources">${sourceLinks(media)}</div></header>
         <div class="lpv-toolbar"><div class="lpv-switch" role="group" aria-label="查看方式"><button type="button" data-mode="3d">整屋三维</button>${canEnter?'<button type="button" data-mode="room">进入房间</button>':''}<button type="button" data-mode="2d">二维对照</button></div>
         <div class="lpv-navigation"><button type="button" data-action="top">俯视</button><button type="button" data-action="reset">复位</button><button type="button" data-action="out" aria-label="缩小">−</button><button type="button" data-action="in" aria-label="放大">＋</button></div></div>
         ${canEnter?`<div class="lpv-room-controls" hidden><label>房间<select data-room-select aria-label="当前房间">${plan.anchors.map((a,i)=>{const same=plan.anchors.filter(r=>r.room===a.room);return `<option value="${i}" ${i===roomIndex?'selected':''}>${escape(a.room)}${same.length>1?' '+(same.indexOf(a)+1):''}</option>`;}).join('')}</select></label>

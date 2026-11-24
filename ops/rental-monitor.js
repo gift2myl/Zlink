@@ -1,6 +1,8 @@
+import { listingBasics } from './listing-basics.js';
+
 const collator = new Intl.Collator('zh-CN', { numeric: true });
 const levels = ['district', 'business', 'community', 'listing'];
-const labels = ['区域', '片区', '小区', '挂牌'];
+const labels = ['区域', '片区', '小区', '房源'];
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 })[c]);
@@ -26,7 +28,7 @@ function buildTree(properties) {
       [district, district || '区域待核验'],
       [business, business || '片区待核验'],
       [key, name || '小区名待核验'],
-      [id, id]
+      [id, listingBasics(property).title]
     ];
     let node = root;
     node.rows.push(row);
@@ -120,9 +122,9 @@ export function mountRentalMonitor(root, { onSelect } = {}) {
     const day = clean(metadata.date).slice(0, 10);
     date.textContent = day ? '官网快照 ' + day.replaceAll('-', '.') : '';
     const partial = hasData && metadata.verifiedCount < metadata.currentCount;
-    const note = partial ? `本期 ${metadata.currentCount} 套挂牌中已核验 ${metadata.verifiedCount} 套。` : '';
+    const note = partial ? `本期 ${metadata.currentCount} 套房源中已核验 ${metadata.verifiedCount} 套。` : '';
     source.textContent = hasData
-      ? note + '按本期官网标注「随时入住」的挂牌统计，排除已预订等受限房源。片区取自官网商圈。'
+      ? note + '按本期官网标注「随时入住」的房源统计，排除已预订等受限房源。片区取自官网商圈。'
       : '待租统计所需的官网入住信息尚待核验。片区取自官网商圈。';
 
     const depth = Math.min(path.length, 3);
@@ -135,21 +137,21 @@ export function mountRentalMonitor(root, { onSelect } = {}) {
       const key = index === 0 ? 'city' : levels[index - 1];
       return `<button type="button" data-rental-level="${key}"${current}>${esc(name)}</button>`;
     }).join('<span aria-hidden="true">›</span>') + (nodes[4]
-      ? `<span aria-hidden="true">›</span><span aria-current="location">挂牌 ${esc(nodes[4].key)}</span>` : '');
+      ? `<span aria-hidden="true">›</span><span aria-current="location">${esc(nodes[4].name)}</span>` : '');
     choices.setAttribute('aria-label', '按' + labels[depth] + '查看待租房源');
     const groups = [...group.children.values()].sort((a, b) => b.rows.length - a.rows.length || collator.compare(a.name, b.name));
     choices.innerHTML = groups.map(node => {
       const listing = level === 'listing';
       const property = node.rows[0].property;
-      const detail = listing ? [property.roomLabel, property.layout].filter(Boolean).join(' · ') : '';
+      const detail = listing ? listingBasics(property).facts.filter(fact => fact.value).map(fact => fact.label === '楼层' ? fact.value + (fact.value.includes('/') ? '层' : '') : fact.value).join(' · ') : '';
       const selected = listing && nodes[4]?.key === node.key;
-      const description = listing ? `在地图查看挂牌 ${node.name}` : `${node.name}，${node.rows.length} 套待租，查看${labels[depth+1]}`;
+      const description = listing ? `在地图查看${node.name}${detail ? '，'+detail : ''}` : `${node.name}，${node.rows.length} 套待租，查看${labels[depth+1]}`;
       return `<button type="button" data-rental-${level}="${esc(node.key)}" aria-label="${esc(description)}"${listing ? ` aria-pressed="${selected}"` : ''}>
-        <span>${esc(listing ? '挂牌 ' + node.name : node.name)}</span>${listing
+        <span>${esc(node.name)}</span>${listing
           ? detail ? `<small>${esc(detail)}</small>` : ''
           : `<strong data-rental-count>${node.rows.length}</strong>`}</button>`;
     }).join('');
-    if (!groups.length) choices.textContent = hasData ? '本范围暂无符合条件的待租挂牌。' : '暂无已核验的待租清单。';
+    if (!groups.length) choices.textContent = hasData ? '本范围暂无符合条件的待租房源。' : '暂无已核验的待租清单。';
     updateExpandButton();
     if (focus) {
       const target = nodes[4] ? choices.querySelector('[aria-pressed="true"]') : crumbs.querySelector('[aria-current]');

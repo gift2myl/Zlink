@@ -1,20 +1,19 @@
+import { listingBasics } from './listing-basics.js';
+
 import * as THREE from 'three';
 
 const OSM_ATTRIBUTION = '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>';
 const TERRAIN_ATTRIBUTION = 'Terrain: <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener">Mapzen / AWS</a> · <a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md" target="_blank" rel="noopener">Contributors</a>';
 const BEIJING = [116.4, 39.91];
 const LISTING_ICON = new URL('./assets/logo-icon-blue.png', import.meta.url).href;
-// Tint the existing public OSM raster locally; no extra tile service or API key.
-// The pinned MapLibre raster shader mixes the two brightness endpoints, so
-// reversing them inverts only the basemap, leaving Three.js status colours intact.
+// Keep roads, water and parks distinct while reducing saturation below the listing overlays.
 const MONITOR_RASTER_PAINT = {
-  'raster-saturation': -1,
-  'raster-contrast': .08,
-  'raster-brightness-min': .78,
-  'raster-brightness-max': .055,
-  'raster-opacity': .84
+  'raster-saturation': -.53,
+  'raster-contrast': -.06,
+  'raster-brightness-min': .10,
+  'raster-brightness-max': 1
 };
-const propertyColour = entry => entry.priority === 'P1' ? 0xff6577 : entry.priority === 'P2' ? 0xffbd69 : 0x4bb9ff;
+const propertyColour = entry => entry.priority === 'P1' ? 0xb52f48 : entry.priority === 'P2' ? 0xa15b05 : 0x1375bd;
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 const hasPoint = entry => Array.isArray(entry.position) && entry.position.length === 2 && entry.position.every(Number.isFinite) && entry.position[0] >= 115 && entry.position[0] <= 118 && entry.position[1] >= 39 && entry.position[1] <= 42;
 class InitializationPaused extends Error {}
@@ -177,8 +176,8 @@ export class GeographicMap {
     const tileNote = this.tileError ? ' · 底图部分瓦片未返回' : '';
     const terrainLabel = this.terrainState === 'ready' ? 'Mapzen / AWS 地形 ×1.2' : this.terrainState === 'error' ? '地形暂不可用' : '地形加载中';
     const text = this.mode === 'webgl'
-      ? '监控深色 · 三维地图' + (this.terrainEnabled ? ' · ' + terrainLabel : ' · 平面视图') + tileNote
-      : this.mode === 'leaflet' ? '监控深色 · 二维兼容视图' + tileNote
+      ? '浅色三维地图' + (this.terrainEnabled ? ' · ' + terrainLabel : ' · 平面视图') + tileNote
+      : this.mode === 'leaflet' ? '浅色二维地图' + tileNote
       : this.mode === 'failed' ? '地图加载失败，房源清单仍可使用'
       : '正在加载北京公共地图';
     this.onStatus?.({ mode: this.mode, text, terrainEnabled: this.mode === 'webgl' && this.terrainEnabled, terrainState: this.terrainState, ...extra });
@@ -311,7 +310,7 @@ export class GeographicMap {
           'aws-terrain': { type: 'raster-dem', tiles: terrainTiles, tileSize: 256, encoding: 'terrarium', maxzoom: this.sources.terrain?.demoMaxZoom || 14, attribution: TERRAIN_ATTRIBUTION }
         },
         layers: [
-          { id: 'monitor-background', type: 'background', paint: { 'background-color': '#081827' } },
+          { id: 'monitor-background', type: 'background', paint: { 'background-color': '#f3f6f9' } },
           { id: 'osm-basemap', type: 'raster', source: 'osm', paint: MONITOR_RASTER_PAINT }
         ],
         terrain: { source: 'aws-terrain', exaggeration: 1.2 }
@@ -406,7 +405,7 @@ export class GeographicMap {
     button.dataset.geoLevel = entry.type || 'property';
     button.dataset.positionKind = entry.positionPrecision || entry.geography?.precision || '';
     const listing=entry.property && !entry.type;
-    const caption=listing ? entry.name + ' · ' + entry.id : entry.name;
+    const caption=listing ? listingBasics(entry.property).title : entry.name;
     const face = listing
       ? '<img class="geo-marker-logo" src="' + escapeHtml(LISTING_ICON) + '" alt="" draggable="false" width="36" height="36">'
       : '<span class="geo-marker-number">' + escapeHtml(entry.mapIndex) + '</span>';
@@ -415,7 +414,7 @@ export class GeographicMap {
       : entry.type === 'business' ? '按商圈聚合 · 已定位小区参考点'
       : entry.type === 'point' ? '同一参考位置 · 点击选择'
       : entry.matchType === 'station_proxy' ? '地铁参考点，非房源位置' : '小区级参考位置';
-    const label = entry.type ? (entry.type === 'business' ? entry.district + ' · ' : '') + entry.name + ' · ' + entry.mapIndex + (['point','nearby'].includes(entry.type) ? ' 项' : ' 条房源') : entry.name + ' · ' + entry.id;
+    const label = entry.type ? (entry.type === 'business' ? entry.district + ' · ' : '') + entry.name + ' · ' + entry.mapIndex + (['point','nearby'].includes(entry.type) ? ' 项' : ' 条房源') : caption;
     const status = entry.hasPending ? (entry.priority || '') + ' 演示待办 ' + (entry.pendingCount || 1) + ' 条' : '暂无演示待办 · 真实状态未接入';
     button.setAttribute('aria-label', label + ' · ' + precision + ' · ' + status);
     button.setAttribute('aria-pressed', String(entry.id === this.selectedId));
@@ -482,7 +481,7 @@ export class GeographicMap {
       this.markerRecords.push({ marker, element, entry });
     }
     if (this.mode === 'webgl') this.propertyLayer?.rebuild(display);
-    this.select(this.selectedId, this.selectedListingId);
+    this.select(this.selectedId);
   }
 
   setEntries(entries, listingPins = []) {
@@ -491,17 +490,12 @@ export class GeographicMap {
     this.refreshMarkers();
   }
 
-  select(id, listingId = null) {
+  select(id) {
     this.selectedId = id;
-    this.selectedListingId = listingId;
     for (const record of this.markerRecords) {
       const selected = record.entry.id === id || (record.entry.type === 'nearby' && record.entry.members.some(item => item.id === id));
       record.element.classList.toggle('is-selected', selected);
       record.element.setAttribute('aria-pressed', String(selected));
-      if(record.entry.type) {
-        const caption=record.element.querySelector('.geo-marker-caption');
-        caption.textContent=selected && listingId ? record.entry.name+' · '+listingId : record.entry.name;
-      }
     }
   }
 

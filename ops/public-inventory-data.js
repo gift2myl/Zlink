@@ -111,7 +111,7 @@ function referenceRow(p) {
 }
 
 /** Join the official filtered list and the supplied identifier checks on the public detail-page identity. */
-export function projectPublicInventory(snapshot, communityMap = {}, availability = {}, listingFacts = {}) {
+export function projectPublicInventory(snapshot, communityMap = {}, availability = {}, listingFacts = {}, listingOffers = {}) {
   const publicationDate = text(snapshot?.date) || null;
   const listings = new Map();
   for (const row of rows(snapshot?.listings)) {
@@ -131,6 +131,7 @@ export function projectPublicInventory(snapshot, communityMap = {}, availability
   const history = new Map(rows(snapshot?.previousListings).filter(row => identity(row) && text(row.community)).map(row => [row.id,row]));
   const allIds = new Set([...listings.keys(), ...byId.keys(), ...history.keys()]);
   const unavailable = new Map(rows(availability?.unavailable).map(row => [String(row.id),row.url]));
+  const offersById = new Map(rows(listingOffers?.properties).map(row => [row.id,row]));
   const factsById = new Map(rows(listingFacts?.properties).map(row => [String(row.id),row]));
   const mapped = new Map(rows(communityMap.properties).map(row => [String(row.id), row]));
   const properties = [...allIds].map(id => {
@@ -164,6 +165,17 @@ export function projectPublicInventory(snapshot, communityMap = {}, availability
       const currentFacts = facts?.sourceUrl === geo.sourceUrl && facts.detailCheckedAt;
       if (currentFacts) {
         p.observedAt = p.sourceObservedAt = facts.detailCheckedAt;
+        const offer = offersById.get(id);
+        if (offer && offer.sourceUrl === facts.sourceUrl && offer.sourceUrl === p.sourceUrl &&
+            /^[a-f0-9]{64}$/.test(facts.detailSha256) && offer.detailSha256 === facts.detailSha256 &&
+            Number.isFinite(Date.parse(offer.checkedAt))) {
+          const monthlyRent = Number.isSafeInteger(offer.monthlyRent) ? positive(offer.monthlyRent) : null;
+          p.officialOffer = {
+            title: text(offer.title), monthlyRent, paymentLabel: text(offer.paymentLabel),
+            priceCondition: text(offer.priceCondition), signBadge: offer.signBadge === true, sourceUrl: offer.sourceUrl, checkedAt: offer.checkedAt
+          };
+          if (monthlyRent) p.rentText = '¥'+monthlyRent+'/月'+(p.officialOffer.paymentLabel ? '（'+p.officialOffer.paymentLabel+'）' : '');
+        }
         if (Object.hasOwn(facts, 'officialMoveInLabel') && /^[a-f0-9]{64}$/.test(facts.detailSha256)) {
           p.officialMoveInLabel = text(facts.officialMoveInLabel) || null;
           p.officialMoveInEvidence = {

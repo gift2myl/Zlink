@@ -39,7 +39,7 @@ export function createOfficialVrPlayer(resolveProperty) {
     shownId=id;
     stage.replaceChildren();
     title.textContent=property?.name ? property.name+' · 官网实景 VR' : '官网实景 VR';
-    identity.textContent='自如挂牌 '+id;
+    identity.textContent=[property?.district, property?.businessArea, property?.layout].filter(Boolean).join(' · ');
     external.hidden=!url;
     if(url){
       external.href=url;
@@ -60,7 +60,7 @@ export function createOfficialVrPlayer(resolveProperty) {
       external.removeAttribute('href');
       const note=document.createElement('p');
       note.className='official-vr-empty';
-      note.textContent=property ? '本套挂牌暂未取得已核验的官网 VR。' : '北京房源台账中尚无此挂牌号。';
+      note.textContent=property ? '本套房源暂未取得已核验的官网 VR。' : '北京房源台账中未找到这套房源。';
       stage.append(note);
     }
     if(!dialog.open)dialog.showModal();

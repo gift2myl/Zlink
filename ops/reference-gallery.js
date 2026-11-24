@@ -61,7 +61,7 @@ export function mountReferenceGallery(container, {record, onViewModel} = {}) {
   const summary = assets.length ? `${floorplans} 张户型图 · ${assets.length - floorplans} 张实景照片` : '对应素材待补充';
   heading.append(element('p', 'refg-summary', summary));
   const audit = record?.roomEvidence;
-  if (audit) heading.append(element('p', 'refg-summary', `房源编码 ${audit.houseCode} · ${audit.layout} · ${audit.areaLabel} ${audit.area}㎡ · ${audit.rooms.length} 个可进入空间`));
+  if (audit) heading.append(element('p', 'refg-summary', `${audit.layout} · ${audit.areaLabel} ${audit.area}㎡ · ${audit.rooms.length} 个可进入空间`));
   header.append(heading);
   const source = confirmedSource(record);
   if (source) {

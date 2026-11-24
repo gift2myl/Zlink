@@ -77,3 +77,13 @@
   .pd-device {gap:.6rem;}
   .pd-device-room {max-width:6.8rem;text-align:right;}
 }
+
+.property-row > .property-basics { grid-column: span 2; min-width: 0; }
+.listing-summary-title { margin: 0 0 6px; font-size: 18px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+.listing-basics-light .geo-listing-rent { color: #a34509; }
+.listing-basics-light .geo-listing-facts { border-color: #dce3e9; }
+.listing-basics-light .geo-listing-facts dd { color: #1d2a37; }
+.listing-basics-light .geo-listing-facts dt, .property-location { color: #546372; }
+.property-location { margin: 6px 0 3px; font-size: 13px; line-height: 1.5; }
+.property-basics .text-btn { margin-right: 10px; }
+@media(max-width:960px) { .property-row > .property-basics { grid-column: 1 / -1; } }

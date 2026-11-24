@@ -1,14 +1,14 @@
 .rental-monitor {
-  --rental-line: #31495d;
-  --rental-muted: #afc6d8;
-  --rental-text: #edf6ff;
-  --rental-accent: #80cfff;
+  --rental-line: var(--map-border);
+  --rental-muted: var(--map-muted);
+  --rental-text: var(--map-ink);
+  --rental-accent: var(--map-accent);
   min-width: 0;
   margin: 0 0 16px;
   padding: 15px 22px 13px;
   color: var(--rental-text);
-  background: linear-gradient(110deg, #102b42, #0b1928 72%);
-  border: 1px solid #24394c;
+  background: linear-gradient(110deg, var(--map-soft), var(--map-surface) 72%);
+  border: 1px solid var(--map-border);
   border-radius: 8px;
   font-variant-numeric: tabular-nums;
 }
@@ -104,7 +104,7 @@ body:not([data-scene="city"]) .rental-monitor,
   font-size: 13px;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: #58768e transparent;
+  scrollbar-color: var(--map-strong-border) transparent;
 }
 .rental-monitor-choices button {
   display: inline-flex;
@@ -114,9 +114,9 @@ body:not([data-scene="city"]) .rental-monitor,
   max-width: 100%;
   min-height: 33px;
   padding: 6px 10px;
-  border: 1px solid #3a556b;
+  border: 1px solid var(--map-strong-border);
   border-radius: 4px;
-  background: #152b3c;
+  background: var(--map-surface);
   color: var(--rental-text);
   font-size: 13px;
   line-height: 1.45;
@@ -128,7 +128,7 @@ body:not([data-scene="city"]) .rental-monitor,
 .rental-monitor-choices button small { color: var(--rental-muted); font-size: 12px; }
 .rental-monitor-choices button:hover, .rental-monitor-choices button[aria-pressed="true"] {
   border-color: var(--rental-accent);
-  background: #203d54;
+  background: var(--map-tint);
 }
 .rental-monitor button:focus-visible { outline: 2px solid var(--rental-accent); outline-offset: 1px; }
 .rental-monitor .rental-monitor-source {

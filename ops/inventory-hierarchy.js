@@ -9,7 +9,7 @@ const normalizeCity = value => text(value).replace(/市$/, '') || '北京';
 const normalizeDistrict = value => text(value).replace(/^北京市/, '').replace(/[区县]$/, '');
 
 export function lingzhiEvidence(property) {
-  if (property.lingzhiLabelVisible === true) return '本套挂牌明示灵之智能';
+  if (property.lingzhiLabelVisible === true) return '本套房源明示灵之智能';
   if (property.lingzhiFilterReturned === true) return '灵之筛选返回，本套未见明示标签';
   return property.lingzhiLabelVisible === false ? '本套未见公开灵之标签' : '';
 }

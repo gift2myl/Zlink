@@ -149,12 +149,6 @@ body[data-scene="city"] .geo-group-item .geo-property-region{display:block;margi
 body[data-scene="city"] #scene-breadcrumb{display:flex;flex-wrap:wrap;align-items:center;gap:5px;min-width:0}
 body[data-scene="city"] #scene-breadcrumb .text-btn{white-space:normal;text-align:left}
 .geo-point-options{display:grid;gap:6px;max-height:240px;overflow-y:auto}
-.geo-precision-legend{margin-top:7px}
-.geo-precision-legend summary{cursor:pointer;color:var(--map-accent)}
-.geo-precision-legend>div{display:flex;align-items:baseline;gap:6px;margin-top:5px}
-.geo-precision-symbol{flex:none;display:inline-block;width:10px;height:10px;border:2px solid var(--map-accent);border-radius:50%}
-.geo-precision-symbol[data-position-kind="registered_community_estimate"]{border-style:dashed}
-.geo-precision-symbol[data-position-kind="city_registered_community_estimate"]{border-style:dotted;border-width:3px}
 
 /* Keep the map and navigation together. Selections expand below the canvas. */
 body[data-page="overview"] main#app{padding-top:22px}

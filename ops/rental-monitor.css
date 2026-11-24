@@ -45,5 +45,5 @@ body[data-scene=city] .rental-monitor-head h2 {margin:0;font-size:16px;font-weig
   .rental-monitor-metrics strong {font-size:23px}
 }
 
-.geo-panel:has(.rental-monitor:not([hidden]):not(:empty)) .geo-coverage-totals {display:none}
+.geo-panel:has(.rental-monitor:not([hidden]):not(:empty)) #geo-coverage-summary:has(.geo-coverage-totals) {display:none}
 #geo-coverage-summary {color:var(--map-muted);font-size:13px;line-height:1.6}

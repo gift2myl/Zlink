@@ -331,21 +331,7 @@ export class PropertyMapWorkspace {
     const community = this.entries.filter(entry => entry.matchType === 'community').length;
     const proxy = this.entries.filter(entry => entry.matchType === 'station_proxy').length;
     const unmatched = this.entries.length - community - proxy;
-    const kinds = [
-      ['osm_residential_reference','OSM 住宅范围参考点'],
-      ['official_bd09_community_estimate','官网小区 · 坐标换算估计'],
-      ['registered_community_estimate','官网小区 · 邻域配准估算'],
-      ['city_registered_community_estimate','官网小区 · 市域配准估算'],
-    ];
-    const legendOpen = element.querySelector('details')?.open || false;
-    const legend = kinds.map(([kind, label]) => {
-      const members = this.entries.filter(e => e.position && e.geography?.precision === kind);
-      const stat = members[0]?.geography;
-      const test = stat?.validationP90Metres != null ? `；交叉验证 ${stat.holdoutCount} 个小区，中位 ${stat.validationMedianMetres} 米，P90 ${stat.validationP90Metres} 米` : '';
-      return members.length ? `<div><i class="geo-precision-symbol" data-position-kind="${kind}" aria-hidden="true"></i><span>${label} · ${members.length} 条${test}</span></div>` : '';
-    }).join('');
-    element.innerHTML = `<span class="geo-coverage-totals">已采集 ${this.entries.length} 套 · 小区参考 ${community} · 地铁参考 ${proxy} · 待定位 ${unmatched}<br>当前范围 ${this.filteredEntries.length} 套</span>` +
-      (legend ? `<details class="geo-precision-legend" ${legendOpen ? 'open' : ''}><summary>定位图例与误差</summary>${legend}</details>` : '');
+    element.innerHTML = `<span class="geo-coverage-totals">已采集 ${this.entries.length} 套 · 小区参考 ${community} · 地铁参考 ${proxy} · 待定位 ${unmatched}<br>当前范围 ${this.filteredEntries.length} 套</span>`;
   }
 
   renderMonitorSummary() {

@@ -734,6 +734,6 @@ $('#top-view-btn').onclick=()=>$('#top-view-btn').classList.toggle('active',!!ac
 $('#geo-terrain-btn').onclick=()=>mapWorkspace?.toggleTerrain();
 $('#fullscreen-btn').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('.map-panel').requestFullscreen();}catch{toast('当前浏览器未开启全屏，可放大页面查看。');}};
 $('#reference-btn').onclick=showReferences;$('#cutaway-btn').onclick=()=>{const cutaway=activeScene()?.toggleWalls();$('#cutaway-btn').innerHTML=icon('layers')+(cutaway?'显示完整墙体':'恢复剖切视图');};
-$('#source-btn').onclick=showSources;$('#nav-data').onclick=showSources;$('#footer-source').onclick=showSources;
+$('#source-btn').onclick=showSources;$('#footer-source').onclick=showSources;
 $('#modal-close').onclick=()=>$('#modal').close();$('#modal').addEventListener('close',()=>{if(!$('#modal').open)disposeListingPlan();});$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))$('#modal').close();});
 init();

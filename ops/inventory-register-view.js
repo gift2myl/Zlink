@@ -13,7 +13,8 @@ function registerProperty(row, archived) {
   if (!row.telemetryConnected) missing.push('设备最新状态与历史遥测');
   return {
     ...archived, id:row.id, recordKey:row.realListingId ? 'ziroom:'+row.realListingId : (archived?.recordKey || `record:${p.sourceBatchId || 'saved-map-list'}:${row.id}`),
-    realListingId:row.realListingId || null, businessId:p.businessId || null, name:row.communityName, listingLabel:p.listingLabel || row.communityName,
+    realListingId:row.realListingId || null, businessId:p.businessId || null, officialHouseCode:p.officialHouseCode || null,
+    currentFilteredListing:p.currentFilteredListing === true, listObservedAt:p.listObservedAt || null, officialVrStatus:p.officialVrStatus || null, name:row.communityName, listingLabel:p.listingLabel || row.communityName,
     city:row.city, district:row.district || null, districtVerified:row.districtVerified,
     businessArea:row.businessVerified ? row.businessName : null, businessAreaVerified:row.businessVerified,
     businessAreaCandidate:row.businessCandidate || null, bedroomGroup:row.bedroomGroup, bedrooms:p.bedrooms ?? null,

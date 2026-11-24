@@ -1,3 +1,4 @@
+import {createOfficialVrPlayer, verifiedVrUrl} from './official-vr.js';
 import { attachReviewedTwins } from './reviewed-twin-records.js';
 import { mountMapListingSearch } from './map-listing-search.js';
 import { mountListingPlanViewer, loadListingPlanIndex } from './listing-plan-viewer.js';
@@ -107,7 +108,7 @@ function initializePropertyData(base,report,dataset){
  data={source:{...source,url:safeUrl(source.url)},districts,properties:mergeCollectedProperties(historicalProperties,crawledProperties)};
  state.imported=normalizeProperties(state.imported,'imported');
 }
-let snapshotSummary,latestCollection;
+let snapshotSummary,latestCollection,officialVrPlayer;
 let unmatchedChecks=[];
 function mergedRows(previous, additions, combine) {
  const rows=new Map((previous||[]).map(row=>[row.id,row]));
@@ -125,7 +126,7 @@ function applyInventorySources(base,report,dataset,locations,coverage,audit,regi
   const saved=priorById.get(row.realListingId);
   if(!saved)return row;
   const current=Object.fromEntries(Object.entries(row).filter(([,v])=>v!=null));
-  return {...saved,...current,publicFloorplanUrl:row.publicFloorplanUrl,modelReady:saved.modelReady===true};
+  return {...saved,...current,publicFloorplanUrl:row.publicFloorplanUrl,publicVrUrl:row.publicVrUrl,modelReady:saved.modelReady===true};
  });
  data.properties=mergeCollectedProperties(prior, additions);
  if(projected.properties.length)data.source={...projected.source};
@@ -133,7 +134,7 @@ function applyInventorySources(base,report,dataset,locations,coverage,audit,regi
   legacyLocalCount:data.properties.filter(p=>!listingIdentity(p)).length};
  unmatchedChecks=(snapshot?.checks||[]).filter(row=>row.status==='unmatched');
  latestCollection={status:'snapshot',sourceUrl:data.source.url,checkedAt:data.source.observedAt,
-  validListingPages:snapshotSummary.pages,newVerifiedListings:snapshotSummary.addedCount};
+  validListingPages:snapshotSummary.pages,newVerifiedListings:snapshotSummary.coverage?.addedToLedger??snapshotSummary.addedCount};
  listingInventory={...audit,properties:mergedRows(audit?.properties,projected.audits,(old,row)=>({
   ...old,...row,fields:{...old.fields,...Object.fromEntries(Object.entries(row.fields).filter(([,f])=>f.verified))}
  }))};
@@ -142,7 +143,7 @@ function applyInventorySources(base,report,dataset,locations,coverage,audit,regi
  }))};
  const references=mergedRows(coverage?.properties,projected.references,(old,row)=>{
   if(old.modelReady!==true)return {...old,...row};
-  return {...row,...old,publicFloorplanUrl:row.publicFloorplanUrl,publicVrUrl:row.publicVrUrl,vr:row.vr||old.vr};
+  return {...row,...old,publicFloorplanUrl:row.publicFloorplanUrl,publicVrUrl:row.publicVrUrl,vr:row.vr};
  });
  attachReviewedTwins(data.properties,references,planCatalog,roomAudits);
  modelCoverage={...coverage,properties:references};
@@ -192,7 +193,7 @@ function renderInventorySummary(){
  const metrics=[['properties',totals.properties,'已采集收录的全部房源 · 按记录去重'],['businesses',totals.businesses,`已确认商圈 · ${totals.pendingBusinessRecords} 条房源待核验`],['communities',totals.communities,'按行政区与小区名称去重']];
  for(const [key,number,note] of metrics){$('#metric-'+key).textContent=number;$('#metric-'+key+'-note').textContent=note;}
  const sourceUrl=safeUrl(data.source.url),status=verification.status==='blocked'?'最近补采受阻':'已更新官网数据';
- $('#inventory-source-status').innerHTML=`<span><strong>北京 · 运维房源</strong><span class="tag ${verification.status==='blocked'?'amber':'neutral'}">${esc(status)}</span></span><span>累计收录 ${stats.count} 条 · 最近补采新增 ${fetched===null?'—':fetched} 条 · 非北京全量</span><button class="text-btn" id="inventory-refresh" ${inventoryRefreshRunning?'disabled':''}>${inventoryRefreshRunning?'正在刷新':'刷新已收录数据'}</button><button class="text-btn" id="inventory-audit">统计口径</button>${sourceUrl?`<a class="text-btn" href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">自如官网</a>`:''}`;
+ $('#inventory-source-status').innerHTML=`<span><strong>北京 · 运维房源</strong><span class="tag ${verification.status==='blocked'?'amber':'neutral'}">${esc(status)}</span></span><span>${esc(snapshotSummary.publicationDate)} · 官网筛选 ${snapshotSummary.listingCount} 套 · 其中 ${snapshotSummary.currentVrCount} 套有官网 VR · 累计台账 ${stats.count} 条</span><button class="text-btn" id="inventory-refresh" ${inventoryRefreshRunning?'disabled':''}>${inventoryRefreshRunning?'正在刷新':'刷新已收录数据'}</button><a class="text-btn" href="#beijing-current-list">查看本次全部挂牌</a><a class="text-btn" href="#beijing-vr">浏览官网 VR</a><a class="text-btn" href="./ops/assets/beijing-current-listings.csv" download>下载本次清单</a><a class="text-btn" href="./ops/assets/beijing-public-coverage.json" target="_blank" rel="noopener noreferrer">核验记录</a><button class="text-btn" id="inventory-audit">统计口径</button>${sourceUrl?`<a class="text-btn" href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">自如官网</a>`:''}`;
  $('#inventory-refresh').onclick=refreshCollectedInventory;
  $('#inventory-audit').onclick=showInventoryAudit;
  $('#bedroom-summary').innerHTML=[['1','1 居'],['2','2 居'],['3+','3 居及以上'],['shared','合租单间'],['unknown','待分类']].map(([key,label])=>`<button type="button" class="bedroom-stat" data-bedroom-group="${key}" aria-label="查看${label}采集房源"><span>${label}</span><strong>${stats.bedrooms[key]}</strong><small>${key==='shared'?'按出租卧室计':'条房源记录'}</small></button>`).join('');
@@ -234,6 +235,7 @@ async function init(){
   renderInventoryLedger();
   mountCollectionLeads($('#collection-leads'),{showModal,downloadFile});
   renderSceneLegend();
+  officialVrPlayer=createOfficialVrPlayer(id=>allProperties().find(p=>p.id===id));
   renderRoomDirectory();setMapScope('collected');
   if(!state.activities.length)state.activities=[{title:'健康监控员 · 待核验事件',body:'4 条演示事件已按影响与优先级排列。',kind:'network',time:'演示初始化'},{title:'经验蒸馏师 · 资料已准备',body:'“同户多设备离线”技能草案等待专家核验。',kind:'book',time:'演示初始化'}];
   renderActivity();
@@ -243,13 +245,14 @@ async function init(){
 function renderAll(){renderEvents();renderActivity();renderModelTables();renderProperties();renderAgents();renderTickets();renderModelCoverage();hydrateIcons();}
 function allProperties(){const m=new Map(state.imported.map(p=>[String(p.id),p]));for(const p of data?.properties||[])m.set(p.id,p);return [...m.values()].sort((a,b)=>Number(a.imported)-Number(b.imported));}
 function inventoryProperties(scope='collected'){
+ if(scope==='current'||scope==='current-vr')return (data?.properties||[]).filter(p=>p.currentFilteredListing===true && (scope==='current'||verifiedVrUrl(p)));
  if(scope==='beijing')return (data?.properties||[]).filter(p=>p.city==='北京' && p.publicDetailVerified===true);
  if(scope==='references')return (data?.properties||[]).filter(p=>p.reviewedRoomDemo);
  if(scope==='imported')return allProperties().filter(p=>p.imported);
  const rows=data?.properties||[];return scope==='model'?rows.filter(originalTwin):rows;
 }
 function mapProperties(){return inventoryProperties(mapInventoryScope);}
-function mapScopeNote(){return mapInventoryScope==='beijing'?'北京目标挂牌 · 位置精确到小区':mapInventoryScope==='references'?'逐套核对的户型参考 · 小区级位置':mapInventoryScope==='model'?'有三维参考的采集房源 · 非房间精确坐标':'全部已采集房源 · 小区 / 地铁参考位置';}
+function mapScopeNote(){return mapInventoryScope==='current-vr'?'本次官网筛选 · 已核验的实景 VR':mapInventoryScope==='current'?'本次官网筛选 · 挂牌号去重':mapInventoryScope==='beijing'?'北京目标挂牌 · 位置精确到小区':mapInventoryScope==='references'?'逐套核对的户型参考 · 小区级位置':mapInventoryScope==='model'?'有三维参考的采集房源 · 非房间精确坐标':'全部已采集房源 · 小区 / 地铁参考位置';}
 function renderRoomDirectory(){
  const box=$('#room-demo-directory');
  const rows=(data?.properties||[]).filter(p=>p.reviewedRoomDemo).sort((a,b)=>a.name.localeCompare(b.name,'zh-CN'));
@@ -260,7 +263,7 @@ function renderRoomDirectory(){
 }
 function setMapScope(scope){
  mapListingSearch?.close();
- mapInventoryScope=['model','references','beijing'].includes(scope)?scope:'collected';
+ mapInventoryScope=['model','references','beijing','current','current-vr'].includes(scope)?scope:'collected';
  $('#room-demo-directory').open=mapInventoryScope==='references';
  $('#map-inventory-scope').value=mapInventoryScope;mapWorkspace?.closeDetail();mapWorkspace?.update(mapProperties(),state.events);
  if(state.scene==='city'){$('#scene-footnote').textContent=mapScopeNote();$('#scene-subtitle').textContent=mapInventoryScope==='model'?'已取得对应户型与照片 · 房源参考位置':'房源分布 · 演示待办 · 分级跟进';}
@@ -354,8 +357,10 @@ async function showScene(mode,initialMode='3d'){
  $('#scene-footnote').textContent=mode==='city'?mapScopeNote():'方案配置推演 · 实装与遥测待接入';
  renderSceneLegend();
  $('#apartment-actions').hidden=mode!=='apartment';
- const vr=$('#reviewed-source-vr');vr.hidden=!reviewed || !property.publicVrUrl;
- if(vr.hidden)vr.removeAttribute('href');else vr.href=property.publicVrUrl;
+ const vr=$('#reviewed-source-vr');
+ vr.hidden=mode!=='apartment' || !verifiedVrUrl(property);
+ if(vr.hidden){vr.removeAttribute('href');delete vr.dataset.officialVr;}
+ else{vr.href='#vr-'+property.id;vr.dataset.officialVr=property.id;}
  $('#reference-btn').disabled=!referenceReady;$('#cutaway-btn').disabled=!referenceReady;
  $('.map-panel').scrollIntoView({behavior:motionBehavior(),block:'start'});
  if(mode==='city'){
@@ -444,12 +449,12 @@ function renderInventoryLedger(){
 }
 function renderPropertiesList(){
  const q=$('#property-search').value.trim().toLowerCase(),district=$('#district-select').value,scope=$('#inventory-view').value,bedroom=$('#bedroom-select').value,business=$('#business-select').value;
- const sourceRows=inventoryProperties(scope),labels={collected:'全部采集房源',beijing:'北京目标挂牌',model:'有三维参考',references:'已核对户型参考',imported:'本地导入 · 未核验'};
+ const sourceRows=inventoryProperties(scope),labels={collected:'全部采集房源',current:'本次官网筛选房源','current-vr':'本次有官网 VR 的房源',beijing:'北京目标挂牌',model:'有三维参考',references:'已核对户型参考',imported:'本地导入 · 未核验'};
  $('#property-dataset-tag').textContent=labels[scope]||labels.collected;
- $('#property-scope').textContent=scope==='imported'?`本地导入 ${sourceRows.length} 条，以提供的资料为准，未计入公开采集成果。`:scope==='beijing'?`北京目标挂牌 ${sourceRows.length} 套，按官网商圈、小区和挂牌号归档。`:scope==='references'?`已核对的 ${sourceRows.length} 套户型原图，可查看三维与设备方案。`:scope==='model'?`已采集房源中 ${sourceRows.length} 套具备对应户型图和室内照片；建模资料齐备度不影响累计房源数量。`:`累计已采集 ${sourceRows.length} 条 · 最近补采新增 ${collectionAddedCount()??'—'} 条；包含官网挂牌、编号核验和历史采样，最近采样 ${formatObservedAt(data.source.observedAt)}。`;
- const filtered=sourceRows.filter(p=>(!district||(district==='__unknown__'?!p.district:p.district===district))&&(!bedroom||housingGroup(p)===bedroom)&&(!business||propertyBusiness(p).key===business)&&(!q||[p.name,p.listingLabel,p.roomLabel,p.station,p.id,p.businessId,p.district,p.product,propertyBusiness(p).label].some(s=>String(s||'').toLowerCase().includes(q))));
+ $('#property-scope').textContent=scope==='imported'?`本地导入 ${sourceRows.length} 条，以提供的资料为准，未计入公开采集成果。`:scope==='current-vr'?`${sourceRows.length} 套房源可直接播放对应的自如官网全景。`:scope==='current'?`${snapshotSummary.publicationDate} 更新 · 官网筛选 ${sourceRows.length} 套 · ${snapshotSummary.currentVrCount} 套可看官网 VR。`:scope==='beijing'?`北京目标挂牌 ${sourceRows.length} 套，按官网商圈、小区和挂牌号归档。`:scope==='references'?`已核对的 ${sourceRows.length} 套户型原图，可查看三维与设备方案。`:scope==='model'?`已采集房源中 ${sourceRows.length} 套具备对应户型图和室内照片；建模资料齐备度不影响累计房源数量。`:`累计已采集 ${sourceRows.length} 条 · 最近补采新增 ${collectionAddedCount()??'—'} 条；包含官网挂牌、编号核验和历史采样，最近采样 ${formatObservedAt(data.source.observedAt)}。`;
+ const filtered=sourceRows.filter(p=>(!district||(district==='__unknown__'?!p.district:p.district===district))&&(!bedroom||housingGroup(p)===bedroom)&&(!business||propertyBusiness(p).key===business)&&(!q||[p.name,p.listingLabel,p.roomLabel,p.station,p.id,p.businessId,p.officialHouseCode,p.district,p.product,propertyBusiness(p).label].some(s=>String(s||'').toLowerCase().includes(q))));
  const page=propertyPage(filtered,state.propertyPage);state.propertyPage=page.current;
- $('#property-list').innerHTML=page.rows.length?page.rows.map(p=>`<article class="property-row"><div class="property-name"><strong>${esc(p.name)}${p.roomLabel?' · '+esc(p.roomLabel):''}</strong><span>${esc(p.district||'区域待确认')} · ${esc(p.product||(p.imported?'用户导入':'产品标签未返回'))}</span><span>${esc(propertyBusiness(p).label)}</span><button class="text-btn" data-property-source="${esc(p.id)}">房源资料</button>${p.publicFloorplanUrl?'<button class="text-btn" data-direct-plan="'+esc(p.id)+'">户型与设备</button>':''}</div><div class="property-meta">${p.areaScope==='listed_bedroom'?'卧室 ':''}${esc(p.area)}㎡ · ${p.areaScope==='listed_bedroom'?'所属户型 ':''}${esc(p.bedrooms)}居 · ${p.floor!=null&&p.totalFloors!=null?esc(p.floor)+'/'+esc(p.totalFloors)+'层':'楼层待补'}<p>${p.station?esc(p.station)+'站'+(p.distance!==null?' · 步行约 '+esc(p.distance)+'m':''):'未提供地铁信息'}</p></div><div class="property-status"><span class="tag ${canOpenModel(p)?'green':''}">${canOpenModel(p)?'已有三维样板':p.publicFloorplanUrl?'已有官网户型图':'待补建模资料'}</span><p style="margin-top:5px">${p.coordinate?(p.coordinateStatus==='verified'?'来源坐标已核验':'来源坐标待核验'):'精确坐标待补充'}</p></div><div class="property-actions"><button class="button" data-household="${esc(p.id)}">运行看板</button><button class="button ${canOpenModel(p)?'primary':''}" data-property="${esc(p.id)}">${canOpenModel(p)?'进入三维':'设备配置'}</button></div></article>`).join(''):`<div class="empty-state">${icon('search')}<h3>${scope==='collected'&&!sourceRows.length?'尚未收录房源':'没有匹配的房源'}</h3><p>${scope==='collected'&&!sourceRows.length?'当前采集台账为空，可查看采集状态或补充来源资料。':'可调整居室、区域或关键词。'}</p><button class="button" id="clear-property-search">清除筛选</button>${scope==='collected'?'<button class="button" id="empty-inventory-audit">查看核验情况</button>':''}</div>`;
+ $('#property-list').innerHTML=page.rows.length?page.rows.map(p=>`<article class="property-row"><div class="property-name"><strong>${esc(p.name)}${p.roomLabel?' · '+esc(p.roomLabel):''}</strong><span>${esc(p.district||'区域待确认')} · ${esc(p.product||(p.imported?'用户导入':'产品标签未返回'))}</span><span>${esc(propertyBusiness(p).label)}</span><button class="text-btn" data-property-source="${esc(p.id)}">房源资料</button>${p.publicFloorplanUrl?'<button class="text-btn" data-direct-plan="'+esc(p.id)+'">户型与设备</button>':''}</div><div class="property-meta">${p.areaScope==='listed_bedroom'?'卧室 ':''}${esc(p.areaDisplay || (p.area != null ? p.area+'㎡' : '面积待核验'))} · ${p.areaScope==='listed_bedroom'?'所属户型 ':''}${esc(p.layout || (p.bedrooms != null ? p.bedrooms+'居' : '户型待核验'))} · ${p.floor!=null&&p.totalFloors!=null?esc(p.floor)+'/'+esc(p.totalFloors)+'层':'楼层待补'}<p>${p.station?esc(p.station)+'站'+(p.distance!==null?' · 步行约 '+esc(p.distance)+'m':''):'未提供地铁信息'}</p></div><div class="property-status"><span class="tag ${canOpenModel(p)?'green':''}">${canOpenModel(p)?'已有三维样板':p.publicFloorplanUrl?'已有官网户型图':'待补建模资料'}</span><p style="margin-top:5px">${p.coordinate?(p.coordinateStatus==='verified'?'来源坐标已核验':'来源坐标待核验'):'精确坐标待补充'}</p></div><div class="property-actions"><button class="button" data-household="${esc(p.id)}">运行看板</button>${verifiedVrUrl(p)?`<a class="button primary" href="#vr-${esc(p.id)}" data-official-vr="${esc(p.id)}">官网实景 VR</a>`:''}<button class="button ${!verifiedVrUrl(p)&&canOpenModel(p)?'primary':''}" data-property="${esc(p.id)}">${canOpenModel(p)?'进入三维':'设备配置'}</button></div></article>`).join(''):`<div class="empty-state">${icon('search')}<h3>${scope==='collected'&&!sourceRows.length?'尚未收录房源':'没有匹配的房源'}</h3><p>${scope==='collected'&&!sourceRows.length?'当前采集台账为空，可查看采集状态或补充来源资料。':'可调整居室、区域或关键词。'}</p><button class="button" id="clear-property-search">清除筛选</button>${scope==='collected'?'<button class="button" id="empty-inventory-audit">查看核验情况</button>':''}</div>`;
  $('#property-pagination').innerHTML=`<span class="pagination-summary" aria-live="polite">筛选结果 ${esc(page.total)} 条${page.total?` · 当前 ${esc(page.start+1)}–${esc(page.start+page.rows.length)} 条`:''}</span><div class="pagination-actions"><button class="button" id="property-prev" ${page.current===1?'disabled':''}>上一页</button><span>第 ${esc(page.current)} / ${esc(page.pages)} 页</span><button class="button" id="property-next" ${page.current===page.pages?'disabled':''}>下一页</button></div>`;
  const move=delta=>{state.propertyPage+=delta;renderPropertiesList();$('.asset-panel').scrollIntoView({behavior:motionBehavior(),block:'start'});};$('#property-prev').onclick=()=>move(-1);$('#property-next').onclick=()=>move(1);
  $$('[data-property]').forEach(b=>b.onclick=()=>{const p=allProperties().find(p=>p.id===b.dataset.property);if(!p)return;openTwin(p.id);});
@@ -568,10 +573,10 @@ function disposeListingPlan(){
 function showModal(title,body){disposeListingPlan();propertyDetailController?.destroy?.();propertyDetailController=null;$('#modal').classList.remove('property-detail-modal');$('#modal-title').textContent=title;$('#modal-body').innerHTML=body;$('#modal').showModal();hydrateIcons($('#modal'));}
 function inventoryScopeText(){
  const s=snapshotSummary;
- return `官网筛选返回 ${s.listingCount} 个挂牌号，${s.explicitListingCount} 条卡片明示灵之智能。送核 ${s.checkCount} 个编号，匹配 ${s.verifiedCount} 个，其中 ${s.overlapCount} 个也在筛选列表中。累计台账另含 ${s.legacyLocalCount} 条仅有本地索引的历史记录，实际房源是否重合待核验。`;
+ return `${s.publicationDate} 逐页核对北京公开筛选，共 ${s.pages} 个结果页，按挂牌号去重 ${s.listingCount} 套。已核对本次挂牌详情 ${s.currentDetailCount} 套，${s.currentVrCount} 套有已核验官网 VR，${s.currentNoVrCount} 套官网未列 VR。${s.coverage?.addedToLedger ?? 0} 套首次加入台账。${s.explicitListingCount} 条卡片明示灵之智能。送核 ${s.checkCount} 个编号，匹配 ${s.verifiedCount} 个，其中 ${s.overlapCount} 个也在筛选列表中。累计台账另含 ${s.legacyLocalCount} 条仅有本地索引的历史记录，实际房源是否重合待核验。`;
 }
 function checkResultsHtml(){
- return `<div class="source-block"><a href="./ops/assets/verified-listings-20261120.xlsx" download="北京房源编号核验_20261120.xlsx">下载编号核验表（Excel）</a><details id="unmatched-number-list"><summary>官网查询未返回的编号（${unmatchedChecks.length}）</summary><ul>${unmatchedChecks.map(row=>`<li>${esc(row.code)}</li>`).join('')}</ul></details></div>`;
+ return `<div class="source-block"><a href="./ops/assets/beijing-current-listings.csv" download>下载本次北京官网房源清单（CSV）</a> · <a href="./ops/assets/beijing-public-coverage.json" target="_blank" rel="noopener noreferrer">查看逐页与逐套核验记录</a> · <a href="./ops/assets/verified-listings-20261120.xlsx" download="北京房源编号核验_20261120.xlsx">查看 11 月 20 日编号专项核验表（Excel）</a><details id="unmatched-number-list"><summary>官网查询未返回的编号（${unmatchedChecks.length}）</summary><ul>${unmatchedChecks.map(row=>`<li>${esc(row.code)}</li>`).join('')}</ul></details></div>`;
 }
 function showCrawlStatus(){
  if(!data){toast('采集记录仍在加载。');return;}
@@ -629,6 +634,7 @@ $('#room-demo-directory').addEventListener('click',event=>{
 });
 function followInventoryLink(){
  if(!data || !inventoryExplorer)return;
+ if(officialVrPlayer?.handleRoute(location.hash))return;
  const roomId=location.hash.match(/^#room-(\d+)$/)?.[1];
  if(roomId){
   const p=data.properties.find(row=>row.id===roomId && row.reviewedRoomDemo);
@@ -649,9 +655,13 @@ function followInventoryLink(){
  const planId=location.hash.match(/^#plan-(\d+)$/)?.[1];
  if(planId){openListingPlan(planId);return;}
  switch(location.hash){
+  case '#beijing-vr':
+  case '#beijing-current-list':
+   $('#inventory-view').value=location.hash==='#beijing-vr'?'current-vr':'current';$('#district-select').value='';$('#business-select').value='';$('#bedroom-select').value='';$('#property-search').value='';state.propertyPage=1;showPage('properties');renderProperties();break;
+  case '#beijing-current':
   case '#beijing-map':
   case '#floorplan-references':
-   setMapScope(location.hash==='#floorplan-references'?'references':'beijing');
+   setMapScope(location.hash==='#floorplan-references'?'references':location.hash==='#beijing-current'?'current':'beijing');
    mapWorkspace?.reset();
    showScene('city');break;
   case '#check-inventory':

@@ -1,3 +1,4 @@
+import { verifiedVrUrl } from './official-vr.js';
 import { GeographicMap } from './geo-map-viewer.js';
 import { mapGroupKeys, mapGroups, combineMapPoints } from './map-hierarchy.js';
 import { buildDeviceConfiguration, CONFIG_PROFILES } from './device-configuration.js';
@@ -34,13 +35,14 @@ function businessInfo(record) {
 function positionLabel(entry) {
   if (entry.matchType === 'station_proxy') return '地铁参考';
   if (entry.matchType !== 'community') return '待定位';
+  if (entry.geography?.precision === 'official_bd09_community_estimate') return '官网小区 · 坐标换算估计';
   return entry.geography?.precision === 'city_registered_community_estimate' ? '官网小区 · 市域配准估算'
     : entry.geography?.precision === 'registered_community_estimate' ? '官网小区 · 邻域配准估算'
     : entry.geography?.precision === 'osm_residential_reference' ? 'OSM 住宅参考点' : '小区参考';
 }
 
 function propertyFacts(property) {
-  const area = finite(property.area) && property.area > 0 ? `${property.area}㎡${property.areaScope === 'listed_bedroom' ? '（该卧室）' : ''}` : '面积待核验';
+  const area = finite(property.area) && property.area > 0 ? `${property.areaDisplay || property.area+'㎡'}${property.areaScope === 'listed_bedroom' ? '（该卧室）' : ''}` : '面积待核验';
   const layout = string(property.layout) || (finite(property.bedrooms) && property.bedrooms > 0 ? `${property.bedrooms}居` : '');
   const room = string(property.roomLabel);
   const floor = finite(property.floor) ? (finite(property.totalFloors) ? `${property.floor}/${property.totalFloors}层` : `${property.floor}层`) : '';
@@ -357,6 +359,7 @@ export class PropertyMapWorkspace {
     const unmatched = this.entries.length - community - proxy;
     const kinds = [
       ['osm_residential_reference','OSM 住宅范围参考点'],
+      ['official_bd09_community_estimate','官网小区 · 坐标换算估计'],
       ['registered_community_estimate','官网小区 · 邻域配准估算'],
       ['city_registered_community_estimate','官网小区 · 市域配准估算'],
     ];
@@ -367,7 +370,7 @@ export class PropertyMapWorkspace {
       const test = stat?.validationP90Metres != null ? `；交叉验证 ${stat.holdoutCount} 个小区，中位 ${stat.validationMedianMetres} 米，P90 ${stat.validationP90Metres} 米` : '';
       return members.length ? `<div><i class="geo-precision-symbol" data-position-kind="${kind}" aria-hidden="true"></i><span>${label} · ${members.length} 条${test}</span></div>` : '';
     }).join('');
-    element.innerHTML = `已采集 ${this.entries.length} 条 · 小区参考 ${community} · 地铁参考 ${proxy} · 待定位 ${unmatched}<br>当前范围 ${this.filteredEntries.length} 条 · 非北京全量 · 真实设备状态未接入` +
+    element.innerHTML = `已采集 ${this.entries.length} 条 · 小区参考 ${community} · 地铁参考 ${proxy} · 待定位 ${unmatched}<br>当前范围 ${this.filteredEntries.length} 条 · 真实设备状态未接入` +
       (legend ? `<details class="geo-precision-legend" ${legendOpen ? 'open' : ''}><summary>定位图例与误差</summary>${legend}</details>` : '');
   }
 
@@ -462,8 +465,10 @@ export class PropertyMapWorkspace {
 
   showSelectedListing(entry,focus=false) {
     const id=entry.property.realListingId || entry.id;
+    const hasVr=Boolean(verifiedVrUrl(entry.property));
     this.setMapCard(entry.name,`<p><strong>${entry.property.realListingId?'挂牌号':'记录号'} ${esc(id)}</strong> · ${esc(positionLabel(entry))}</p>
       <p>${esc(propertyFacts(entry.property))}</p><div class="geo-listing-actions">
+      ${hasVr?`<a class="geo-vr-entry" href="#vr-${esc(id)}" data-official-vr="${esc(id)}">看官网 VR</a>`:''}
       ${entry.property.reviewedRoomDemo?'<button type="button" data-geo-card-room>进入房间三维</button>':''}<button type="button" data-geo-card-detail>设备详情</button>
       ${this.filteredEntries.length>1?`<button type="button" data-geo-card-siblings>本小区 ${this.filteredEntries.length} 套</button>`:''}
       <button type="button" data-geo-card-city>返回北京地图</button></div>`,focus);
@@ -535,6 +540,7 @@ export class PropertyMapWorkspace {
     const element = this.elements['scene-detail'];
     if (!element || !this.active) return;
     const geographicRecord = entry.geography;
+    const hasVr=Boolean(verifiedVrUrl(entry.property));
     const osmUrl = safeUrl(geographicRecord?.osm?.objectUrl);
     const businessUrl = safeUrl(geographicRecord?.businessDistrict?.sourceUrl);
     const sourceUrl = safeUrl(entry.property.sourceUrl);
@@ -549,8 +555,9 @@ export class PropertyMapWorkspace {
     element.innerHTML = `<button type="button" class="icon-btn close-scene-detail" data-geo-action="close" aria-label="关闭房源地图详情">×</button>
       <div class="geo-detail-heading"><h3>${esc(entry.name)}</h3><p>${entry.property.realListingId ? '挂牌号' : '记录号'} ${esc(entry.id)}${(entry.property.officialHouseCode || entry.property.businessId) ? ' · ' + esc(entry.property.officialHouseCode || entry.property.businessId) : ''}</p><p>${esc(entry.district)} · ${esc(entry.businessLabel)} · ${esc(propertyFacts(entry.property))}</p></div>
       <div class="geo-detail-actions">
-        ${entry.property.reviewedRoomDemo?'<button class="button primary" type="button" data-geo-action="room">进入房间三维</button>':''}
-        ${this.callbacks.onOpenPlan ? `<button type="button" class="button${entry.property.reviewedRoomDemo ? '' : ' primary'}" data-geo-action="plan" aria-controls="overview-plan-pane" aria-expanded="${document.getElementById('overview-plan-pane')?.hidden === false}">${entry.property.publicFloorplanUrl ? '查看户型与设备点位' : '查看本套配置方案'}</button>` : ''}
+        ${hasVr?`<a class="button primary" href="#vr-${esc(entry.id)}" data-official-vr="${esc(entry.id)}">看官网 VR</a>`:''}
+        ${entry.property.reviewedRoomDemo?`<button class="button${hasVr?'':' primary'}" type="button" data-geo-action="room">进入房间三维</button>`:''}
+        ${this.callbacks.onOpenPlan ? `<button type="button" class="button${hasVr || entry.property.reviewedRoomDemo ? '' : ' primary'}" data-geo-action="plan" aria-controls="overview-plan-pane" aria-expanded="${document.getElementById('overview-plan-pane')?.hidden === false}">${entry.property.publicFloorplanUrl ? '查看户型与设备点位' : '查看本套配置方案'}</button>` : ''}
         <button type="button" class="button" data-geo-action="operations">查看家庭运行</button>
         <button type="button" class="button" data-geo-action="property">查看房源详情</button>
         <button type="button" class="button" data-geo-action="model">${this.canOpenModel(entry) ? '进入三维运维' : '设备配置推演'}</button>

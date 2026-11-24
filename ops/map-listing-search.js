@@ -7,7 +7,7 @@ const joinFacts = values => values.filter(value => typeof value === 'string' && 
 function listingFacts(property) {
   const layout = property.layout || (property.bedrooms ? property.bedrooms+'居' : '');
   const area = Number.isFinite(property.area) && property.area>0 ?
-    (property.areaScope==='listed_bedroom' ? '卧室 ' : '')+property.area+'㎡' : property.areaDisplay;
+    (property.areaScope==='listed_bedroom' ? '卧室 ' : '')+(property.areaDisplay || property.area+'㎡') : property.areaDisplay;
   const floor=Number.isFinite(property.floor) ? (Number.isFinite(property.totalFloors)
     ? property.floor+'/'+property.totalFloors+'层' : property.floor+'层') : '';
   const orientation=property.orientation && !property.orientation.startsWith('朝')

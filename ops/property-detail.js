@@ -1,3 +1,4 @@
+import { verifiedVrUrl } from './official-vr.js';
 import { buildDeviceConfiguration, CONFIG_SOURCE, CONFIG_PROFILES } from './device-configuration.js';
 import { lingzhiEvidence } from './inventory-hierarchy.js';
 
@@ -41,7 +42,8 @@ export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onH
   const officialDetail = sourceUrl(property.sourceUrl, row.realListingId, true) || sourceUrl(coverageRecord?.confirmedDetailUrl, row.realListingId, true);
   const publicPlan = officialDetail ? sourceUrl(row.publicFloorplanUrl) : null;
   const publicPhotos = officialDetail && Array.isArray(row.publicPhotoUrls) ? row.publicPhotoUrls.map(url=>sourceUrl(url)).filter(Boolean) : [];
-  const vrUrl = row.vrVerified === true ? sourceUrl(row.vrUrl) : null;
+  const vrUrl = verifiedVrUrl(property);
+  const vrEntry = vrUrl ? `<a class="pd-button pd-button-primary" href="#vr-${esc(id)}" data-official-vr="${esc(id)}">看官网 VR</a>` : '';
   const matchesCoverage = coverageRecord && text(coverageRecord.id) === id && (!coverageRecord.realListingId || text(coverageRecord.realListingId) === text(row.realListingId));
   const references = matchesCoverage ? coverageRecord : null;
   const floorplans = Math.max(count(references?.floorplanCount), count(row.floorplanCount), publicPlan ? 1 : 0);
@@ -58,27 +60,32 @@ export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onH
   const shared = row.bedroomGroup === 'shared' || property.areaScope === 'listed_bedroom' || Boolean(property.roomLabel);
   const observed = observedDate(row.observedAt || property.observedAt || references?.sourceObservedAt);
   const propertyName = valueOr(property.listingLabel, valueOr(row.communityName || property.name, '房源记录'));
-  const availability = property.currentAvailabilityVerified === true && text(property.currentAvailabilityLabel) ? property.currentAvailabilityLabel : '当前在租状态待核验';
+  const captureScope = property.currentFilteredListing === true ? '本次北京官网筛选命中'+(property.listObservedAt ? ' · '+observedDate(property.listObservedAt) : '') : property.currentFilteredListing === false ? '本次筛选未列出 · 已收录记录' : '已收录记录';
+  const cardAvailability = property.currentFilteredListing && Array.isArray(property.availability) ? property.availability.filter(Boolean).join('、') : '';
+  const availability = property.currentAvailabilityVerified === true && text(property.currentAvailabilityLabel) ? property.currentAvailabilityLabel
+    : cardAvailability ? '采集时官网标注'+cardAvailability : '当前在租状态待核验';
   let selectedTab = 'overview', selectedProfile = 'base', destroyed = false;
 
   container.innerHTML = `<div class="pd" data-property-id="${esc(id)}">
     <header class="pd-header"><div><span class="pd-eyebrow">PROPERTY WORKSPACE</span><h3 class="pd-title">${esc(propertyName)}</h3><p class="pd-subtitle">北京 · ${esc(valueOr(row.district, '行政区待核验'))} · ${esc(valueOr(row.businessName, '商圈待核验'))}</p></div><span class="pd-badge${referenceReady ? ' pd-badge-blue' : ''}">${esc(mediaStatus)}</span></header>
-    <div class="pd-actions"><button type="button" class="pd-button pd-button-primary" data-pd-action="twin" ${typeof onTwin !== 'function' ? 'disabled' : ''}>3D / VR 与设备</button><button type="button" class="pd-button" data-pd-action="household" ${typeof onHousehold !== 'function' ? 'disabled' : ''}>家庭运行</button>${typeof onMap === 'function' ? '<button type="button" class="pd-button" data-pd-action="map">地图定位</button>' : ''}${officialDetail ? `<a class="pd-button" href="${esc(officialDetail)}" target="_blank" rel="noopener noreferrer">自如房源原页</a>` : ''}</div>
-    <p class="pd-scope">资料观察：${esc(observed)} · ${esc(availability)}${property.imported ? ' · 本地导入记录' : ' · 已收录采集记录'}</p>
+    <div class="pd-actions">${vrEntry}<button type="button" class="pd-button${vrUrl?'':' pd-button-primary'}" data-pd-action="twin" ${typeof onTwin !== 'function' ? 'disabled' : ''}>三维设备运维</button><button type="button" class="pd-button" data-pd-action="household" ${typeof onHousehold !== 'function' ? 'disabled' : ''}>家庭运行</button>${typeof onMap === 'function' ? '<button type="button" class="pd-button" data-pd-action="map">地图定位</button>' : ''}${officialDetail ? `<a class="pd-button" href="${esc(officialDetail)}" target="_blank" rel="noopener noreferrer">自如房源原页</a>` : ''}</div>
+    <p class="pd-scope">资料观察：${esc(observed)} · ${esc(availability)}${property.imported ? ' · 本地导入记录' : ' · '+esc(captureScope)}</p>
     <div class="pd-tabs" role="tablist" aria-label="房源详情维度">${[['overview','房源信息'],['references','3D 与 VR'],['devices','设备配置']].map(([key,label]) => `<button type="button" role="tab" id="${uid}-tab-${key}" aria-controls="${uid}-panel-${key}" aria-selected="${key === selectedTab}" tabindex="${key === selectedTab ? '0' : '-1'}" data-pd-tab="${key}">${label}</button>`).join('')}</div>
     <section class="pd-panel" id="${uid}-panel-overview" role="tabpanel" aria-labelledby="${uid}-tab-overview" data-pd-panel="overview">
       <dl class="pd-facts">${[
         ['小区', valueOr(row.communityName || property.name)],
         ['商圈', row.businessVerified ? valueOr(row.businessName) + ' · 已确认' : '待核验'],
         ['行政区', valueOr(row.district) + (row.districtVerified === false ? ' · 归属待核验' : '')],
-        [shared ? '出租卧室面积' : '房源面积', finite(property.area) ? property.area + ' ㎡' : '待补'],
+        [text(property.areaLabel) || (shared ? '出租卧室面积' : '房源面积'), text(property.areaDisplay) || (finite(property.area) ? property.area + ' ㎡' : '待补')],
+        ['租金', text(property.rentText) || '见官网'],
+        ...[['电梯','elevator'],['建成年代','built'],['供暖','heating'],['绿化率','greenery']].flatMap(([label,key])=>text(property.detailFields?.[key]) ? [[label,text(property.detailFields[key])]] : []),
         ['居室分类', roomLabel(property, row)],
         ['楼层', finite(property.floor) && finite(property.totalFloors) ? `${property.floor} / ${property.totalFloors} 层` : '待补'],
         ['房源朝向', valueOr(property.orientation)],
         ['产品标签', valueOr(property.product)],
-        ['附近地铁', property.station ? property.station + '站' + (finite(property.distance) ? ` · 原页约 ${property.distance} m` : '') : '待补'],
+        ['附近地铁', text(property.detailFields?.transit) || (property.station ? property.station + '站' + (finite(property.distance) ? ` · 原页约 ${property.distance} m` : '') : '待补')],
         ['记录身份', row.realListingId ? `自如挂牌号 ${row.realListingId}` : `本地记录 ${id}`],
-        ...(property.businessId ? [['房源编号', property.businessId]] : []),
+        ...((property.officialHouseCode || property.businessId) ? [['房源编号', property.officialHouseCode || property.businessId]] : []),
         ...(lingzhiEvidence(property) ? [['灵之标签证据', lingzhiEvidence(property)]] : [])
       ].map(([label,value]) => fact(label,value)).join('')}</dl>
       ${!row.businessVerified && row.businessCandidate ? `<div class="pd-note"><strong>商圈归属待核验</strong><p>现有位置线索：${esc(row.businessCandidate)}。该线索不计入已确认商圈数量。</p></div>` : ''}
@@ -88,7 +95,7 @@ export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onH
       <div class="pd-foot-links">${!officialDetail && source ? `<a href="${esc(source)}" target="_blank" rel="noopener noreferrer">查看原采集来源</a>` : ''}<span>真实设备状态：${row.telemetryConnected === true ? '请进入家庭运行核对' : '未接入'}</span></div>
     </section>
     <section class="pd-panel" id="${uid}-panel-references" role="tabpanel" aria-labelledby="${uid}-tab-references" data-pd-panel="references" hidden>
-      <div class="pd-reference-grid"><article class="pd-reference-card"><span class="pd-eyebrow">3D FLOORPLAN</span><h4>${referenceReady ? '本套户型参考已具备' : publicPlan ? '本套官网户型图' : '本套三维资料待补'}</h4><p>${referenceReady ? '使用该房源的官方户型图与室内照片近似重建，可进入三维查看设备配置点位。' : publicPlan ? '可对照本套原图查看户型与方案配置，实测尺寸和安装位置待核验。' : '设备配置可以查看；对应户型图、室内照片与必要尺寸补齐后，再建立这套房的三维空间。'}</p><div class="pd-reference-counts"><span><strong>${floorplans}</strong> 张户型图</span><span><strong>${photos}</strong> 张实景照片</span></div>${publicPlan && (typeof onPlan === 'function' || typeof onTwin === 'function') ? '<button type="button" class="pd-button pd-button-primary" data-pd-action="plan">查看本套户型与方案点位</button>' : ''}${publicPlan ? `<a class="pd-button" href="${esc(publicPlan)}" target="_blank" rel="noopener noreferrer">查看官网户型图</a>` : ''}${canViewReferences ? '<button type="button" class="pd-button" data-pd-action="references">查看原始户型与照片</button>' : publicPlan ? '' : '<span class="pd-muted">尚无本套可查看的原始图片</span>'}</article><article class="pd-reference-card"><span class="pd-eyebrow">OFFICIAL VR</span><h4>${vrUrl ? '已核验原始 VR' : '原始 VR 待补'}</h4><p>${vrUrl ? '打开与本条房源对应的已核验官网 VR 链接。' : '当前没有与本条房源对应的已核验官网 VR 链接。三维参考模型与原始 VR 分别记录。'}</p>${vrUrl ? `<a class="pd-button" href="${esc(vrUrl)}" target="_blank" rel="noopener noreferrer">查看官网 VR</a>` : '<span class="pd-badge">尚未取得</span>'}</article></div>
+      <div class="pd-reference-grid"><article class="pd-reference-card"><span class="pd-eyebrow">3D FLOORPLAN</span><h4>${referenceReady ? '本套户型参考已具备' : publicPlan ? '本套官网户型图' : '本套三维资料待补'}</h4><p>${referenceReady ? '使用该房源的官方户型图与室内照片近似重建，可进入三维查看设备配置点位。' : publicPlan ? '可对照本套原图查看户型与方案配置，实测尺寸和安装位置待核验。' : '设备配置可以查看；对应户型图、室内照片与必要尺寸补齐后，再建立这套房的三维空间。'}</p><div class="pd-reference-counts"><span><strong>${floorplans}</strong> 张户型图</span><span><strong>${photos}</strong> 张实景照片</span></div>${publicPlan && (typeof onPlan === 'function' || typeof onTwin === 'function') ? '<button type="button" class="pd-button pd-button-primary" data-pd-action="plan">查看本套户型与方案点位</button>' : ''}${publicPlan ? `<a class="pd-button" href="${esc(publicPlan)}" target="_blank" rel="noopener noreferrer">查看官网户型图</a>` : ''}${canViewReferences ? '<button type="button" class="pd-button" data-pd-action="references">查看原始户型与照片</button>' : publicPlan ? '' : '<span class="pd-muted">尚无本套可查看的原始图片</span>'}</article><article class="pd-reference-card"><span class="pd-eyebrow">OFFICIAL VR</span><h4>${vrUrl ? '已核验原始 VR' : '原始 VR 待补'}</h4><p>${vrUrl ? '在此查看自如提供的本套房源全景。' : '本套暂未取得已核验的官网全景。'}</p>${vrUrl ? vrEntry : '<span class="pd-badge">尚未取得</span>'}</article></div>
       ${publicPhotos.length ? `<details class="pd-missing"><summary>官网室内照片 · ${publicPhotos.length} 张</summary><div class="pd-foot-links">${publicPhotos.map((url,index) => `<a class="pd-button" href="${esc(url)}" target="_blank" rel="noopener noreferrer">照片 ${index+1}</a>`).join('')}</div></details>` : ''}
       ${referenceReady ? '<p class="pd-muted">参考重建用于空间与设备展示；实测尺寸、安装位置和真实设备状态仍需现场资料确认。</p>' : `<details class="pd-missing"><summary>本套尺寸与实装核验资料</summary><ul>${missingMaterials.map(item => `<li>${esc(item)}</li>`).join('')}</ul></details>`}
     </section>

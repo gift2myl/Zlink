@@ -1,0 +1,52 @@
+#official-vr-dialog {
+  width:min(1120px,calc(100vw - 32px));
+  max-width:none;
+  max-height:94vh;
+  max-height:94dvh;
+  padding:0;
+  background:#fff;
+  border:1px solid #c8d4dd;
+}
+.official-vr-header {
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 18px;background:#101f2d;color:#edf5fc;
+}
+.official-vr-header h2 {margin:0;font-size:18px;font-weight:600;overflow-wrap:anywhere}
+.official-vr-header p {margin:4px 0 0;color:#b3c9db;font-size:13px}
+.official-vr-actions {display:flex;align-items:center;gap:8px;flex-shrink:0}
+.official-vr-actions :is(button,a), #geo-listing-card .geo-vr-entry {
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:40px;padding:6px 12px;border:1px solid #536e80;border-radius:5px;
+  color:#edf6fe;background:#1b3345;font:inherit;font-size:14px;line-height:1.35;
+  text-decoration:none;cursor:pointer;
+}
+.official-vr-actions :is(button,a):hover {background:#284960}
+.official-vr-actions a[hidden] {display:none}
+.official-vr-actions :is(button,a):focus-visible, .geo-vr-entry:focus-visible {
+  outline:2px solid #58acdf;outline-offset:2px;
+}
+#official-vr-stage {position:relative;background:#07131b}
+.official-vr-loading {
+  position:absolute;z-index:1;inset:12px auto auto 12px;margin:0;padding:7px 10px;
+  background:#102333;color:#eef7ff;border-radius:4px;font-size:14px;pointer-events:none;
+}
+#official-vr-stage iframe {display:block;width:100%;height:min(72vh,760px);height:min(72dvh,760px);border:0}
+.official-vr-empty {margin:0;padding:36px 18px;background:#fff;color:#47596a;font-size:15px}
+#geo-listing-card .geo-vr-entry {
+  min-height:32px;padding:4px 9px;border-color:#99d7fb;background:#99d7fb;color:#102637;font-weight:600;
+}
+#geo-listing-card .geo-vr-entry:hover {background:#c5eaff}
+#geo-listing-card .geo-vr-entry + [data-geo-card-room] {background:#17364e;color:#e1f3ff;font-weight:500;border-color:#55778e}
+.geo-detail-actions a[data-official-vr], .pd-actions a[data-official-vr] {text-decoration:none}
+@media(max-width:640px) {
+  #official-vr-dialog {width:calc(100vw - 12px);max-height:98dvh}
+  .official-vr-header {padding:10px 12px;align-items:flex-start;flex-wrap:wrap}
+  .official-vr-header h2 {font-size:16px}
+  .official-vr-actions :is(button,a), #geo-listing-card .geo-vr-entry {min-height:44px}
+  #official-vr-stage iframe {height:66vh;height:66dvh}
+}
+@media(max-height:520px) and (orientation:landscape) {
+  #official-vr-dialog {width:min(1120px,100vw);max-height:100dvh}
+  .official-vr-header {flex-wrap:nowrap;align-items:center;padding:5px 12px}
+  #official-vr-stage iframe {height:calc(100dvh - 64px)}
+}

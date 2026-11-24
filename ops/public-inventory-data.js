@@ -21,14 +21,14 @@ function identity(row) {
 function checkedVr(check, id) {
   const url = officialUrl(check?.vrUrl);
   const ids = url?.searchParams.getAll('inv_no') || [];
-  return url?.hostname === 'metaverse.ziroom.com' && ids.length && ids.every(value => value === id) ? url.href : null;
+  return url?.hostname === 'metaverse.ziroom.com' && url.pathname === '/pano-vr' && url.searchParams.get('zrVrId') && ids.length && ids.every(value => value === id) ? url.href : null;
 }
 
 function checkedPhotos(check) {
   const urls = new Set();
   for (const photo of rows(check?.photos)) {
     const url = officialUrl(photo);
-    if (url?.hostname === 'imgpro.ziroom.com' && url.href !== check.planUrl) urls.add(url.href);
+    if (url && ['imgpro.ziroom.com','smsimg.ziroom.com','home-decoration-cdn.ziroom.com'].includes(url.hostname) && url.href !== check.planUrl) urls.add(url.href);
   }
   return [...urls];
 }
@@ -45,7 +45,7 @@ function listingProperty(id, listing, check, date) {
   const station = transit.match(/^距.+?线(?:[（(][^)）]*[)）])?(.+?)站步行约(\d+)米$/);
   const tags = rows(listing?.tags);
   const product = tags.find(tag => /心舍|灵之智能|曼舍|友家|理想家/.test(tag));
-  const explicit = listing?.explicit === true || check?.explicit === true;
+  const explicit = listing ? listing.explicit === true : check?.explicit === true;
   const district = text(check?.district).replace(/区$/, '');
   const sourceUrl = check?.detailUrl || listing.detailUrl;
   return {
@@ -110,12 +110,18 @@ export function projectPublicInventory(snapshot, communityMap = {}, availability
   }
   const verified = [...checks.values()].filter(row => row.status === 'verified');
   const byId = new Map(verified.map(row => [row.id, row]));
-  const allIds = new Set([...listings.keys(), ...byId.keys()]);
+  const history = new Map(rows(snapshot?.previousListings).filter(row => identity(row) && text(row.community)).map(row => [row.id,row]));
+  const allIds = new Set([...listings.keys(), ...byId.keys(), ...history.keys()]);
   const unavailable = new Map(rows(availability?.unavailable).map(row => [String(row.id),row.url]));
   const factsById = new Map(rows(listingFacts?.properties).map(row => [String(row.id),row]));
   const mapped = new Map(rows(communityMap.properties).map(row => [String(row.id), row]));
   const properties = [...allIds].map(id => {
-    const p = listingProperty(id, listings.get(id), byId.get(id), publicationDate);
+    const current = listings.get(id), previous = history.get(id), check = byId.get(id);
+    const p = listingProperty(id, current || previous, check, current ? publicationDate : previous?.lastSeen || check?.observedAt || null);
+    p.currentFilteredListing = Boolean(current);
+    p.listObservedAt = current ? publicationDate : previous?.lastSeen || null;
+    p.sourceListingRuns = current?.sourceListingRuns || {};
+    p.firstSeen = current?.firstSeen || previous?.firstSeen || p.listObservedAt || check?.observedAt || null;
     const geo = mapped.get(id);
     if (!geo) {
       if (unavailable.get(id) === p.publicFloorplanUrl) p.publicFloorplanUrl = null;
@@ -127,16 +133,36 @@ export function projectPublicInventory(snapshot, communityMap = {}, availability
       const facts = factsById.get(id);
       if (facts && facts.sourceUrl === geo.sourceUrl) {
         p.officialHouseCode = text(facts.houseCode) || null;
-        p.layout ||= text(facts.layout) || null;
-        p.orientation ||= text(facts.orientation).replace(/^朝/, '') || null;
-        if (p.floor == null && Number.isInteger(facts.floor) && positive(facts.totalFloors)) {
+        p.layout = text(facts.layout) || p.layout;
+        p.orientation = text(facts.orientation).replace(/^朝/, '') || p.orientation;
+        if (Number.isInteger(facts.floor) && positive(facts.totalFloors)) {
           p.floor = facts.floor;
           p.totalFloors = facts.totalFloors;
         }
       }
       p.name = text(geo.name) || p.name;
       p.publicFloorplanUrl = officialUrl(geo.publicFloorplanUrl)?.href || p.publicFloorplanUrl;
-      p.publicVrUrl ||= checkedVr({vrUrl:geo.publicVrUrl}, id);
+      const currentFacts = facts?.sourceUrl === geo.sourceUrl && facts.detailCheckedAt;
+      if (currentFacts) {
+        p.observedAt = p.sourceObservedAt = facts.detailCheckedAt;
+        p.detailFields = facts.detailFields || {};
+        p.areaLabel = text(facts.areaLabel) || null;
+        p.area = positive(facts.area) || p.area;
+        if (p.area && facts.area) p.areaDisplay = text(facts.areaDisplay) || p.area + '㎡';
+        if (facts.sharedRoom === true) p.areaScope = 'listed_bedroom';
+        if (facts.sharedRoom === false) p.areaScope = 'listed_property';
+        if (facts.transit) p.transit = facts.transit;
+        p.detailTags = rows(facts.tags);
+        p.publicPhotoUrls = checkedPhotos({photos:facts.photos,planUrl:geo.publicFloorplanUrl});
+        p.publicFloorplanUrl = officialUrl(geo.publicFloorplanUrl)?.href || null;
+      }
+      if (facts?.officialVrStatus) {
+        p.officialVrStatus = facts.officialVrStatus;
+        p.officialVrCheckedAt = facts.officialVrCheckedAt;
+        p.publicVrUrl = facts.officialVrStatus === 'verified' ? checkedVr({vrUrl:geo.publicVrUrl},id) : null;
+      } else {
+        p.publicVrUrl ||= checkedVr({vrUrl:geo.publicVrUrl}, id);
+      }
     }
     if (unavailable.get(id) === p.publicFloorplanUrl) p.publicFloorplanUrl = null;
     p.communityId = text(geo.communityId);
@@ -158,7 +184,7 @@ export function projectPublicInventory(snapshot, communityMap = {}, availability
     properties, audits: properties.map(auditRow), references: properties.map(referenceRow), locations,
     source: {
       url: 'https://www.ziroom.com/z/z0-q1308471230679097345-a1308470925672038401/?p=x63', city: '北京', cityCode: '110000',
-      filter: '北京 · 租住方式不限 · 灵之智能', observedAt: publicationDate,
+      filter: '北京 · 灵之智能', observedAt: publicationDate,
       isFullInventory: false, isDemoGeneratedData: false
     },
     summary: {
@@ -168,7 +194,10 @@ export function projectPublicInventory(snapshot, communityMap = {}, availability
       floorplanCount: properties.filter(p => p.publicFloorplanUrl).length, vrCount: properties.filter(p => p.publicVrUrl).length,
       publicPhotoCount: properties.reduce((sum, p) => sum + p.publicPhotoUrls.length, 0),
       photoPropertyCount: properties.filter(p => p.publicPhotoUrls.length > 0).length,
-      pages: Number.isInteger(snapshot?.pages) ? snapshot.pages : 0
+      currentVrCount: properties.filter(p => p.currentFilteredListing && p.publicVrUrl).length,
+      currentNoVrCount: properties.filter(p => p.currentFilteredListing && p.officialVrStatus === 'no_official_link').length,
+      currentDetailCount: properties.filter(p => p.currentFilteredListing && factsById.get(p.id)?.detailCheckedAt).length,
+      coverage: snapshot?.coverage || null, pages: Number.isInteger(snapshot?.pages) ? snapshot.pages : 0
     }
   };
 }

@@ -68,7 +68,7 @@ function mountImprovementPlan(standards, plan = []) {
     slot.replaceChildren();
     slot.hidden = !item;
     if (!item) continue;
-    slot.innerHTML = `<details class="grade-improvement">
+    slot.innerHTML = `<details class="grade-improvement" open>
       <summary><span>改善举措</span><strong>${escape(item.strategy)}</strong></summary>
       <div><p>责任方 <strong>${escape(item.owner)}</strong></p>
       <h4>专项行动与计划覆盖量</h4><ol>${item.actions.map(action=>`<li>${escape(action)}</li>`).join('')}</ol>

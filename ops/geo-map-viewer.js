@@ -3,6 +3,7 @@ import * as THREE from 'three';
 const OSM_ATTRIBUTION = '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>';
 const TERRAIN_ATTRIBUTION = 'Terrain: <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener">Mapzen / AWS</a> · <a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md" target="_blank" rel="noopener">Contributors</a>';
 const BEIJING = [116.4, 39.91];
+const LISTING_ICON = new URL('./assets/logo-icon-blue.png', import.meta.url).href;
 // Tint the existing public OSM raster locally; no extra tile service or API key.
 // The pinned MapLibre raster shader mixes the two brightness endpoints, so
 // reversing them inverts only the basemap, leaving Three.js status colours intact.
@@ -82,7 +83,8 @@ function createPropertyLayer(maplibre, entries) {
       if (this.disposed || !this.group) return;
       this.clear();
       this.points = [];
-      for (const entry of next.filter(hasPoint)) {
+      // Individual listings use one screen-facing brand marker in both map renderers.
+      for (const entry of next.filter(entry => entry.type && hasPoint(entry))) {
         const point = maplibre.MercatorCoordinate.fromLngLat(entry.position, 0);
         const placement = new THREE.Group();
         placement.position.set((point.x - origin.x) / metre, 0, (point.y - origin.y) / metre);
@@ -404,9 +406,11 @@ export class GeographicMap {
     button.dataset.geoLevel = entry.type || 'property';
     button.dataset.positionKind = entry.positionPrecision || entry.geography?.precision || '';
     const listing=entry.property && !entry.type;
-    const number=listing ? String(entry.property.realListingId || entry.id).slice(-4) : entry.mapIndex;
     const caption=listing ? entry.name + ' · ' + entry.id : entry.name;
-    button.innerHTML = '<span class="geo-marker-number">' + escapeHtml(number) + '</span>' + (entry.priority ? '<span class="geo-marker-priority" aria-hidden="true">' + escapeHtml(entry.priority) + '</span>' : '') + '<span class="geo-marker-caption" aria-hidden="true">' + escapeHtml(caption) + '</span>';
+    const face = listing
+      ? '<img class="geo-marker-logo" src="' + escapeHtml(LISTING_ICON) + '" alt="" draggable="false" width="36" height="36">'
+      : '<span class="geo-marker-number">' + escapeHtml(entry.mapIndex) + '</span>';
+    button.innerHTML = face + (entry.priority ? '<span class="geo-marker-priority" aria-hidden="true">' + escapeHtml(entry.priority) + '</span>' : '') + '<span class="geo-marker-caption" aria-hidden="true">' + escapeHtml(caption) + '</span>';
     const precision = entry.type === 'nearby' ? '相邻分组 · 点击放大，或选择房源'
       : entry.type === 'business' ? '按商圈聚合 · 已定位小区参考点'
       : entry.type === 'point' ? '同一参考位置 · 点击选择'

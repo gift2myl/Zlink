@@ -69,12 +69,12 @@ function devicePlan(property, profile) {
 export class PropertyMapWorkspace {
   constructor(container, {
     properties = [], events = [], geography = {}, sources = {},
-    onOpenProperty, onOpenModel, onOpenRoom, onOpenPlan, onClosePlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap
+    onOpenProperty, onOpenModel, onOpenRoom, onOpenPlan, onClosePlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap, onFilterPath
   } = {}) {
     this.container = container;
     this.geography = geography || {};
     this.sources = sources || {};
-    this.callbacks = { onOpenProperty, onOpenModel, onOpenRoom, onOpenPlan, onClosePlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap };
+    this.callbacks = { onOpenProperty, onOpenModel, onOpenRoom, onOpenPlan, onClosePlan, onOpenOperations, onEvent, onViewInventory, onStatus, onActivateMap, onFilterPath };
     this.active = true;
     this.communityKey = '';
     this.selectedId = null;
@@ -320,6 +320,14 @@ export class PropertyMapWorkspace {
     this.renderCoverage();
     this.renderMonitorSummary();
     this.renderBreadcrumb();
+    const branch = this.filters.business && this.entries.find(e=>e.businessKey===this.filters.business && (!this.communityKey || this.communityKey===e.communityKey));
+    this.callbacks.onFilterPath?.({
+      district:this.filters.district || (branch && branch.district) || '',
+      business:branch ? branch.geography?.businessDistrict?.name || '' : '',
+      communityId:this.communityKey ? branch?.property.communityId || '' : '',
+      communityName:this.communityKey ? branch?.name || '' : '',
+      listingId:this.selectedId || ''
+    });
     if (fit) { this.viewer?.setRotate(false); this.viewer?.fitAll(true, this.level === 'business' ? 12 : 15); this.syncControls(); }
   }
 
@@ -651,6 +659,19 @@ export class PropertyMapWorkspace {
     this.filters = { district: '', business: '', status: 'all' };
     this.closeDetail(); this.renderFilters(); this.applyFilters(false);
     this.viewer.setRotate(false); this.viewer.reset(); this.syncControls();
+  }
+
+  focusRentalPath({district='',business='',communityId='',communityName='',listingId=''}={}) {
+    const entry = this.entries.find(e => e.district===district && (!business || e.geography?.businessDistrict?.name===business)
+      && (communityId ? e.property.communityId===communityId : !communityName || e.name===communityName)
+      && (!listingId || e.id===listingId));
+    if (!district || !entry) { this.reset(); return; }
+    this.closeDetail();
+    this.filters = {district:entry.district,business:business ? entry.businessKey : '',status:'all'};
+    this.communityKey = communityId || communityName ? entry.communityKey : '';
+    if (listingId) { void this.focusProperty(listingId,{reveal:false}); return; }
+    this.renderFilters();
+    this.applyFilters(true);
   }
 
   focusDistrict(id) {

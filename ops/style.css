@@ -26,10 +26,6 @@ button,.button,a,input,select{touch-action:manipulation}
 
 /* A quiet, centred brand header remains available above every workspace. */
 .topbar{height:var(--header-height);padding:0 6vw;display:flex;align-items:center;gap:24px;position:fixed;inset:0 0 auto;z-index:60;background:rgba(255,255,255,.98);color:#191919;box-shadow:0 1px 0 #00000012}
-.header-left{display:flex;align-items:center;gap:22px;min-width:0}
-.menu-toggle{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 8px 0 0;font-size:16px;white-space:nowrap}
-.menu-toggle svg{width:24px;height:24px}
-.app-title{font-size:15px;font-weight:400;letter-spacing:.02em;white-space:nowrap}
 .brand{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:210px;padding:0;line-height:1}
 .brand img{display:block;width:100%;height:auto;max-height:48px;object-fit:contain;filter:brightness(0)}
 .brand:hover{text-decoration:none}
@@ -389,7 +385,6 @@ body.drawer-open{overflow:hidden}
 @media(max-width:1050px){
   .environment{display:none}
   .brand{width:195px}
-  .topbar .app-title{font-size:14px}
   .nav-rail{gap:27px}
   .nav-bottom{gap:20px}
   .nav-bottom .version{display:none}
@@ -425,7 +420,6 @@ body.drawer-open{overflow:hidden}
 @media(max-width:760px){
   main#app{width:88%;padding-top:40px}
   .topbar{gap:14px}
-  .topbar .app-title{display:none}
   .brand{width:185px}
   .header-actions{gap:14px}
   .nav-rail{gap:24px;padding-inline:6vw}
@@ -473,26 +467,20 @@ body.drawer-open{overflow:hidden}
 }
 @media(max-width:640px){
   :root{--header-height:64px}
-  html{scroll-padding-top:86px}
+  html{scroll-padding-top:118px}
   .topbar{padding:0 20px;gap:12px}
-  .menu-toggle{min-height:44px;font-size:14px;gap:7px;padding:0}
-  .menu-toggle svg{width:22px;height:22px}
   .brand{width:174px}
   .brand img{max-height:39px}
   .header-actions{gap:0}
-  .topbar .app-title,.topbar #clock,.topbar .environment,.topbar #source-btn{display:none}
+  .topbar #clock,.topbar .environment,.topbar #source-btn{display:none}
   .avatar{width:32px;height:32px;flex-basis:32px;font-size:12px}
-  .nav-rail{display:none;position:fixed;inset:var(--header-height) 0 auto;z-index:55;flex-direction:column;align-items:stretch;gap:0;min-height:0;max-height:calc(100svh - var(--header-height));padding:15px 24px 25px;margin-top:0!important;border-bottom:1px solid #d8d8d8;background:#fff;overflow:auto;box-shadow:0 18px 30px #00000012}
-  body.menu-open .nav-rail{display:flex}
-  .nav-item{justify-content:flex-start;gap:13px;min-height:57px;padding:9px 2px;font-size:17px}
-  .nav-item svg{display:block;width:20px;height:20px}
-  .nav-item::after{height:1px;bottom:0}
+  .nav-rail{min-height:44px;gap:16px;overflow-x:auto;overscroll-behavior-x:contain;padding-inline:16px;scrollbar-width:thin}
+  .nav-item,.nav-bottom .nav-item{flex:none;min-height:44px;padding:0 2px;font-size:14px}
+  .nav-item svg,.nav-bottom .nav-item svg,.nav-bottom .version{display:none}
+  .nav-item::after{bottom:0}
   .nav-item.active{font-weight:500}
-  .nav-item b{margin-left:auto}
-  .nav-bottom{display:flex;justify-content:space-between;align-items:center;margin:15px 0 0;padding-top:10px;border-top:1px solid #ddd}
-  .nav-bottom .nav-item{font-size:15px;min-height:45px}
-  .nav-bottom .version{display:block;font-size:10px}
-  main#app{width:calc(100% - 40px);padding:calc(var(--header-height) + 32px) 0 22px}
+  .nav-bottom{flex:none;margin:0}
+  main#app{width:calc(100% - 40px);padding:24px 0 22px}
   .page-heading{margin-bottom:38px}
   .page-heading .eyebrow{font-size:11px;margin-bottom:14px;letter-spacing:.14em}
   .page-heading h1{font-size:36px;line-height:1.25;font-weight:300}
@@ -643,8 +631,6 @@ body.drawer-open{overflow:hidden}
 @media(max-width:380px){
   .topbar{padding-inline:16px}
   .brand{width:151px}
-  .menu-toggle{font-size:13px;gap:5px}
-  .menu-toggle svg{width:20px;height:20px}
   .avatar{width:29px;height:29px;flex-basis:29px}
   main#app{width:calc(100% - 32px)}
   .heading-actions .button{font-size:13px;padding-inline:9px}

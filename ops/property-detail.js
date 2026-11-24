@@ -77,6 +77,7 @@ export function mountPropertyDetail(container, {row, coverageRecord, onTwin, onH
         ['商圈', row.businessVerified ? valueOr(row.businessName) + ' · 已确认' : '待核验'],
         ['行政区', valueOr(row.district) + (row.districtVerified === false ? ' · 归属待核验' : '')],
         [text(property.areaLabel) || (shared ? '出租卧室面积' : '房源面积'), text(property.areaDisplay) || (finite(property.area) ? property.area + ' ㎡' : '待补')],
+        ...(property.officialMoveInEvidence ? [['官网可入住日期', text(property.officialMoveInLabel) || '官网未标注']] : []),
         ['租金', text(property.rentText) || '见官网'],
         ...[['电梯','elevator'],['建成年代','built'],['供暖','heating'],['绿化率','greenery']].flatMap(([label,key])=>text(property.detailFields?.[key]) ? [[label,text(property.detailFields[key])]] : []),
         ['居室分类', roomLabel(property, row)],

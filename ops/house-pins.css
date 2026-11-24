@@ -33,7 +33,11 @@
 .geo-listing-choice span{font-size:12px;color:#bcd4e3}
 .geo-listing-actions{margin-top:7px;flex-wrap:wrap}
 .geo-listing-actions button{padding:4px 9px;min-height:30px}
-body[data-scene=city] .geo-map-marker[data-geo-level=property] .geo-marker-number{font-size:11px;letter-spacing:-0.4px}
+/* MapLibre positions each marker from the canvas origin. Leaflet positions its outer icon. */
+.maplibregl-marker.geo-map-marker{position:absolute}
+.geo-marker-logo{display:block;width:36px;height:36px;object-fit:contain;pointer-events:none;user-select:none}
+body[data-scene=city] .geo-map-marker[data-geo-level=property]::before{inset:0;border-radius:27%;transform:none}
+body[data-scene=city] .geo-map-marker[data-geo-level=property]:is(:focus-visible,.is-selected){border-radius:27%}
 [data-geo-list-back]{align-self:flex-start;flex:none;margin:0 14px 4px;padding:4px 9px;min-height:36px;border:0;background:transparent;color:#9bd6fe;font:inherit;font-size:14px;cursor:pointer}
 [data-geo-list-back]::before{content:"‹";margin-right:7px;font-size:18px;line-height:1}
 [data-geo-list-back][hidden]{display:none}

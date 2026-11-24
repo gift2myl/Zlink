@@ -2,6 +2,24 @@ const rows = value => Array.isArray(value) ? value : [];
 const text = value => typeof value === 'string' ? value.trim() : '';
 const positive = value => typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null;
 const field = value => ({ value: value ?? null, verified: value !== undefined && value !== null && value !== '' });
+const districtName = value => text(value).replace(/^(东城|西城|朝阳|丰台|石景山|海淀|门头沟|房山|通州|顺义|昌平|大兴|怀柔|平谷|密云|延庆)区$/, '$1');
+
+/** Both the listing card and its detail page were checked in the same Beijing snapshot. */
+export function hasCurrentRentalEvidence(property) {
+  if (property?.city !== '北京' || property.imported || property.currentFilteredListing !== true ||
+      property.publicDetailVerified !== true || property.rentalCardStatusVerified !== true ||
+      !Array.isArray(property.availability) || !Object.hasOwn(property, 'officialMoveInLabel')) return false;
+  const proof = property.officialMoveInEvidence;
+  if (!proof || !/^\d+$/.test(property.id) || property.id !== property.realListingId || proof.listingId !== property.id ||
+      proof.sourceUrl !== `https://www.ziroom.com/x/${property.id}.html` || proof.sourceUrl !== property.sourceUrl ||
+      !/^[a-f0-9]{64}$/.test(proof.sha256) || !/(?:Z|[+-]\d{2}:\d{2})$/.test(proof.checkedAt)) return false;
+  const time = Date.parse(proof.checkedAt);
+  return Number.isFinite(time) && new Date(time + 8 * 60 * 60 * 1000).toISOString().slice(0, 10) === property.listObservedAt;
+}
+
+export function isMonitoredRental(property) {
+  return hasCurrentRentalEvidence(property) && property.availability.length === 0 && property.officialMoveInLabel === '随时入住';
+}
 
 function officialUrl(value) {
   try {
@@ -46,7 +64,7 @@ function listingProperty(id, listing, check, date) {
   const tags = rows(listing?.tags);
   const product = tags.find(tag => /心舍|灵之智能|曼舍|友家|理想家/.test(tag));
   const explicit = listing ? listing.explicit === true : check?.explicit === true;
-  const district = text(check?.district).replace(/区$/, '');
+  const district = districtName(check?.district);
   const sourceUrl = check?.detailUrl || listing.detailUrl;
   return {
     id, realListingId: id, idType: 'ziroom_property_id', businessId: text(check?.code) || null,
@@ -119,6 +137,7 @@ export function projectPublicInventory(snapshot, communityMap = {}, availability
     const current = listings.get(id), previous = history.get(id), check = byId.get(id);
     const p = listingProperty(id, current || previous, check, current ? publicationDate : previous?.lastSeen || check?.observedAt || null);
     p.currentFilteredListing = Boolean(current);
+    p.rentalCardStatusVerified = current?.detailUrl === `https://www.ziroom.com/x/${id}.html` && Array.isArray(current?.availability);
     p.listObservedAt = current ? publicationDate : previous?.lastSeen || null;
     p.sourceListingRuns = current?.sourceListingRuns || {};
     p.firstSeen = current?.firstSeen || previous?.firstSeen || p.listObservedAt || check?.observedAt || null;
@@ -145,6 +164,12 @@ export function projectPublicInventory(snapshot, communityMap = {}, availability
       const currentFacts = facts?.sourceUrl === geo.sourceUrl && facts.detailCheckedAt;
       if (currentFacts) {
         p.observedAt = p.sourceObservedAt = facts.detailCheckedAt;
+        if (Object.hasOwn(facts, 'officialMoveInLabel') && /^[a-f0-9]{64}$/.test(facts.detailSha256)) {
+          p.officialMoveInLabel = text(facts.officialMoveInLabel) || null;
+          p.officialMoveInEvidence = {
+            listingId: id, sourceUrl: facts.sourceUrl, checkedAt: facts.detailCheckedAt, sha256: facts.detailSha256
+          };
+        }
         p.detailFields = facts.detailFields || {};
         p.areaLabel = text(facts.areaLabel) || null;
         p.area = positive(facts.area) || p.area;
@@ -167,7 +192,7 @@ export function projectPublicInventory(snapshot, communityMap = {}, availability
     if (unavailable.get(id) === p.publicFloorplanUrl) p.publicFloorplanUrl = null;
     p.communityId = text(geo.communityId);
     if (text(geo.district)) {
-      p.district = text(geo.district).replace(/区$/, '');
+      p.district = districtName(geo.district);
       p.districtConfidence = 'confirmed';
     }
     if (geo.businessDistrict?.status === 'confirmed') p.businessArea = text(geo.businessDistrict.name) || p.businessArea;

@@ -2585,6 +2585,68 @@
     "currentLocations": 537,
     "undisclosedRent": "官网未提供明文数值时保留空值，可在官网挂牌页查看。"
   },
+  "historicalNumberCheck": {
+    "requestedCount": 62,
+    "officialDetailsCompared": 599,
+    "matchedCount": 57,
+    "matchedInCurrentCount": 19,
+    "matchedInHistoricalCount": 38,
+    "unmatchedCount": 5,
+    "matchMethod": "历史完整房源编码与本次自如北京挂牌详情的房源编码逐字匹配。",
+    "exactSearchObservation": "五次官网搜索均回显完整编码，搜索结果区均为零条。未匹配编码保留为线索，公开资料未能确认其挂牌状态。",
+    "unmatchedSearches": [
+      {
+        "code": "BJZRGZ39222076205",
+        "searchUrl": "https://www.ziroom.com/z/?qwd=BJZRGZ39222076205",
+        "checkedAt": "2026-11-24T11:19:35+08:00",
+        "httpStatus": 200,
+        "resultCount": 0,
+        "responseSha256": "2fd087ee55fc2bcf89317c4c3de6510f07ba3d144c52fe743d771cc4e49cb34b"
+      },
+      {
+        "code": "BJZRGZ39222078671",
+        "searchUrl": "https://www.ziroom.com/z/?qwd=BJZRGZ39222078671",
+        "checkedAt": "2026-11-24T11:19:35+08:00",
+        "httpStatus": 200,
+        "resultCount": 0,
+        "responseSha256": "5b874cde1228011525f5347bc07f70ffcb6d1d71c910ef7beb03dc2f423ae9d1"
+      },
+      {
+        "code": "BJZRGZ39222082508",
+        "searchUrl": "https://www.ziroom.com/z/?qwd=BJZRGZ39222082508",
+        "checkedAt": "2026-11-24T11:19:36+08:00",
+        "httpStatus": 200,
+        "resultCount": 0,
+        "responseSha256": "d31241764e7748931dbdaa3a4e9b0526dcf85b4235be6e8cd49d1d535adcf8ac"
+      },
+      {
+        "code": "BJZRGZ39222082763",
+        "searchUrl": "https://www.ziroom.com/z/?qwd=BJZRGZ39222082763",
+        "checkedAt": "2026-11-24T11:19:36+08:00",
+        "httpStatus": 200,
+        "resultCount": 0,
+        "responseSha256": "4c206c199e9929a06df0f1a08c46f939d7f1071dc498b249b639773222094e38"
+      },
+      {
+        "code": "BJZRGZ39222083402",
+        "searchUrl": "https://www.ziroom.com/z/?qwd=BJZRGZ39222083402",
+        "checkedAt": "2026-11-24T11:19:36+08:00",
+        "httpStatus": 200,
+        "resultCount": 0,
+        "responseSha256": "eb8b0885bf5dc091b85bc5395ee6e920288ae3dfd2360f8efd6783184727c24d"
+      }
+    ],
+    "positiveControl": {
+      "code": "BJZRGZ39222074469",
+      "searchUrl": "https://www.ziroom.com/z/?qwd=BJZRGZ39222074469",
+      "checkedAt": "2026-11-24T11:19:36+08:00",
+      "httpStatus": 200,
+      "resultCount": 1,
+      "listingId": "809142959",
+      "detailUrl": "https://www.ziroom.com/x/809142959.html",
+      "responseSha256": "04a987ea49a78c45cec8d8183033b6d1ce63c8287f201541155f4c735f845e7b"
+    }
+  },
   "listingChecks":[
 {"id":"574832613","sourceUrl":"https://www.ziroom.com/x/574832613.html","status":"no_official_link","detailStatus":200,"detailCheckedAt":"2026-11-24T11:05:47+08:00","detailSha256":"40bb6a8089a0e5b3dde43490d02eada79e5963c5a92e66c8a220422e57fecbdc"},
 {"id":"610509377","sourceUrl":"https://www.ziroom.com/x/610509377.html","status":"verified","detailStatus":200,"detailCheckedAt":"2026-11-24T11:05:47+08:00","detailSha256":"f5334870a4b199f14847a120d08876583ac9eb3b9b74055d520545f63967ab4f","vrUrl":"https://metaverse.ziroom.com/pano-vr?zrVrId=177008721015431576948&inv_no=610509377&inv_no=610509377","vrHttpStatus":200,"vrCheckedAt":"2026-11-24T11:05:49+08:00","vrSha256":"96f0d55627de984e2db5228078c27443498778251b7c7daa3d09129c6609879f","viewpoints":true,"listingIdInPayload":true,"panoramaIdInPayload":true},

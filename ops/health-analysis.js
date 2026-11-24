@@ -62,15 +62,19 @@ function mostSeverePerHome(entries, order) {
   return [...homes.values()].sort(order);
 }
 
-function mountImprovementPlan(root,plan) {
-  if (!root || !Array.isArray(plan) || !plan.length) return;
-  root.innerHTML = `<header><h2 id="improvement-title">健康度改善举措</h2><small>专项计划覆盖量</small></header>
-    <div class="improvement-plans">${plan.map((item,i)=>`<details class="improvement-grade" data-level="${escape(item.grade)}" ${i===0?'open':''}>
-      <summary><b>${escape(item.grade)}</b><span>${escape(item.name)}<strong>${escape(item.strategy)}</strong></span></summary>
-      <div><p>责任方 <strong>${escape(item.owner)}</strong></p><ol>${item.actions.map(action=>`<li>${escape(action)}</li>`).join('')}</ol>
+function mountImprovementPlan(standards, plan = []) {
+  for (const slot of standards.querySelectorAll('[data-improvement-grade]')) {
+    const item = plan.find(entry => entry.grade === slot.dataset.improvementGrade);
+    slot.replaceChildren();
+    slot.hidden = !item;
+    if (!item) continue;
+    slot.innerHTML = `<details class="grade-improvement">
+      <summary><span>改善举措</span><strong>${escape(item.strategy)}</strong></summary>
+      <div><p>责任方 <strong>${escape(item.owner)}</strong></p>
+      <h4>专项行动与计划覆盖量</h4><ol>${item.actions.map(action=>`<li>${escape(action)}</li>`).join('')}</ol>
       ${item.target?`<p class="improvement-target">处置目标 <strong>${escape(item.target)}</strong></p>`:''}</div>
-    </details>`).join('')}</div>`;
-  root.hidden=false;
+    </details>`;
+  }
 }
 
 export function mountHealthAnalysis(snapshot, monitorRoot, rankingRoot, severeRoot, onDetails, onMonitorFilter, nameFor=homeDisplayName) {
@@ -92,7 +96,7 @@ export function mountHealthAnalysis(snapshot, monitorRoot, rankingRoot, severeRo
     }
   }
   const safetyHomes = new Set(entries.filter(entry=>entry.safety).map(({row})=>row.homeKey));
-  mountImprovementPlan(document.getElementById('health-improvement'),snapshot.improvementPlan);
+  mountImprovementPlan(document.getElementById('health-standards'),snapshot.improvementPlan);
   const extraVersions = uniqueNames(entries.map(({row}) => row.version)).filter(v => !productVersions.includes(v));
   const versions = [...productVersions, ...extraVersions];
   const roots = [monitorRoot,severeRoot];

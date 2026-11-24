@@ -18,6 +18,10 @@ import { TwinWorkspace, configurationCatalogHtml } from './twin-workspace.js';
 import { buildDeviceConfiguration, CONFIG_SOURCE } from './device-configuration.js';
 
 const $=s=>document.querySelector(s);
+$('#standards-unlock').onclick=()=>openOperationsAccess('#health-standards');
+$('#health-standards').addEventListener('toggle',event=>{
+ if(event.newState==='closed' && location.hash==='#health-standards')history.replaceState(null,'','#household');
+});
 const cityMapKey = $('#scene-legend').innerHTML;
 $('#health-standards').addEventListener('click',event=>{
  const key=event.target.closest('[data-standard-event]')?.dataset.standardEvent;
@@ -161,6 +165,7 @@ async function loadHealthViews(){
  try{
   const {snapshot:healthSnapshot,directory}=await loadOperationsData(readAsset);
   publicOverview = healthSnapshot.publicOverview === true;
+  $('#standards-unlock').hidden = !publicOverview;
    health=mountOccupancyHealth(healthSnapshot,$('#occupancy-overview'),$('#household-workspace'),{
     directory:directory?.date===healthSnapshot.date ? directory : null,
     onOperations:goRecordOperations,
@@ -620,7 +625,7 @@ function healthRoute(){
  switch(location.hash || (requestedView ? '#'+requestedView : '')){
   case '#anomalies':return 'anomalies';
   case '#severe':return 'severe';
-  case '#household':case '#health-rental':case '#health-occupied':return 'household';
+  case '#health-standards':case '#household':case '#health-rental':case '#health-occupied':return 'household';
   default:return null;
  }
 }
@@ -631,7 +636,9 @@ function followInventoryLink(){
    healthAnalysis?.setMonitorScope(location.hash==='#health-rental'?'rental':location.hash==='#health-occupied'?'occupied':'');
    health?.open();
   }
-  showPage(page);return;
+  showPage(page);
+  if(location.hash==='#health-standards' && !$('#health-standards').matches(':popover-open'))$('#health-standards').showPopover();
+  return;
  }
  if(!data || !twinWorkspace || !mapWorkspace){showPage('overview',false);return;}
  if(officialVrPlayer?.handleRoute(location.hash))return;

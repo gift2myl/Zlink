@@ -20,7 +20,9 @@ function byKey(entries, key) {
 }
 
 function referenceAnchor(entries) {
-  const candidates = entries.filter(entry => entry.position && entry.matchType === 'community');
+  const located = entries.filter(entry => entry.position);
+  const communities = located.filter(entry => entry.matchType === 'community');
+  const candidates = communities.length ? communities : located;
   if (!candidates.length) return null;
   // Choose an observed community point near the centre. Never invent a location for an unknown group.
   const x = candidates.reduce((sum, e) => sum + e.position[0], 0) / candidates.length;
@@ -30,14 +32,10 @@ function referenceAnchor(entries) {
 }
 
 function groupRecord(id, type, name, members, position) {
-  const pendingP1Count = members.reduce((sum, item) => sum + item.pendingP1Count, 0);
-  const pendingP2Count = members.reduce((sum, item) => sum + item.pendingP2Count, 0);
   return {
-    id, type, name, position, members, mapIndex: members.length, matchType: 'community',
+    id, type, name, position, members, mapIndex: members.length, matchType: members.find(e => e.position === position)?.matchType || 'unmatched',
     positionPrecision: members.find(e => e.position === position)?.geography?.precision,
-    district: members[0].district, pendingP1Count, pendingP2Count,
-    pendingCount: pendingP1Count + pendingP2Count, hasPending: pendingP1Count + pendingP2Count > 0,
-    priority: pendingP1Count ? 'P1' : pendingP2Count ? 'P2' : null,
+    district: members[0].district,
   };
 }
 

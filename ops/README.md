@@ -212,7 +212,7 @@ https://www.ziroom.com/z/z2-q1308385113142296577-a1308384876582944769/?p=x63&isO
 - 根目录 index.html 是新首页；应用模块、图片、数据、Three.js 均位于 ops/。
 - 沿用原静态站部署，无构建步骤，无新增后端；脚本依赖随站部署，公共地图与地形瓦片按可见视口从对应数据提供方请求。
 - 旧版保留于备份分支 backup/zlink-before-ops-20261119；旧版提交 a2a736b1a77282da338a7aec4327217add4a19ac。
-- 本地需从仓库根目录提供 HTTP 服务，例如 python3 -m http.server 8080；不能只服务 ops/。
+- 在仓库根目录运行 `python3 ops/tools/serve_health_preview.py`，打开 `http://127.0.0.1:49746/`。本地预览直接从同一期健康快照和房源明细生成首屏数据，完整地图与三维交互随后加载。
 
 ### 范围与来源
 

@@ -13,7 +13,7 @@ const clamp = (value,min,max) => Math.max(min,Math.min(value,max));
 const numeric = value => typeof value === 'number' && Number.isFinite(value);
 
 export function loadListingPlanIndex() {
-  if (!indexRequest) indexRequest=fetch(indexUrl).then(async response=>{
+  if (!indexRequest) indexRequest=fetch(indexUrl,{signal:AbortSignal.timeout?.(10000)}).then(async response=>{
     if (!response.ok) throw Error('逐套户型索引暂时不可用');
     const {plans}=await response.json();
     if (!Array.isArray(plans)) throw Error('户型索引格式无效');
@@ -49,6 +49,11 @@ function mediaFor(property,plan,id) {
     vr:vr?.hostname==='metaverse.ziroom.com' && queryIds.length && queryIds.every(v=>v===id) ? vr.href : '',
     page:matched ? property.sourceUrl : plan?.sourceUrl || ''
   };
+}
+
+export function verifiedFloorplanUrl(property, plan) {
+  const id=String(property.id);
+  return mediaFor(property, plan && String(plan.id)===id && sameListing(plan.sourceUrl,id) ? plan : null, id).image;
 }
 
 function sourceLinks(media) {

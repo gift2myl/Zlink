@@ -1,33 +1,24 @@
 // One pure state reducer for the 3D layer and the non-3D configuration view.
 // These scenarios are illustrative. No configuration-derived device is telemetry.
-export const TWIN_SCENARIOS = Object.freeze(['unknown','gateway-offline','local-fault','safety-alert']);
-const STATE_LABELS = Object.freeze({unknown:'运行状态未接入',affected:'远程状态待核验',offline:'网关离线 · 演示',fault:'照明异常 · 演示',alarm:'安全告警 · 演示'});
+const STATE_LABELS = Object.freeze({unknown:'运行状态未接入',affected:'远程状态待核验',offline:'离线点位示意',fault:'异常点位示意',alarm:'告警点位示意'});
 const PRIORITY = {unknown:0,affected:1,offline:2,fault:2,alarm:3};
 
 export function evaluateTwinState(input=[],options={}) {
-  const scenario=TWIN_SCENARIOS.includes(options.scenario)?options.scenario:'unknown';
+  const event=options.event;
+  const scenario=event?.key || 'unknown';
   const devices=input.map(d=>({...d,state:'unknown',stateLabel:STATE_LABELS.unknown,telemetryStatus:'unknown',stateSource:'not_connected'}));
-  let target=null;
-  if(scenario==='gateway-offline')target=devices.find(d=>d.formFactor==='gateway'||d.catalogId==='max1');
-  if(scenario==='local-fault')target=devices.find(d=>d.formFactor==='ceiling-light'&&String(d.roomId).startsWith('bedroom'));
-  if(scenario==='safety-alert')target=devices.find(d=>d.formFactor==='gas-sensor')||devices.find(d=>d.formFactor==='smoke-sensor');
+  const candidates=event?.formFactor ? devices.filter(d=>d.formFactor===event.formFactor) : [];
+  const target=candidates.length===1 ? candidates[0] : null;
   if(target){
-    target.state=scenario==='gateway-offline'?'offline':scenario==='local-fault'?'fault':'alarm';
+    target.state=event.category==='安全事件'?'alarm':'offline';
+    target.stateLabel=STATE_LABELS[target.state];
     target.stateSource='simulation';
-    if(scenario==='gateway-offline')for(const d of devices){
-      if(d!==target&&d.formFactor!=='door-lock'){d.state='affected';d.stateSource='simulation';}
-    }
   }
-  for(const d of devices)d.stateLabel=STATE_LABELS[d.state];
-  const isDemo=scenario!=='unknown';
-  const unavailable=isDemo&&!target;
-  const states={
-    unknown:{code:'unknown',label:'运行状态未接入',severity:'unknown',description:'按配置文档推演设备；实装数量、点位和运行状态均待现场台账或平台数据确认。'},
-    'gateway-offline':{code:'gateway-offline',label:'网关离线 · 演示',severity:'critical',description:'模拟网关失联。橙色设备仅表示远程状态待核验，不代表设备本体故障或本地功能全部失效。'},
-    'local-fault':{code:'local-fault',label:'局部照明异常 · 演示',severity:'warning',description:'模拟一个卧室灯具异常，仅突出该设备和对应空间；其余设备仍为未接入状态。'},
-    'safety-alert':{code:'safety-alert',label:'安全告警 · 演示',severity:'critical',description:'模拟燃气或烟雾传感器告警，突出告警设备与对应房间。页面不会执行远程控制或真实派单。'}
-  };
-  const houseState=unavailable?{code:'scenario-unavailable',label:'当前配置不支持此演示',severity:'unknown',description:scenario==='safety-alert'?'该配置未包含燃气或烟雾传感器，请选择 Plus 配置后演示。':'当前出租空间的配置清单没有该场景所需设备。'}:states[scenario];
+  const isDemo=Boolean(event);
+  const houseState=event ? {
+    code:scenario,label:event.name,severity:event.category==='安全事件'?'critical':'warning',
+    description:[event.category,event.measure,target?'高亮同类型规划点位，具体发生位置待核验。':'本期记录未能唯一关联配置点位，按房源展示。'].filter(Boolean).join(' · ')
+  } : {code:'unknown',label:'配置状态',severity:'unknown',description:'展示本套规划配置，设备实时状态待接入。'};
   const grouped=new Map();
   for(const d of devices){
     const id=d.roomId||'unassigned';

@@ -1,98 +1,49 @@
-.rental-monitor {
-  min-width: 0;
-  margin-bottom: 20px;
-  padding: clamp(14px, 2vw, 28px);
-  color: var(--map-ink);
-  background: var(--map-surface);
-  border: 1px solid var(--map-border);
-  border-radius: 8px;
-  font-variant-numeric: tabular-nums;
+.rental-monitor {flex:none;min-width:0;padding:16px 19px 9px;border-bottom:1px solid var(--map-border);
+  background:#fff;color:var(--map-ink);font-variant-numeric:tabular-nums;scroll-margin-top:90px}
+body:not([data-scene="city"]) .rental-monitor,.rental-monitor [hidden],.rental-monitor[hidden],.rental-monitor:empty {display:none}
+.rental-monitor-head {display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+body[data-scene=city] .rental-monitor-head h2 {margin:0;font-size:16px;font-weight:650;line-height:1.4}
+.rental-monitor-scope {font-size:12px;color:#506778}
+.rental-monitor-metrics {display:grid;grid-template-columns:1.2fr repeat(3,1fr);margin:13px 0 8px;
+  padding:10px 0;border-radius:8px;background:#f0f5f9}
+.rental-monitor-metrics>div {min-width:0;padding:0 9px;display:flex;flex-direction:column}
+.rental-monitor-metrics>div+div {border-left:1px solid #d4e1ea}
+.rental-monitor-metrics dt {color:#4c6578;font-size:12px;white-space:nowrap}
+.rental-monitor-metrics dd {display:flex;align-items:baseline;gap:3px;margin:4px 0 0;line-height:1}
+.rental-monitor-metrics strong {color:#17394e;font-size:clamp(19px,1.65vw,25px);font-weight:650}
+.rental-monitor-metrics>div:first-child strong {color:#095f9e}
+.rental-monitor-metrics dd span {font-size:10px;color:#536d7f}
+.rental-monitor nav {display:flex;align-items:center;flex-wrap:wrap;gap:0 6px;color:#546e80;font-size:12px}
+.rental-monitor button {font:inherit;cursor:pointer}
+.rental-monitor nav button,.rental-monitor-expand {min-height:36px;padding:3px 0;color:#185e90;border:0;background:transparent;text-align:left}
+.rental-monitor nav [aria-current] {color:#233d4f;font-weight:600}
+.rental-monitor-choices {display:grid;gap:1px;max-height:208px;overflow:auto;overscroll-behavior:contain}
+.rental-monitor:not([data-expanded=true]) .rental-monitor-choices>button:nth-child(n+4) {display:none}
+.rental-monitor-choices button {display:grid;grid-template-columns:minmax(4em,auto) minmax(24px,1fr) 2.5em;align-items:center;
+  gap:10px;min-height:32px;width:100%;padding:4px 7px;color:#274557;border:0;background:transparent;border-radius:4px;
+  text-align:left;font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.rental-monitor-choices button:hover,.rental-monitor-choices button[aria-pressed=true] {background:#edf5fa}
+.rental-monitor-choices button>span:first-child {max-width:10em}
+.rental-monitor-bar {height:5px;overflow:hidden;background:#edf2f6;border-radius:4px}
+.rental-monitor-bar i {display:block;min-width:2px;height:100%;border-radius:inherit;background:#4782a9}
+.rental-monitor-choices strong {text-align:right;font-size:14px}
+.rental-monitor[data-rental-depth="3"] .rental-monitor-choices button {display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.rental-monitor[data-rental-depth="3"] .rental-monitor-choices button>span:first-child {max-width:none;font-weight:600}
+.rental-monitor-choices small {font-size:12px;color:#516c7c}
+.rental-monitor-actions {display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px}
+.rental-monitor-actions summary {width:fit-content;cursor:pointer;padding:9px 0;color:#516d81}
+.rental-monitor-source {margin:0 0 6px;color:#4c6679;font-size:12px;line-height:1.6}
+.rental-monitor-actions button {flex:none}
+.rental-monitor :is(button,summary):focus-visible {outline:2px solid #1f6da0;outline-offset:-2px;border-radius:4px}
+@media(min-width:1101px){
+  #overview-page .command-grid>.geo-panel:has(.rental-monitor:not([hidden])) {min-height:560px;overflow:auto}
+  #overview-page .geo-panel:has(.rental-monitor:not([hidden])) #geo-property-list {min-height:145px}
 }
-body:not([data-scene="city"]) .rental-monitor,
-.rental-monitor [hidden],
-.rental-monitor[hidden] { display: none; }
+@media(max-width:640px){
+  .rental-monitor {padding:14px 14px 8px}
+  .rental-monitor nav button,.rental-monitor-choices button,.rental-monitor-expand,.rental-monitor-actions summary {min-height:44px}
+  .rental-monitor-metrics strong {font-size:23px}
+}
 
-.rental-monitor-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 5px 16px;
-}
-.rental-monitor-head h2 { margin: 0; font-size: 16px; font-weight: 600; }
-.rental-monitor-date, .rental-monitor-source { color: var(--map-muted); font-size: 13px; }
-.rental-monitor-metrics {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin: 22px 0;
-}
-.rental-monitor-metrics > div { min-width: 0; padding: 4px clamp(10px, 2vw, 28px); }
-.rental-monitor-metrics > div:first-child { padding-left: 0; }
-.rental-monitor-metrics > div + div { border-left: 1px solid var(--map-border); }
-.rental-monitor-metrics dt { color: var(--map-muted); font-size: 14px; }
-.rental-monitor-metrics dd { display: flex; align-items: baseline; gap: 6px; margin: 8px 0 0; }
-.rental-monitor-metrics strong { font-size: clamp(32px, 4vw, 58px); font-weight: 500; line-height: 1.05; }
-.rental-monitor-metrics dd span { color: var(--map-muted); font-size: 12px; }
-
-.rental-monitor-drill {
-  padding: 8px 12px;
-  border: 1px solid var(--map-border);
-  border-radius: 6px;
-  background: var(--map-soft);
-}
-.rental-monitor nav { display: flex; align-items: center; flex-wrap: wrap; gap: 3px 7px; color: var(--map-muted); font-size: 13px; }
-.rental-monitor button { font: inherit; cursor: pointer; }
-.rental-monitor nav button, .rental-monitor-expand {
-  min-height: 44px;
-  padding: 0 4px;
-  border: 0;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--map-accent);
-}
-.rental-monitor nav [aria-current] { color: var(--map-ink); font-weight: 600; }
-.rental-monitor-rail { display: flex; align-items: start; gap: 8px; min-width: 0; }
-.rental-monitor-expand { flex: none; font-size: 13px; }
-.rental-monitor-choices {
-  flex: 1;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 112px), 1fr));
-  align-content: start;
-  min-width: 0;
-  max-height: 60px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 2px;
-  color: var(--map-muted);
-  font-size: 13px;
-}
-.rental-monitor[data-expanded="true"] .rental-monitor-choices { max-height: 240px; }
-.rental-monitor-choices button {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 6px;
-  min-height: 54px;
-  padding: 7px 10px;
-  border: 0;
-  border-inline-start: 1px solid var(--map-border);
-  background: transparent;
-  color: var(--map-ink);
-  text-align: left;
-  overflow-wrap: anywhere;
-}
-.rental-monitor-choices strong { font-size: 19px; font-weight: 500; }
-.rental-monitor-choices small { color: var(--map-muted); font-size: 12px; }
-.rental-monitor[data-rental-depth="3"] .rental-monitor-choices {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
-  max-height: 124px;
-}
-.rental-monitor[data-rental-depth="3"][data-expanded="true"] .rental-monitor-choices { max-height: 240px; }
-.rental-monitor[data-rental-depth="3"] .rental-monitor-choices button { flex-direction: column; align-items: start; justify-content: center; }
-.rental-monitor-choices button:hover, .rental-monitor-choices button[aria-pressed="true"] { background: var(--map-tint); }
-.rental-monitor button:focus-visible { outline: 2px solid var(--map-accent); outline-offset: -2px; }
-.rental-monitor-source { margin: 10px 0 0; line-height: 1.55; }
-
-@media (max-width: 620px) {
-  .rental-monitor-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; margin: 15px 0; }
-  .rental-monitor-metrics > div:nth-child(3) { border-left: 0; padding-left: 0; }
-}
+.geo-panel:has(.rental-monitor:not([hidden]):not(:empty)) .geo-coverage-totals {display:none}
+#geo-coverage-summary {color:var(--map-muted);font-size:13px;line-height:1.6}

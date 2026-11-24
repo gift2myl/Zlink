@@ -73,28 +73,27 @@ function asSelection(nodes) {
 export function mountRentalMonitor(root, { onSelect } = {}) {
   let tree = buildTree([]), path = [], metadata = {};
   root.classList.add('rental-monitor');
-  root.setAttribute('aria-label', '待租房源监控');
+  root.setAttribute('aria-label', '地图房源范围');
   root.innerHTML = `<header class="rental-monitor-head">
-    <h2>北京 · 待租房源监控</h2>
-    <span class="rental-monitor-date"></span>
+    <h2>地图匹配范围</h2>
+    <span class="rental-monitor-scope">北京</span>
   </header>
   <dl class="rental-monitor-metrics">
-    <div><dt>当前监控待租房源</dt><dd><strong data-rental-total>—</strong><span>套</span></dd></div>
+    <div><dt>匹配房源</dt><dd><strong data-rental-total>—</strong><span>套</span></dd></div>
     ${levels.slice(0, 3).map((level, i) =>
-      `<div><dt>覆盖${labels[i]}</dt><dd><strong data-rental-metric="${level}">—</strong><span>${i === 0 ? '个行政区' : '个'}</span></dd></div>`).join('')}
+      `<div><dt>${labels[i]}</dt><dd><strong data-rental-metric="${level}">—</strong><span>个</span></dd></div>`).join('')}
   </dl>
   <div class="rental-monitor-drill">
-    <nav aria-label="待租房源分级路径"></nav>
-    <div class="rental-monitor-rail">
-      <div class="rental-monitor-choices"></div>
-      <button type="button" class="rental-monitor-expand" aria-expanded="false" hidden>展开</button>
+    <nav aria-label="地图房源分级路径"></nav>
+    <div class="rental-monitor-choices"></div>
+    <div class="rental-monitor-actions">
+      <details><summary>匹配明细</summary><p class="rental-monitor-source"></p></details>
+      <button type="button" class="rental-monitor-expand" aria-expanded="false" hidden>展开全部</button>
     </div>
-  </div>
-  <p class="rental-monitor-source"></p>`;
+  </div>`;
 
   const total = root.querySelector('[data-rental-total]');
   const metrics = [...root.querySelectorAll('[data-rental-metric]')];
-  const date = root.querySelector('.rental-monitor-date');
   const crumbs = root.querySelector('nav');
   const choices = root.querySelector('.rental-monitor-choices');
   const source = root.querySelector('.rental-monitor-source');
@@ -102,33 +101,29 @@ export function mountRentalMonitor(root, { onSelect } = {}) {
   choices.id = (root.id || 'rental-monitor') + '-groups';
   expand.setAttribute('aria-controls', choices.id);
   function updateExpandButton() {
-    const first = choices.firstElementChild;
-    const last = choices.lastElementChild;
-    const wrapped = !!first && last.offsetTop > first.offsetTop;
-    expand.hidden = !wrapped;
-    const opened = wrapped && root.dataset.expanded === 'true';
+    const more = choices.children.length > 3;
+    const opened = more && root.dataset.expanded === 'true';
+    expand.hidden = !more;
     expand.setAttribute('aria-expanded', String(opened));
-    expand.textContent = opened ? '收起' : '展开';
-    if (!wrapped) delete root.dataset.expanded;
+    expand.textContent = opened ? '收起' : '展开全部（' + choices.children.length + '）';
+    if (!more) delete root.dataset.expanded;
   }
-  new ResizeObserver(updateExpandButton).observe(choices);
 
   function render({ focus = false } = {}) {
     const nodes = pathNodes(tree, path);
     path = nodes.slice(1).map(node => node.key);
     const active = nodes.at(-1);
     const rowCount = active.rows.length;
-    const hasData = Number.isInteger(metadata.verifiedCount) && (metadata.verifiedCount > 0 || metadata.currentCount === 0);
+    const hasData = metadata.available === true;
     const counts = coverage(active.rows);
+    root.querySelector('.rental-monitor-scope').textContent = ['北京', metadata.label].filter(Boolean).join(' · ');
     total.textContent = hasData ? rowCount : '—';
     metrics.forEach((metric, index) => { metric.textContent = hasData ? counts[index] : '—'; });
-    const day = clean(metadata.date).slice(0, 10);
-    date.textContent = day ? '官网快照 ' + day.replaceAll('-', '.') : '';
-    const partial = hasData && metadata.verifiedCount < metadata.currentCount;
-    const note = partial ? `本期 ${metadata.currentCount} 套房源中已核验 ${metadata.verifiedCount} 套。` : '';
-    source.textContent = hasData
-      ? note + '按本期官网标注「随时入住」的房源统计，排除已预订等受限房源。片区取自官网商圈。'
-      : '待租统计所需的官网入住信息尚待核验。片区取自官网商圈。';
+    if (!hasData) source.textContent = '健康快照尚未加载。';
+    else if (metadata.label === '待租') {
+      const places = active.rows.filter(row=>row.property.rentalCommunity).length;
+      source.textContent = `官网房源编号匹配 ${rowCount-places} 套 · 按小区匹配 ${places} 套。地图标记为小区参考位置。` + (!path.length && metadata.pending ? `另有 ${metadata.pending} 套待定位。` : '');
+    } else source.textContent = '按房源编号关联地图，区域、片区与小区仅统计已匹配房源。';
 
     const depth = Math.min(path.length, 3);
     root.dataset.rentalDepth = String(depth);
@@ -141,20 +136,21 @@ export function mountRentalMonitor(root, { onSelect } = {}) {
       return `<button type="button" data-rental-level="${key}"${current}>${esc(name)}</button>`;
     }).join('<span aria-hidden="true">›</span>') + (nodes[4]
       ? `<span aria-hidden="true">›</span><span aria-current="location">${esc(nodes[4].name)}</span>` : '');
-    choices.setAttribute('aria-label', '按' + labels[depth] + '查看待租房源');
+    choices.setAttribute('aria-label', '按' + labels[depth] + '查看地图房源');
     const groups = [...group.children.values()].sort((a, b) => b.rows.length - a.rows.length || collator.compare(a.name, b.name));
+    const largest = groups[0]?.rows.length || 1;
     choices.innerHTML = groups.map(node => {
       const listing = level === 'listing';
       const property = node.rows[0].property;
       const detail = listing ? listingBasics(property).facts.filter(fact => fact.value).map(fact => fact.label === '楼层' ? fact.value + (fact.value.includes('/') ? '层' : '') : fact.value).join(' · ') : '';
       const selected = listing && nodes[4]?.key === node.key;
-      const description = listing ? `在地图查看${node.name}${detail ? '，'+detail : ''}` : `${node.name}，${node.rows.length} 套待租，查看${labels[depth+1]}`;
+      const description = listing ? `在地图查看${node.name}${detail ? '，'+detail : ''}` : `${node.name}，${node.rows.length} 套房源，查看${labels[depth+1]}`;
       return `<button type="button" data-rental-${level}="${esc(node.key)}" aria-label="${esc(description)}"${listing ? ` aria-pressed="${selected}"` : ''}>
         <span>${esc(node.name)}</span>${listing
-          ? detail ? `<small>${esc(detail)}</small>` : ''
-          : `<strong data-rental-count>${node.rows.length}</strong>`}</button>`;
+          ? (detail || property.healthLabel) ? `<small>${esc([property.healthLabel,detail].filter(Boolean).join(' · '))}</small>` : ''
+          : `<span class="rental-monitor-bar" aria-hidden="true"><i style="width:${100 * node.rows.length / largest}%"></i></span><strong data-rental-count>${node.rows.length}</strong>`}</button>`;
     }).join('');
-    if (!groups.length) choices.textContent = hasData ? '本范围暂无符合条件的待租房源。' : '暂无已核验的待租清单。';
+    if (!groups.length) choices.textContent = hasData ? '本范围暂无符合条件的匹配房源。' : '暂无已匹配的房源清单。';
     updateExpandButton();
     if (focus) {
       const target = nodes[4] ? choices.querySelector('[aria-pressed="true"]') : crumbs.querySelector('[aria-current]');
@@ -198,7 +194,7 @@ export function mountRentalMonitor(root, { onSelect } = {}) {
         if (row) next = [row.district, row.business, row.communityKey, row.id];
       } else if (selection.district) {
         next.push(clean(selection.district));
-        if (selection.business) next.push(clean(selection.business));
+        if (selection.business || selection.communityId || selection.communityName) next.push(clean(selection.business));
         if (next.length === 2 && (selection.communityId || selection.communityName)) {
           next.push(communityKey(selection.communityId, selection.communityName));
         }

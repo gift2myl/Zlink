@@ -112,7 +112,7 @@ export function mountMapListingSearch(container, {getEntries,onLocate}) {
       const title=document.createElement('strong');
       title.textContent=listingBasics(p).title;
       const details=document.createElement('small');
-      details.textContent=joinFacts([district,p.businessArea || (businessLabel || '').split('（')[0],listingFacts(p)]);
+      details.textContent=joinFacts([listingBasics(p).healthLabel,district,p.businessArea || (businessLabel || '').split('（')[0],listingFacts(p)]);
       button.append(title,details);
       list.append(button);
     }

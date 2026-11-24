@@ -18,7 +18,7 @@ export function listingBasics(property = {}) {
   const orientation = text(property.orientation);
   const floor = finite(property.floor) ? `${property.floor}${finite(property.totalFloors) ? '/'+property.totalFloors : '层'}` : '';
   return {
-    title, sourceUrl, signBadge:offer?.signBadge === true,
+    title, sourceUrl, healthLabel:text(property.healthLabel) || '暂无匹配健康记录', signBadge:offer?.signBadge === true,
     monthlyRent:Number.isSafeInteger(offer?.monthlyRent) && offer.monthlyRent > 0 ? offer.monthlyRent : null,
     paymentLabel:text(offer?.paymentLabel), priceCondition:text(offer?.priceCondition),
     facts:[
@@ -34,7 +34,9 @@ export function renderListingTitle({ title, signBadge }) {
   return (signBadge ? '<span class="geo-sign-badge">签</span>' : '') + esc(title);
 }
 
-export function renderListingOfferAndFacts({ monthlyRent, paymentLabel, priceCondition, sourceUrl, facts }, { inButton = false } = {}) {
+export function renderListingOfferAndFacts({ monthlyRent, paymentLabel, priceCondition, sourceUrl, facts, healthLabel }, { inButton = false } = {}) {
+  const tone = healthLabel?.match(/\bP[1-4]\b/)?.[0] || (healthLabel?.includes('健康房源') ? 'healthy' : 'unknown');
+  const badge = `<span class="listing-health" data-grade="${tone}">${esc(healthLabel)}</span>`;
   let rent = sourceUrl ? '租金见官网' : '租金待核验';
   if (monthlyRent != null) {
     rent = `<strong data-geo-monthly-rent>¥${esc(monthlyRent)}<small> /月</small></strong>`;
@@ -45,8 +47,8 @@ export function renderListingOfferAndFacts({ monthlyRent, paymentLabel, priceCon
   const condition = priceCondition && priceCondition !== paymentLabel ? `<span class="geo-price-condition">${esc(priceCondition)}</span>` : '';
   if (inButton) {
     const cells = facts.map(({label,value}) => `<span><span class="geo-fact-label">${esc(label)}</span><span class="geo-fact-value">${esc(value || '待核验')}</span></span>`).join('');
-    return `<span class="geo-listing-rent">${rent}${payment}${condition}</span><span class="geo-listing-facts">${cells}</span>`;
+    return `${badge}<span class="geo-listing-rent">${rent}${payment}${condition}</span><span class="geo-listing-facts">${cells}</span>`;
   }
   const cells = facts.map(({label,value}) => `<div><dt>${esc(label)}</dt><dd>${esc(value || '待核验')}</dd></div>`).join('');
-  return `<div class="geo-listing-rent">${rent}${payment}${condition}</div><dl class="geo-listing-facts">${cells}</dl>`;
+  return `${badge}<div class="geo-listing-rent">${rent}${payment}${condition}</div><dl class="geo-listing-facts">${cells}</dl>`;
 }

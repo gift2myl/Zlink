@@ -39,7 +39,7 @@ export function createOfficialVrPlayer(resolveProperty) {
     shownId=id;
     stage.replaceChildren();
     title.textContent=property?.name ? property.name+' · 官网实景 VR' : '官网实景 VR';
-    identity.textContent=[property?.district, property?.businessArea, property?.layout].filter(Boolean).join(' · ');
+    identity.textContent=[property?.healthLabel, property?.district, property?.businessArea, property?.layout].filter(Boolean).join(' · ');
     external.hidden=!url;
     if(url){
       external.href=url;

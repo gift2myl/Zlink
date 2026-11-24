@@ -1,3 +1,4 @@
+import { houseEvents } from './house-events.js';
 import { buildDeviceConfiguration, CONFIG_CATALOG, CONFIG_SOURCE } from './device-configuration.js';
 import { evaluateTwinState } from './twin-state.js';
 
@@ -6,7 +7,6 @@ const REFERENCE_ID='810151211';
 const stateName={unknown:'状态未接入',affected:'链路受影响',offline:'演示离线',fault:'演示异常',alarm:'演示告警'};
 const roomOrder=['entry','living','bedroom','bedroom-2','bedroom-3','kitchen','bathroom','south-balcony'];
 const profiles={base:'基础智能',plus:'基础 + Plus',upgrade:'升级选配'};
-const scenarios=[['unknown','配置状态'],['gateway-offline','网关离线'],['local-fault','单灯异常'],['safety-alert','安全告警']];
 const deviceFilters=[['all','全部'],['abnormal','异常'],['affected','链路受影响']];
 const attentionRank={alarm:3,offline:2,fault:2,affected:1,unknown:0};
 const isAbnormal=device=>['alarm','offline','fault'].includes(device.state);
@@ -17,21 +17,26 @@ const icon=(type='device')=>`<svg viewBox="0 0 32 32" aria-hidden="true">${/ligh
 
 /** Configuration is a proposal based on the supplied plan, never a live device inventory. */
 export class TwinWorkspace {
-  constructor({controls,panel,empty,detail,properties,geography,coverage,onProperty,onChange,onFocus,onCatalog,onSource,onPlan,onExport}){
-    Object.assign(this,{controls,panel,empty,detail,properties,geography,coverage,onProperty,onChange,onFocus,onCatalog,onSource,onPlan,onExport});
-    this.propertyId=REFERENCE_ID;this.profile='base';this.scenario='unknown';this.singleTracks=false;this.visible=false;this.showLabels=true;this.selectedId=null;this.deviceFilter='all';this.roomFilter='';this.focusMessage='';
+  constructor({controls,panel,healthDate,detail,properties,geography,coverage,onProperty,onChange,onFocus,onCatalog,onSource,onPlan,onExport}){
+    Object.assign(this,{controls,panel,healthDate,detail,properties,geography,coverage,onProperty,onChange,onFocus,onCatalog,onSource,onPlan,onExport});
+    this.propertyId=REFERENCE_ID;this.profile='base';this.scenario='unknown';this.operationRecord=properties.find(p=>p.id===REFERENCE_ID)?.healthRecord;this.singleTracks=false;this.visible=false;this.showLabels=true;this.selectedId=null;this.deviceFilter='all';this.roomFilter='';this.focusMessage='';
     this.rebuild();
   }
   get property(){return this.properties.find(p=>p.id===this.propertyId)||this.properties[0];}
   get referenceReady(){return this.property?.modelReady===true && (this.property.id===REFERENCE_ID || this.property.reviewedRoomDemo===true);}
   updateProperties(properties){this.properties=properties;this.rebuild();}
-  open(id,profile=this.profile){
+  get events(){return houseEvents(this.operationRecord);}
+  get selectedEvent(){return this.events.find(event=>event.key===this.scenario);}
+  open(id,profile=this.profile,eventKey,record){
     if(!this.properties.some(p=>p.id===String(id)))return;
-    this.propertyId=String(id);this.scenario='unknown';
+    this.propertyId=String(id);
+    this.operationRecord=record ?? this.property.healthRecord;
+    const events=this.events;
+    this.scenario=events.find(e=>e.key===eventKey)?.key || events[0]?.key || 'unknown';
     if(Object.hasOwn(profiles,profile))this.profile=profile;
     this.resetDeviceView();this.rebuild();
   }
-  setVisible(value){this.visible=!!value;this.controls.hidden=!this.visible;this.panel.hidden=!this.visible;this.empty.hidden=!this.visible||this.referenceReady;}
+  setVisible(value){this.visible=!!value;this.controls.hidden=!this.visible;this.panel.hidden=!this.visible;}
   configurationOptions(){
     const property=this.property,shared=property?.areaScope==='listed_bedroom'||!!property?.roomLabel;
     const rooms=shared?['bedroom']:['living',...Array.from({length:Math.max(0,Math.min(8,Number(property?.bedrooms)||0))},(_,i)=>i?'bedroom-'+(i+1):'bedroom')];
@@ -40,9 +45,9 @@ export class TwinWorkspace {
   rebuild(){
     if(!this.property)return;
     this.configuration=buildDeviceConfiguration(this.property,this.configurationOptions());
-    this.result=evaluateTwinState(this.configuration.devices,{scenario:this.scenario,propertyId:this.propertyId,profile:this.profile});
+    this.result=evaluateTwinState(this.configuration.devices,{event:this.selectedEvent,propertyId:this.propertyId,profile:this.profile});
     if(this.selectedId&&!this.configuration.devices.some(d=>d.id===this.selectedId)){this.selectedId=null;this.detail.hidden=true;}
-    this.renderControls();this.renderPanel();this.renderEmpty();this.setVisible(this.visible);
+    this.renderControls();this.renderPanel();this.setVisible(this.visible);
   }
   change(){this.rebuild();this.onChange?.({property:this.property,configuration:this.configuration,scenario:this.scenario,showLabels:this.showLabels});}
   setResult(result){if(!result)return;this.result=result;this.renderPanel();if(this.selectedId)this.selectDevice(this.selectedId,false);}
@@ -50,7 +55,7 @@ export class TwinWorkspace {
     if(!Object.hasOwn(profiles,profile) || profile===this.profile)return;
     this.profile=profile;this.resetDeviceView();this.change();
   }
-  setScenario(scenario){if(!scenarios.some(s=>s[0]===scenario))return;this.scenario=scenario;this.resetDeviceView();this.change();}
+  setScenario(scenario){if(scenario!=='unknown' && !this.events.some(e=>e.key===scenario))return;this.scenario=scenario;this.resetDeviceView();this.change();}
   findLegacyDevice(id){
     if(this.configuration.devices.some(d=>d.id===id))return id;
     const terms={gateway:/gateway/, 'living-light':/ceiling.*45|45.*ceiling|light.*45/, 'door-lock':/lock/, 'smoke-sensor':/smoke/, 'curtain-sensor':/curtain.*motor/};
@@ -58,7 +63,8 @@ export class TwinWorkspace {
   }
   renderControls(){
     const p=this.property,config=this.configuration;
-    this.controls.innerHTML=`<div class="twin-controls-head"><div><p class="eyebrow">HOME DIGITAL TWIN</p><h3>从房间到设备，看清影响范围。</h3></div><button class="button" data-twin-catalog>配置依据</button></div><div class="twin-choices"><label><span>已采集房源</span><select aria-label="切换三维运维房源" id="twin-property-select">${this.properties.map(row=>`<option value="${esc(row.id)}" ${row.id===this.propertyId?'selected':''}>${esc(row.name)}${row.roomLabel?' · '+esc(row.roomLabel):' · '+esc(row.bedrooms)+'居'}${row.reviewedRoomDemo?' · 房间三维':row.id===REFERENCE_ID?' · 原运维样板':''}</option>`).join('')}</select></label><label><span>心舍 3.0.1 配置推演</span><select aria-label="智能设备配置方案" id="twin-profile-select">${Object.entries(profiles).map(([key,label])=>`<option value="${key}" ${this.profile===key?'selected':''}>${label}</option>`).join('')}</select></label><label class="twin-track-choice"><input type="checkbox" id="twin-track-preview" ${this.singleTracks?'checked':''} ${this.profile==='base'?'disabled':''}><span>预览每屋单轨窗帘<small>用户规划 · 窗长待确认</small></span></label></div><div class="twin-scenarios"><span>异常可视化演示</span><div role="group" aria-label="三维异常演示情景">${scenarios.map(([key,label])=>`<button type="button" data-twin-scenario="${key}" aria-pressed="${key===this.scenario}" class="${key===this.scenario?'selected':''}">${label}</button>`).join('')}</div><label class="twin-label-toggle"><input type="checkbox" id="twin-label-toggle" ${this.showLabels?'checked':''}>设备标记</label></div><p class="twin-version-note"><span class="tag">配置推演</span>当前房源标签：${esc(p.product||'产品版本待核验')}。${esc(config.applicability?.reason||'方案型号与数量需逐套核对实装清单。')}<span>资料依据：配置文档第 6–9 页。</span></p>`;
+    const scenarios=[['unknown','配置状态'],...this.events.map(e=>[e.key,e.name+' · '+e.measure])];
+    this.controls.innerHTML=`<div class="twin-controls-head"><div><p class="eyebrow">HOME DIGITAL TWIN</p><h3>从房间到设备，看清影响范围。</h3></div><button class="button" data-twin-catalog>配置依据</button></div><div class="twin-choices"><label><span>已采集房源</span><select aria-label="切换三维运维房源" id="twin-property-select">${this.properties.map(row=>`<option value="${esc(row.id)}" ${row.id===this.propertyId?'selected':''}>${esc(row.name)}${row.roomLabel?' · '+esc(row.roomLabel):' · '+esc(row.bedrooms)+'居'}${row.reviewedRoomDemo?' · 房间三维':row.id===REFERENCE_ID?' · 原运维样板':''}</option>`).join('')}</select></label><label><span>心舍 3.0.1 配置推演</span><select aria-label="智能设备配置方案" id="twin-profile-select">${Object.entries(profiles).map(([key,label])=>`<option value="${key}" ${this.profile===key?'selected':''}>${label}</option>`).join('')}</select></label><label class="twin-track-choice"><input type="checkbox" id="twin-track-preview" ${this.singleTracks?'checked':''} ${this.profile==='base'?'disabled':''}><span>预览每屋单轨窗帘<small>用户规划 · 窗长待确认</small></span></label></div><div class="twin-scenarios"><span>本套异常事件${this.healthDate?' · '+esc(this.healthDate)+' 快照':''}</span><div role="group" aria-label="按本套事件查看配置演示">${scenarios.map(([key,label])=>`<button type="button" data-twin-scenario="${key}" aria-pressed="${key===this.scenario}" class="${key===this.scenario?'selected':''}">${esc(label)}</button>`).join('')}${this.events.length?'':`<small>${this.operationRecord?'本期明细未列出异常事件':'暂无匹配健康明细'}</small>`}</div><label class="twin-label-toggle"><input type="checkbox" id="twin-label-toggle" ${this.showLabels?'checked':''}>设备标记</label></div><p class="twin-version-note"><span class="tag">配置推演</span>当前房源标签：${esc(p.product||'产品版本待核验')}。${esc(config.applicability?.reason||'方案型号与数量需逐套核对实装清单。')}<span>资料依据：配置文档第 6–9 页。</span></p>`;
     this.controls.querySelector('#twin-property-select').onchange=e=>this.onProperty?.(e.target.value);
     this.controls.querySelector('#twin-profile-select').onchange=e=>this.setProfile(e.target.value);
     this.controls.querySelector('#twin-track-preview').onchange=e=>{this.singleTracks=e.target.checked;this.resetDeviceView();this.change();};
@@ -124,12 +130,6 @@ export class TwinWorkspace {
     this.panel.querySelector('[data-twin-export]').onclick=()=>this.onExport?.(this.exportData());
     this.panel.querySelector('[data-twin-source]').onclick=()=>this.onSource?.(this.propertyId);
   }
-  renderEmpty(){
-    const p=this.property,ref=this.coverage?.properties?.find(row=>row.id===p.id);
-    this.empty.innerHTML=`<div class="twin-empty-icon">${icon('panel')}</div><span class="eyebrow">${esc(p.name)}</span><h3>${p.publicFloorplanUrl?'这套房源已有官网户型图':'等待这套房源的真实户型'}</h3><p>${p.publicFloorplanUrl?'可从本套来源资料查看户型和室内照片。设备点位仍需与现场安装清单核对。':'已为本套整理设备配置。取得对应 VR 或户型图后，才能将设备放进实际空间。'}</p><div class="twin-reference-checks"><div><span>公开房源记录</span><strong>已收录</strong></div><div><span>对应户型图</span><strong>${ref?.floorplanCount||0} 张</strong></div><div><span>室内参考照片</span><strong>${Math.max(ref?.interiorPhotoCount||0,p.publicPhotoUrls?.length||0)} 张</strong></div><div><span>VR / 实测尺寸</span><strong>${p.publicVrUrl?'有官网 VR / 尺寸待补':'待补充'}</strong></div></div><p class="twin-empty-foot">${p.areaScope==='listed_bedroom'?'合租单间 · 所属户型 '+esc(p.bedrooms)+'居':esc(p.bedrooms)+' 居'} · ${p.areaScope==='listed_bedroom'?'出租卧室 ':''}${esc(p.area)}㎡ · 设备实装待核验</p><button class="button" data-missing-source>查看本套来源资料</button>${p.publicFloorplanUrl?'<button class="button primary" data-open-plan>打开本套户型与设备</button>':''}`;
-    const openPlan=this.empty.querySelector('[data-open-plan]');if(openPlan)openPlan.onclick=()=>this.onPlan?.(p.id,this.profile);
-    this.empty.querySelector('[data-missing-source]').onclick=()=>this.onSource?.(p.id);
-  }
   selectDevice(id,focus=true,announcement=''){
     const device=(this.result.devices||[]).find(d=>d.id===id);if(!device)return;
     if(!this.matchesDevice(device)){this.deviceFilter='all';this.roomFilter='';this.renderPanel();}
@@ -158,7 +158,7 @@ export class TwinWorkspace {
         areaScope:p.areaScope||null,roomLabel:p.roomLabel||null,product:p.product,sourceUrl:p.sourceUrl},
       ...(evidence?{roomEvidence:evidence}:{}),
       referenceStatus:this.referenceReady?'official_reference_approximation':p.publicFloorplanUrl?'official_floorplan_available':'missing_corresponding_floorplan',
-      configuration:this.configuration,scenario:this.scenario,telemetryConnected:false,
+      configuration:this.configuration,scenario:this.scenario,event:this.selectedEvent||null,telemetryConnected:false,
       deviceStates:(this.result.devices||[]).map(({mesh,position,...device})=>device),source:CONFIG_SOURCE
     };
   }

@@ -3,14 +3,15 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>灵之智能 · 远程运维中心</title>
-  <meta name="description" content="灵之数字员工远程运维演示：北京房源分布、参考图三维重建、设备核验和工单闭环。">
+  <meta name="description" content="北京待租与已入住运维总览、家庭健康和房源地图。">
   <link rel="icon" type="image/png" sizes="736x736" href="./ops/assets/logo-icon-blue.png?v=20261120-blue">
   <link rel="icon" type="image/svg+xml" sizes="any" href="./favicon.svg?v=20261120-blue">
   <link rel="apple-touch-icon" href="./ops/assets/logo-icon-blue.png?v=20261120-blue">
-  <link rel="stylesheet" href="./ops/assets/vendor/maplibre/maplibre-gl.css"><link rel="stylesheet" href="./ops/assets/vendor/leaflet/leaflet.css"><link rel="stylesheet" href="./ops/style.css"><link rel="stylesheet" href="./ops/twin.css"><link rel="stylesheet" href="./ops/monitor-map.css"><link rel="stylesheet" href="./ops/household.css"><link rel="stylesheet" href="./ops/diagnostic-workspace.css"><link rel="stylesheet" href="./ops/reference-gallery.css"><link rel="stylesheet" href="./ops/inventory-explorer.css"><link rel="stylesheet" href="./ops/property-detail.css"><link rel="stylesheet" href="./ops/overview-hierarchy.css">
+  <link rel="stylesheet" href="./ops/assets/vendor/maplibre/maplibre-gl.css"><link rel="stylesheet" href="./ops/assets/vendor/leaflet/leaflet.css"><link rel="stylesheet" href="./ops/style.css"><link rel="stylesheet" href="./ops/twin.css"><link rel="stylesheet" href="./ops/monitor-map.css"><link rel="stylesheet" href="./ops/reference-gallery.css"><link rel="stylesheet" href="./ops/property-detail.css">
   <link rel="stylesheet" href="./ops/listing-plan-viewer.css">
   <link rel="stylesheet" href="./ops/house-pins.css">
   <link rel="stylesheet" href="./ops/rental-monitor.css">
+  <link rel="stylesheet" href="./ops/occupancy-health.css?v=20261124-goals">
   <link rel="stylesheet" href="./ops/official-vr.css">
   <link rel="stylesheet" href="./ops/reviewed-twin.css">
   <link rel="stylesheet" href="./ops/map-listing-search.css">
@@ -21,35 +22,38 @@
 <body class="header-scrolled" data-page="overview" data-scene="city">
   <header class="topbar">
     <a class="brand" id="brand-home" href="#overview" aria-label="灵之运维首页"><img src="./ops/assets/logo-white.png" alt="Z-LINK 自如灵之"></a>
-    <div class="header-actions"><span class="environment"><i></i>交互演示</span><button class="quiet-btn" id="source-btn" data-icon="database">数据来源</button><time id="clock"></time><button class="avatar" aria-label="查看管理责任" id="owner-btn">灵</button></div>
+    <div class="header-actions"><span class="environment"><i></i>本地快照</span><button class="quiet-btn" id="source-btn" data-icon="database">数据来源</button><time id="clock"></time></div>
   </header>
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0" style="position:absolute;pointer-events:none"><defs>
+    <symbol id="geo-icon-community" viewBox="0 0 20 20"><path d="m2 9 6-5 6 5M4 8.5V16h8V8.5M7 16v-4h2v4m3-11 2-1.5L18 8m-2-1v8"/></symbol>
+    <symbol id="geo-icon-stack" viewBox="0 0 20 20"><path d="m2 7 8-4 8 4-8 4-8-4Zm0 4 8 4 8-4M2 15l8 4 8-4"/></symbol>
+  </defs></svg>
   <aside class="nav-rail" id="main-nav" aria-label="主导航">
-    <button class="nav-item active" data-page="overview"><span data-icon="dashboard"></span><span>运维总览</span></button>
-    <button class="nav-item" data-page="household"><span data-icon="shield"></span><span>家庭运行</span></button>
-    <button class="nav-item" data-page="properties"><span data-icon="building"></span><span>房源资产</span></button>
-    <button class="nav-item" data-page="devices"><span data-icon="devices"></span><span>设备监控</span></button>
-    <button class="nav-item" data-page="agents"><span data-icon="agent"></span><span>数字员工</span></button>
-    <button class="nav-item" data-page="tickets"><span data-icon="ticket"></span><span>事件工单</span><b id="nav-ticket-count">0</b></button>
+    <a class="nav-item active" data-page="overview" href="?view=overview#overview"><span data-icon="dashboard"></span><span>运维总览</span></a>
+    <a class="nav-item" data-page="household" href="?view=household#household"><span data-icon="shield"></span><span>家的运维监控</span></a>
+    <a class="nav-item" data-page="anomalies" href="?view=anomalies#anomalies"><span data-icon="layers"></span><span>全量详情检索</span></a>
+    <a class="nav-item" data-page="severe" href="?view=severe#severe"><span data-icon="alert"></span><span>安全监控异常</span></a>
     <div class="nav-bottom"><button class="nav-item" id="nav-data"><span data-icon="layers"></span><span>来源</span></button><span class="version">DEMO 2.0</span></div>
   </aside>
   <main id="app">
-    <section class="page-heading"><div><div class="eyebrow">Z-LINK OPERATIONS</div><h1 id="page-title">运维总览</h1><p id="page-description">一个入口，两个能力：
-让「用得怎么样」看得见，让「怎么办」问得到。</p></div><div class="heading-actions"><span class="city-chip" data-icon="pin">北京</span><button class="button" id="show-apartment-btn" data-icon="cube">望京运维样板</button><button class="button primary" id="tour-btn" data-icon="play">演示异常闭环</button></div></section>
+    <span id="anomalies" hidden></span><span id="household" hidden></span><span id="severe" hidden></span><span id="health-occupied" hidden></span><span id="health-rental" hidden></span>
+    <div id="startup-retry" hidden role="alert">页面组件未能载入。 <button class="button" type="button" onclick="location.reload()">重新加载</button></div>
+    <section class="page-heading"><div><h1 id="page-title">运维总览</h1><p id="page-description">北京待租库存与已入住房源健康</p></div><div class="heading-actions"><span class="city-chip" data-icon="pin">北京</span><button type="button" class="button" id="health-standards-open" popovertarget="health-standards" aria-haspopup="dialog"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 4.5c3-.8 6-.4 9 1.5 3-1.9 6-2.3 9-1.5v14c-3-.8-6-.4-9 1.5-3-1.9-6-2.3-9-1.5zM12 6v14"/></svg>分级标准</button><button type="button" class="button" id="ops-access-button" aria-haspopup="dialog" hidden>运维口令</button><button class="button" id="show-apartment-btn">望京运维样板</button></div></section>
     <section id="overview-page" class="page active">
-      <section id="rental-monitor" aria-label="北京待租房源监控"><p>正在核对待租房源…</p></section>
+      <section id="occupancy-overview" aria-label="北京待租与已入住健康概况"><!--snapshot:occupancy-overview--><div class="health-overview"><section class="health-block"><header><h2>可立即入住（待租中）</h2></header><p class="health-total">312<small> 套房源</small></p></section><section class="health-block"><header><h2>已入住</h2></header><p class="health-total">4,537<small> 套房源</small></p></section></div><!--/snapshot--></section>
       <div class="command-grid">
         <section class="panel map-panel">
-          <div class="panel-heading"><div class="scene-heading-copy"><h2 id="scene-title" tabindex="-1">灵之房源运维监控大盘</h2><p id="scene-subtitle">房源分布 · 演示待办 · 分级跟进</p><button type="button" class="scene-shortcut" id="open-room-directory" aria-controls="room-demo-directory" hidden>三维房源目录<span aria-hidden="true"> ↓</span></button></div><div class="map-heading-controls"><select id="map-inventory-scope" aria-label="地图房源数据范围"><option value="collected" selected>全部采集房源</option><option value="current">本次官网筛选房源</option><option value="rental">待租监控 · 随时入住</option><option value="current-vr">本次有官网 VR</option><option value="beijing">北京目标房源（含留档）</option><option value="model">原三维样板</option><option value="references">20 套三维设备运维</option></select><div class="segmented" id="scene-tabs"><button class="selected" data-scene="city">城市</button><button data-scene="apartment">房源</button></div><button type="button" class="scene-shortcut" id="jump-to-room-devices" aria-controls="twin-panel" hidden>查看设备<span aria-hidden="true"> ↓</span></button></div></div>
+          <div class="panel-heading"><div class="scene-heading-copy"><h2 id="scene-title" tabindex="-1">灵之房源运维监控大盘</h2><p id="scene-subtitle">北京房源分布 · 小区级定位</p><button type="button" class="scene-shortcut" id="open-room-directory" aria-controls="room-demo-directory" hidden>三维房源目录<span aria-hidden="true"> ↓</span></button></div><div class="map-heading-controls"><select id="map-inventory-scope" aria-label="地图房源数据范围"><option value="collected" selected>全部采集房源</option><option value="current">本次官网筛选房源</option><option value="rental">可立即入住（待租中）</option><option value="occupied">已入住（BI 明细）</option><option value="current-vr">本次有官网 VR</option><option value="beijing">北京目标房源（含留档）</option><option value="model">原三维样板</option><option value="references">20 套三维设备运维</option></select><div class="segmented" id="scene-tabs"><button class="selected" data-scene="city">城市</button><button data-scene="apartment">房源</button></div><button type="button" class="scene-shortcut" id="jump-to-room-devices" aria-controls="twin-panel" hidden>查看设备<span aria-hidden="true"> ↓</span></button></div></div>
           <div id="map-listing-search"></div>
           <div class="geo-filters" id="geo-filters" aria-label="地图房源筛选">
             <label><span>区域</span><select id="geo-district-filter" aria-label="按区域筛选地图房源"><option value="">全部区域</option></select></label>
             <label><span>商圈 / 片区</span><select id="geo-business-filter" aria-label="按商圈或片区筛选地图房源"><option value="">全部商圈</option></select></label>
-            <label class="geo-status-field"><span>运维状态</span><select id="geo-status-filter" aria-label="按运维状态筛选地图房源"><option value="all">全部状态</option><option value="pending">全部演示待办</option><option value="p1">P1 优先处理 · 演示</option><option value="p2">P2 关注跟进 · 演示</option><option value="unconnected">暂无演示待办</option></select></label>
+
           </div>
           <div class="scene-toolbar"><div class="scene-breadcrumb" id="scene-breadcrumb"><span>北京</span><span class="crumb-divider">/</span><strong>全部区域</strong></div><div class="scene-tools"><button id="geo-terrain-btn" class="button geo-terrain-button" aria-pressed="false" title="切换地形显示">地形</button><button id="top-view-btn" class="icon-btn" title="切换俯视视角" aria-label="切换俯视视角" data-icon="layers"></button><button id="rotate-btn" class="icon-btn" title="自动旋转" aria-label="自动旋转" data-icon="rotate"></button><button id="reset-camera" class="icon-btn" title="重置视角" aria-label="重置视角" data-icon="reset"></button><button id="fullscreen-btn" class="icon-btn" title="全屏三维场景" aria-label="全屏三维场景" data-icon="expand"></button></div></div>
-          <div id="scene-container"><div id="geo-map-status" class="geo-map-status" role="status" aria-live="polite">正在加载公共地图 · 地形状态待确认</div><div id="scene-loading"><span class="loader"></span><span>构建三维场景</span></div><div id="scene-labels"></div><div id="reviewed-twin-stage" hidden></div><div id="twin-empty" class="twin-empty" hidden></div><div class="scene-orientation"><span>北 N</span><svg viewBox="0 0 36 36"><path d="M18 2 28 30 18 24 8 30Z"/></svg></div></div>
-          <div class="scene-bottom"><div id="scene-legend"><span><i class="legend-dot collected"></i>小区参考</span><span><i class="legend-dot proxy"></i>地铁参考</span><span><i class="legend-dot critical"></i>P1 演示</span><span><i class="legend-dot warning"></i>P2 演示</span></div><span id="scene-footnote">小区 / 地铁参考点 · 非房间精确坐标</span></div>
-          <div class="apartment-actions" id="apartment-actions" hidden><button type="button" class="button" id="apartment-running-btn">家庭运行</button><a id="reviewed-source-vr" class="button" hidden>看官网 VR</a><button class="button" id="reference-btn" data-icon="image">参考图对照</button><button class="button" id="cutaway-btn" data-icon="layers">切换墙体</button><span>拖动旋转 · 滚轮缩放 · 点击设备</span></div>
+          <div id="scene-container"><div id="geo-map-status" class="geo-map-status" role="status" aria-live="polite">正在加载公共地图 · 地形状态待确认</div><div id="scene-loading"><span class="loader"></span><span>构建三维场景</span></div><div id="scene-labels"></div><div id="reviewed-twin-stage" hidden></div><div id="twin-empty" class="home-operation-stage" hidden></div><div class="scene-orientation"><span>北 N</span><svg viewBox="0 0 36 36"><path d="M18 2 28 30 18 24 8 30Z"/></svg></div></div>
+          <div class="scene-bottom"><div id="scene-legend"><span class="geo-key community"><svg aria-hidden="true"><use href="#geo-icon-community"></use></svg>楼盘 / 小区</span><span class="geo-key stack"><svg aria-hidden="true"><use href="#geo-icon-stack"></use></svg>多房源点</span><span class="geo-key"><img src="./ops/assets/logo-icon-blue.png" alt="" width="19" height="19">单套房源</span><span class="geo-key"><b class="geo-key-risk">P3 / P4</b>点内最高风险</span></div><span id="scene-footnote">小区 / 地铁参考点 · 非房间精确坐标</span></div>
+          <div class="apartment-actions" id="apartment-actions" hidden><button type="button" class="button" id="apartment-running-btn">家的运维监控</button><a id="reviewed-source-vr" class="button" hidden>看官网 VR</a><button class="button" id="reference-btn" data-icon="image">参考图对照</button><button class="button" id="cutaway-btn" data-icon="layers">切换墙体</button><span>拖动旋转 · 滚轮缩放 · 点击设备</span></div>
           <div class="scene-detail" id="scene-detail" tabindex="-1" hidden></div>
           <section id="overview-plan-pane" aria-labelledby="overview-plan-title" hidden>
             <div class="overview-plan-heading"><h2 id="overview-plan-title">户型与设备</h2><button type="button" class="button" id="overview-plan-close">收起户型</button></div>
@@ -58,45 +62,55 @@
           <div id="geo-monitor-summary" class="geo-monitor-summary" aria-label="当前地图运维摘要" aria-live="polite"></div>
         </section>
         <aside class="panel geo-panel" aria-labelledby="geo-panel-title">
-          <div class="panel-heading"><div><h2 id="geo-panel-title">房源监控清单</h2><p id="geo-coverage-summary" aria-live="polite">正在读取全部已采集房源。</p></div></div>
+          <section id="rental-monitor" aria-label="北京地图匹配范围"></section>
+          <div class="panel-heading"><div><h2 id="geo-panel-title">楼盘 / 小区</h2><div id="geo-coverage-summary" aria-live="polite">正在读取全部已采集房源。</div></div></div>
           <details id="room-demo-directory" class="room-demo-directory" hidden><summary>20 套三维设备运维</summary><div class="room-demo-rows"></div></details>
           <div id="geo-property-list" class="geo-property-list" aria-label="地图房源清单"><p class="geo-list-empty">房源位置核验中</p></div>
-          <div class="geo-panel-note">蓝色表示已收录；红 / 橙表示演示待办。真实设备状态尚未接入。</div>
+          <div class="geo-panel-note">点击商圈、小区和房源可查看资料与家的运维监控。</div>
         </aside>
       </div>
-      <div id="inventory-return-bar" class="inventory-return-bar" hidden><button type="button" class="button" id="return-to-inventory">返回当前分级台账</button><span>保留所选商圈、小区与居室筛选</span></div>
+      <section id="home-run-panel" class="health-block" aria-label="本套房源运行明细" hidden></section>
       <section id="twin-controls" class="twin-controls" aria-label="三维设备配置与异常演示" hidden></section>
       <aside id="twin-panel" class="panel twin-panel" aria-label="整屋智能状态与配置设备" hidden></aside>
-      <p id="inventory-source-status" class="inventory-source-status" aria-live="polite"><span class="inventory-scope">北京 · 灵之智能筛选结果</span><span class="inventory-source-detail">累计已采集房源 · 最近新增独立展示</span></p>
-      <div class="metrics inventory-metrics inventory-dimensions" aria-label="按房源、商圈或小区查看已采集数据">
-        <button type="button" class="metric" data-inventory-view="properties" aria-controls="overview-inventory"><span class="metric-name">运维中房源<span data-icon="building"></span></span><strong id="metric-properties">—</strong><span class="metric-foot"><span id="metric-properties-note">已采集收录的全部房源 · 按记录去重</span></span><span class="metric-action">查看全部房源</span></button>
-        <button type="button" class="metric" data-inventory-view="businesses" aria-controls="overview-inventory"><span class="metric-name">覆盖商圈<span data-icon="pin"></span></span><strong id="metric-businesses">—</strong><span class="metric-foot"><span id="metric-businesses-note">已确认商圈与待核验房源分别展示</span></span><span class="metric-action">按商圈分级查看</span></button>
-        <button type="button" class="metric" data-inventory-view="communities" aria-controls="overview-inventory"><span class="metric-name">覆盖小区 / 楼盘<span data-icon="layers"></span></span><strong id="metric-communities">—</strong><span class="metric-foot"><span id="metric-communities-note">按行政区与小区名称去重</span></span><span class="metric-action">按小区查看房源</span></button>
-      </div>
-      <section id="bedroom-summary" class="bedroom-summary" aria-label="居室分类" aria-live="polite"><div class="bedroom-stat"><span>1居</span><strong>—</strong></div><div class="bedroom-stat"><span>2居</span><strong>—</strong></div><div class="bedroom-stat"><span>3居及以上</span><strong>—</strong></div><div class="bedroom-stat"><span>合租单间</span><strong>—</strong></div><div class="bedroom-stat"><span>待分类</span><strong>—</strong></div></section>
-      <section id="overview-inventory" aria-label="房源、商圈与小区分级台账"></section>
-      <section id="household-entry" class="house-entry" aria-label="家庭运行入口"></section>
-      <div class="lower-grid">
-        <aside class="panel event-panel"><div class="panel-heading"><div><h2>异常待办 <span class="number-badge" id="event-count">4</span></h2><p>按影响与优先级跟进</p></div><span class="tag amber">演示</span></div><div class="event-filters"><button class="selected" data-event-filter="all">全部</button><button data-event-filter="P1">P1 优先</button><button data-event-filter="P2">P2 关注</button></div><div id="event-list"></div><div class="event-panel-bottom"><span data-icon="shield"></span>操作只作用于本 Demo</div></aside>
-        <section class="panel model-panel"><div class="panel-heading"><div><h2>重点设备型号</h2><p>用户运维快照 · 采样日期未知</p></div><button class="text-btn" data-go="devices">查看全部</button></div><div class="model-table" id="model-summary"></div></section>
-        <section class="panel activity-panel"><div class="panel-heading"><div><h2>数字员工工作动态</h2><p>每一步保留对象、证据和处理结果</p></div><span class="tag blue">演示记录</span></div><div id="activity-feed"></div></section>
-      </div>
     </section>
-    <section id="household-page" class="page"><div id="household-workspace"></div></section>
-    <section id="properties-page" class="page"><div class="panel asset-panel"><div class="asset-toolbar"><label class="search-field"><span data-icon="search"></span><input id="property-search" placeholder="搜索小区、房源、地铁或产品" aria-label="搜索房源"></label><select id="inventory-view" aria-label="房源列表数据范围"><option value="collected" selected>全部采集房源</option><option value="current">本次官网筛选房源</option><option value="rental">待租监控 · 随时入住</option><option value="current-vr">本次有官网 VR</option><option value="beijing">北京目标房源（含留档）</option><option value="model">原三维样板</option><option value="references">20 套三维设备运维</option><option value="imported">本地导入</option></select><select id="district-select" aria-label="筛选区域"><option value="">全部区域</option></select><select id="business-select" aria-label="筛选商圈"><option value="">全部商圈</option></select><select id="bedroom-select" aria-label="筛选居室"><option value="">全部居室</option><option value="1">1居</option><option value="2">2居</option><option value="3+">3居及以上</option><option value="shared">合租单间</option><option value="unknown">待分类</option></select><button class="button" id="crawl-status-btn" data-icon="database">查看采集状态</button><button class="button" id="import-btn" data-icon="upload">导入房源 CSV</button><button class="button" id="export-sample-btn" data-icon="download">下载导入模板</button></div><div class="dataset-banner"><span class="tag blue" id="property-dataset-tag">全部采集房源</span><span id="property-scope">北京 · 灵之智能筛选结果；全部已采集收录房源合并展示。</span></div><div id="inventory-ledger" class="inventory-ledger"></div><section id="collection-leads" class="collection-leads" aria-label="房源补采线索" hidden></section><div id="model-coverage" class="model-coverage" aria-live="polite"></div><p class="small-note" style="padding:0 22px">CSV 导入更新本地房源台账。地图只显示已核验的地理匹配结果；新增地址需核验后布点，三维重建需补齐对应户型、照片和尺寸。</p><div id="property-list"></div><div id="property-pagination" class="property-pagination" aria-label="房源列表分页"></div><input type="file" id="import-file" accept=".csv,text/csv" hidden></div></section>
-    <section id="devices-page" class="page"><section class="panel configuration-intro"><div><p class="eyebrow">DEVICE CONFIGURATION</p><h2>按型号建立配置，按房间追踪状态。</h2><p>心舍3.0.1配置规则已归档；实际设备以逐套安装清单和平台绑定为准。</p></div><div><button class="button primary" id="device-twin-entry">查看三维设备</button><button class="button" id="device-catalog-entry">设备配置目录</button></div></section><div class="dataset-banner"><span class="tag blue">用户提供运维快照</span><span>采样日期未知，范围为截图可见行；不同城市的历史记录不与北京在租房源直接关联。</span></div><section class="panel"><div class="panel-heading"><div><h2>型号在线率</h2><p>仅统计 ≥50 台的型号 · 按在线率升序 · 截图可见 7 行</p></div><span class="tag">非实时数据</span></div><div id="model-full-table" class="table-wrap"></div></section><section class="panel spaced"><div class="panel-heading"><div><h2>长期离线与未上报设备</h2><p>保留原报告描述；“从未上报在线”先核对资产与上报链路</p></div></div><div id="offline-table" class="table-wrap"></div></section></section>
-    <section id="agents-page" class="page">
-      <section class="agent-product-intro" aria-labelledby="agent-product-title">
-        <div class="agent-product-top"><div class="agent-product-copy"><p class="eyebrow">家庭智能运维管家</p><h2 id="agent-product-title">灵之百晓生 · 统一服务入口</h2><p>从查看家庭运行，到理解问题、承接处理，在同一入口持续跟进。</p></div><div class="agent-product-actions"><button type="button" class="button primary" id="agent-home-entry">查看家庭运行</button><button type="button" class="button" id="agent-ask-entry">问灵之百晓生</button></div></div>
-        <ol class="agent-product-steps"><li><span>01</span><strong>智能异常早知道</strong></li><li><span>02</span><strong>运行状态一目了然</strong></li><li><span>03</span><strong>查看证据与影响</strong></li><li><span>04</span><strong>问题持续跟进</strong></li></ol>
-      </section>
-      <div class="agent-roles-heading"><h2>四类岗位协作</h2><p>监控、诊断、调度与经验蒸馏，共同支撑服务过程。</p></div>
-      <div class="agent-grid" id="agent-grid"></div><section class="panel spaced"><div class="panel-heading"><div><h2>专家经验蒸馏</h2><p>将一次处理的证据、判断规则和反例形成可复用技能草案</p></div><span class="tag blue">示范流程</span></div><div class="knowledge-flow"><div><b>01</b><strong>收集证据</strong><p>房源、设备、日志与执行回执</p></div><div><b>02</b><strong>提炼规则</strong><p>判断顺序、适用范围与例外</p></div><div><b>03</b><strong>专家核验</strong><p>确认结论，记录未知事项</p></div><div><b>04</b><strong>独立测试</strong><p>用新案例评估效果并维护版本</p></div></div><div class="knowledge-example"><span data-icon="book"></span><div><strong>同一房源多设备离线</strong><p>先核查共同网关、供电和上报链路，再判断单设备问题。当前为演示技能草案，待专家和独立案例验证。</p></div><button class="button" id="skill-btn">查看技能草案</button></div></section></section>
-    <section id="tickets-page" class="page"><div class="dataset-banner"><span class="tag amber">本地演示工单</span><span>由诊断流程生成，保存在当前浏览器；未向任何真实系统派单。</span></div><section class="panel"><div class="panel-heading"><div><h2>事件工单</h2><p>从异常到复验，每一步都可以追溯</p></div><button class="button" id="reset-demo-btn" data-icon="reset">重置演示</button></div><div id="ticket-list"></div></section></section>
-    <footer class="app-footer"><a href="#overview" class="footer-brand" aria-label="返回灵之首页"><img src="./ops/assets/logo-color.png" alt="Z-LINK 自如灵之"></a><span>房源：公开页面快照 · 运维：用户提供快照 · 遥测与动作：交互演示</span><button class="text-btn" id="footer-source">查看数据口径</button></footer>
+    <section id="household-page" class="page"><div id="monitor-health"><!--snapshot:monitor-health--><p role="status">正在读取北京房源健康数据…</p><!--/snapshot--></div><div id="household-workspace" hidden></div><section id="health-improvement" class="health-block" aria-labelledby="improvement-title" hidden></section><div id="anomaly-ranking"><!--snapshot:anomaly-ranking--><!--/snapshot--></div></section>
+    <section id="anomalies-page" class="page"><div id="home-directory"><!--snapshot:home-directory--><p role="status">正在读取房源与服务管家明细…</p><!--/snapshot--></div></section>
+    <section id="severe-page" class="page"><div id="severe-homes"><!--snapshot:severe-homes--><p role="status">正在读取安全监控异常明细…</p><!--/snapshot--></div></section>
+    <footer class="app-footer"><a href="#overview" class="footer-brand" aria-label="返回灵之首页"><img src="./ops/assets/logo-color.png" alt="Z-LINK 自如灵之"></a><span>房源：公开页面快照 · 运维：用户提供快照 · 遥测与动作：本地快照</span><button class="text-btn" id="footer-source">查看数据口径</button></footer>
   </main>
-  <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
-  <aside id="event-drawer" class="drawer" aria-modal="true" role="dialog" aria-labelledby="drawer-title" hidden><div class="drawer-top"><div><div class="eyebrow">EVENT WORKSPACE</div><h2 id="drawer-title">事件工作台</h2></div><button class="icon-btn close-drawer" aria-label="关闭事件工作台" data-icon="close"></button></div><div id="drawer-body"></div></aside>
+  <section id="health-standards" popover="auto" role="dialog" aria-labelledby="health-standards-title">
+    <header class="standards-heading"><div><h2 id="health-standards-title">家的健康分级标准</h2><p>依据《灵之房源健康度》</p></div><button type="button" popovertarget="health-standards" popovertargetaction="hide" aria-label="关闭分级标准" autofocus>×</button></header>
+    <div class="standards-grid">
+      <article data-level="0"><h3><b aria-hidden="true">✓</b> 健康</h3><p class="grade-summary">设备稳定，可正常使用。</p><h4>关键判定 · 须全部满足</h4><ul><li>无安全事件。</li><li>网关最新快照在线。</li><li>网关累计在线率和房源设备累计在线率均 <strong>≥90%</strong>。</li></ul><footer><h4>人工介入</h4><p>持续监测，无需人工处理。</p></footer></article>
+      <article data-level="1"><h3><b>P1</b> 局部功能异常</h3><p class="grade-summary">网关在线，1–2 个设备异常，仍可正常使用。</p><h4>关键判定</h4><ul><li>满足健康级全部基础条件。</li><li>网关在线时，出现过单台设备连续离线 <strong>&gt;24 小时</strong>。</li><li>近 7 天内，单台设备出现过 <strong>1–2 天</strong>离线。</li></ul><div class="grade-event-links"><h4>相关事件 · 按条件判级</h4><div><button type="button" data-standard-event="lock" aria-controls="standard-event-lock">智能锁离线</button><button type="button" data-standard-event="panel" aria-controls="standard-event-panel">面屏离线</button></div></div><footer><h4>人工介入</h4><p>技术支持远程重启、恢复连接或下发控制。联系管家、用户或维修人员上门确认修复。</p></footer></article>
+      <article data-level="2"><h3><b>P2</b> 房源异常</h3><p class="grade-summary">部分功能受影响，需针对性排查与修复。</p><h4>关键判定</h4><ul><li>存在非安全异常，无安全事件。</li><li>网关累计在线率 <strong>&gt;90%</strong>，其他设备累计在线率 <strong>&lt;90%</strong>。</li><li>智能锁离线 <strong>&gt;48 小时</strong>。</li><li>网关离线 <strong>&gt;48 小时</strong>。</li><li>近 7 天内，同一设备反复离线 <strong>3 次以上</strong>。</li><li>近 7 天内，网关在线时设备连续离线 <strong>&gt;24 小时</strong>。</li></ul><div class="grade-event-links"><h4>相关事件 · 按条件判级</h4><div><button type="button" data-standard-event="lock" aria-controls="standard-event-lock">智能锁离线</button><button type="button" data-standard-event="gateway" aria-controls="standard-event-gateway">网关离线</button><button type="button" data-standard-event="devices" aria-controls="standard-event-devices">其他设备离线</button><button type="button" data-standard-event="panel" aria-controls="standard-event-panel">面屏离线</button></div></div><footer><h4>人工介入</h4><p>优先远程处理。明确城市、项目、责任人和预计完成时间，远程配合修复。</p></footer></article>
+      <article data-level="3"><h3><b>P3</b> 经营风险</h3><p class="grade-summary">非安全异常持续，影响整套房的使用与居住体验。</p><h4>关键判定</h4><ul><li>网关和房源累计在线率均 <strong>&lt;90%</strong>。</li><li>智能锁连续离线 <strong>&gt;72 小时</strong>，影响密码使用。</li><li>网关离线 <strong>&gt;72 小时</strong>。</li><li>待租房空调或灯具持续开启 <strong>≥24 小时</strong>。</li><li>出现非安全类异常监控报警。</li></ul><div class="grade-event-links"><h4>关联异常事件</h4><div><button type="button" data-standard-event="lock" aria-controls="standard-event-lock">智能锁离线</button><button type="button" data-standard-event="gateway" aria-controls="standard-event-gateway">网关离线</button><button type="button" data-standard-event="air" aria-controls="standard-event-air">空调 24 小时未关</button><button type="button" data-standard-event="light" aria-controls="standard-event-light">灯持续开 24 小时</button></div></div><footer><h4>人工介入</h4><p>明确城市、项目、责任人和预计完成时间。优先远程处理，主动派单安排维修人员上门。</p></footer></article>
+      <article data-level="4"><h3><b>P4</b> 安全隐患</h3><p class="grade-summary">安全事件触发，需确认处置闭环。</p><h4>关键判定</h4><ul><li>出现<strong>撬锁、漏水、烟雾、燃气</strong>等安全事件。</li></ul><div class="grade-event-links"><h4>关联异常事件</h4><div><button type="button" data-standard-event="lock-alert" aria-controls="standard-event-lock-alert">撬锁预警</button><button type="button" data-standard-event="water" aria-controls="standard-event-water">漏水预警</button><button type="button" data-standard-event="smoke" aria-controls="standard-event-smoke">烟雾预警</button><button type="button" data-standard-event="gas" aria-controls="standard-event-gas">燃气预警</button></div></div><footer><h4>人工介入</h4><p>通知房源维护人，由技术支持远程恢复连接、重启或下发控制。联系管家、用户或维修人员上门，确认安全事件闭环。</p></footer></article>
+    </div>
+    <section class="standards-events" aria-labelledby="standards-events-heading">
+      <h3 id="standards-events-heading">异常事件与分级</h3>
+      <table aria-label="家的异常事件与对应分级"><thead><tr><th scope="col">异常事件</th><th scope="col">触发条件</th><th scope="col">分级判定</th></tr></thead>
+        <tbody>
+          <tr id="standard-event-lock" tabindex="-1"><th scope="row">智能锁离线</th><td>连续 24 小时以上，或影响入住、开门。</td><td><b data-event-grade="1">P1</b><b data-event-grade="2">P2</b><b data-event-grade="3">P3</b><span>单台设备满足 P1 基础条件且连续离线超过 24 小时，可按 P1 判定。超过 48 小时对应 P2，超过 72 小时且影响密码使用对应 P3。</span></td></tr>
+          <tr id="standard-event-gateway" tabindex="-1"><th scope="row">网关离线</th><td>影响 ≥50% 的设备，或连续离线 72 小时。</td><td><b data-event-grade="2">P2</b><b data-event-grade="3">P3</b><span>离线超过 48 小时对应 P2，超过 72 小时对应 P3。</span></td></tr>
+          <tr id="standard-event-devices" tabindex="-1"><th scope="row">其他设备离线</th><td>≥3 台设备同时离线。</td><td><b data-event-grade="context">综合判定</b><span>结合网关状态、设备在线率、离线时长及功能影响判级。</span></td></tr>
+          <tr id="standard-event-panel" tabindex="-1"><th scope="row">面屏离线</th><td>影响主要控制功能，或连续离线 24 小时。</td><td><b data-event-grade="context">综合判定</b><span>结合单设备离线时长、网关状态及受影响的功能判级。</span></td></tr>
+          <tr id="standard-event-air" tabindex="-1"><th scope="row">空调 24 小时未关</th><td>存在耗电量风险。空置时提醒管家，已入住时提醒租客。</td><td><b data-event-grade="3">P3</b><span>待租房空调持续开启 ≥24 小时对应 P3。</span></td></tr>
+          <tr id="standard-event-light" tabindex="-1"><th scope="row">灯持续开 24 小时</th><td>多房间同时发生、空置房源或连续开启 72 小时。</td><td><b data-event-grade="3">P3</b><span>待租房灯具持续开启 ≥24 小时对应 P3。</span></td></tr>
+          <tr id="standard-event-lock-alert" tabindex="-1"><th scope="row">撬锁预警</th><td>直接进入安全事件，提醒管家／租客。</td><td><b data-event-grade="4">P4</b><span>安全隐患</span></td></tr>
+          <tr id="standard-event-water" tabindex="-1"><th scope="row">漏水预警</th><td>直接进入安全事件，提醒管家／租客。</td><td><b data-event-grade="4">P4</b><span>安全隐患</span></td></tr>
+          <tr id="standard-event-smoke" tabindex="-1"><th scope="row">烟雾预警</th><td>直接进入安全事件，提醒管家／租客。</td><td><b data-event-grade="4">P4</b><span>安全隐患</span></td></tr>
+          <tr id="standard-event-gas" tabindex="-1"><th scope="row">燃气预警</th><td>直接进入安全事件，提醒管家／租客。</td><td><b data-event-grade="4">P4</b><span>安全隐患</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+  </section>
+  <dialog id="ops-access" aria-labelledby="ops-access-title">
+    <form><h2 id="ops-access-title">查看运维明细</h2>
+      <label>运维口令<input name="passphrase" type="password" autocomplete="current-password" required autofocus></label>
+      <p role="status"></p><div><button type="button" class="button" data-access-cancel>取消</button><button class="button" type="submit">解锁明细</button></div>
+    </form>
+  </dialog>
   <dialog id="modal"><div class="modal-top"><h2 id="modal-title"></h2><button class="icon-btn" id="modal-close" aria-label="关闭弹窗" data-icon="close"></button></div><div id="modal-body"></div></dialog>
   <dialog id="official-vr-dialog" aria-labelledby="official-vr-title">
     <div class="official-vr-header"><div><h2 id="official-vr-title">官网实景 VR</h2><p id="official-vr-identity"></p></div>
@@ -105,6 +119,6 @@
     <div id="official-vr-stage"></div>
   </dialog>
   <div id="toast" role="status"></div>
-  <script type="module" src="./ops/app.js"></script>
+  <script type="module" src="./ops/app.js?v=20261124-goals" onerror="document.getElementById('startup-retry').hidden=false"></script>
 </body>
 </html>

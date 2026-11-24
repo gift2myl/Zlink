@@ -1,0 +1,1524 @@
+{
+  "source": "https://github.com/shuijingoj/LianJiaCommunityData/tree/master/community_data_2019.02/bj",
+  "coordinateSystem": "WGS84",
+  "controlCount": 104,
+  "heldOut": 90,
+  "p90Metres": 189,
+  "places": [
+    {
+      "name": "和平新城一期",
+      "district": "东城",
+      "coordinate": [
+        116.4199077,
+        39.9500524
+      ],
+      "communityId": "1111027375215",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "810933944",
+      "business": "和平里"
+    },
+    {
+      "name": "新景家园东区",
+      "district": "东城",
+      "communityId": "1111027380930",
+      "coordinate": [
+        116.4194327,
+        39.8948767
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.432142,
+        39.902354
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027380930.html",
+      "sha256": "2fc6ca4729068c8cc31f4927cba28a2f92f4edaf00bf1033e915c8bee0dc8057",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "前门"
+    },
+    {
+      "name": "朝阳门南小街",
+      "district": "东城",
+      "communityId": "1111027376670",
+      "coordinate": [
+        116.4207511,
+        39.9162577
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.433451,
+        39.923705
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027376670.html",
+      "sha256": "7f652ed995333d685164dcea2c26ee39bdec32fda157aebb39e39b4347c15d1c",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "灯市口"
+    },
+    {
+      "name": "丽新嘉园东区",
+      "district": "丰台",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.33605349999999,
+        39.8727747
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "984691489"
+    },
+    {
+      "name": "六里桥北里",
+      "district": "丰台",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.2974626,
+        39.88700055
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "1030263849",
+      "communityId": "1111027377981",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027377981/",
+      "business": "六里桥"
+    },
+    {
+      "name": "右外西庄",
+      "district": "丰台",
+      "communityId": "1111027382136",
+      "coordinate": [
+        116.3659,
+        39.8658349
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.378613,
+        39.873255
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027382136.html",
+      "sha256": "67e1134722ccf83673bf26630f253470ad3eaa2b966ff0a309f408d56e6c3830",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "白纸坊"
+    },
+    {
+      "name": "威尔夏大道",
+      "district": "丰台",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.31313945,
+        39.8797487
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "908425749",
+      "communityId": "1111027380185",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027380185/",
+      "business": "太平桥"
+    },
+    {
+      "name": "建欣苑四里",
+      "district": "丰台",
+      "communityId": "1111027377493",
+      "coordinate": [
+        116.3898793,
+        39.8391751
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.402495,
+        39.846914
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027377493.html",
+      "sha256": "8db303623e53ca0800ff92fd6b8bf500459b70f75c2169ee5b005b7bac45e5fc",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "大红门"
+    },
+    {
+      "name": "珠江骏景北区",
+      "district": "丰台",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.3894974,
+        39.8536572
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "671792156",
+      "communityId": "1111027382517",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027382517/",
+      "business": "西罗园"
+    },
+    {
+      "name": "芳群园三区",
+      "district": "丰台",
+      "communityId": "1111027374322",
+      "coordinate": [
+        116.4197098,
+        39.8590583
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.432429,
+        39.866533
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027374322.html",
+      "sha256": "5789f2909545d39e2350f91a78fbb0d716ded2ad6484910fb07f994b320c5619",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "木樨园"
+    },
+    {
+      "name": "西罗园四区",
+      "district": "丰台",
+      "communityId": "1111027381044",
+      "coordinate": [
+        116.3851977,
+        39.8612197
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.397839,
+        39.868935
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027381044.html",
+      "sha256": "58b8e77739beb12e15c0a6c2d5a7c533c1310d897df1333d143ecc5b107188d0",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "北京南站"
+    },
+    {
+      "name": "鸿坤理想城八期",
+      "district": "大兴",
+      "communityId": "1111045309547",
+      "coordinate": [
+        116.3365698,
+        39.7846105
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.3493203766722,
+        39.791583496819584
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111045309547.html",
+      "sha256": "293abbf446b6dfd682edf7f3a909b6c2038182b671388eb2f499b108cf478a4f",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "西红门"
+    },
+    {
+      "name": "万科星园",
+      "district": "朝阳",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.4065198,
+        40.0273016
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "440053473",
+      "communityId": "1111027380342",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027380342/",
+      "business": "奥林匹克公园"
+    },
+    {
+      "name": "三丰里小区",
+      "district": "朝阳",
+      "communityId": "1111027379215",
+      "coordinate": [
+        116.4325295,
+        39.9181191
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.445284,
+        39.925343
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027379215.html",
+      "sha256": "34609f007a14fd4c3092e7fd562da49e0cc092b1a42ece1ad972e0f595769351",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "东大桥"
+    },
+    {
+      "name": "东亚望京中心",
+      "district": "朝阳",
+      "communityId": "1111027374045",
+      "coordinate": [
+        116.466363,
+        39.9908704
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.47911596739138,
+        39.99792126286671
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027374045.html",
+      "sha256": "421aa28bf0544bf29c8e7e55a5f0604e79d4a0f5a49326b3a2531cbfcd5481ce",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "大山子"
+    },
+    {
+      "name": "九龙花园",
+      "district": "朝阳",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.46396555000001,
+        39.8930329
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "671624030",
+      "communityId": "1111027377236",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027377236/",
+      "business": "双井"
+    },
+    {
+      "name": "亚运豪庭",
+      "district": "朝阳",
+      "communityId": "1111027382199",
+      "coordinate": [
+        116.417749,
+        39.993536
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.430477,
+        40.001053
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027382199.html",
+      "sha256": "15e183811a673061ea1d5a760a637c16c40a334ac042ae7bb648dd5e22442aac",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "芍药居"
+    },
+    {
+      "name": "京铁瑞园",
+      "district": "朝阳",
+      "communityId": "11000000079183",
+      "coordinate": [
+        116.4785679,
+        39.8998839
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.49118560357358,
+        39.90707138888414
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/11000000079183.html",
+      "sha256": "7bcdeaf632915a810057d597cbd252b19e6abbade99639c9e0f9cbbf7ef9c3c8",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "百子湾"
+    },
+    {
+      "name": "人民日报社家属区",
+      "district": "朝阳",
+      "coordinate": [
+        116.4680097,
+        39.9192078
+      ],
+      "communityId": "1111027379046",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "810950779",
+      "business": "国贸"
+    },
+    {
+      "name": "光熙门北里",
+      "district": "朝阳",
+      "coordinate": [
+        116.4285734,
+        39.964454
+      ],
+      "communityId": "1111027374756",
+      "basis": "catalog",
+      "precision": "osm_residential_reference",
+      "evidence": "严格同名 OSM 住宅范围包络中心；与官网小区位置就近核对。",
+      "referenceId": "810940783",
+      "business": "芍药居"
+    },
+    {
+      "name": "八里庄东里",
+      "district": "朝阳",
+      "communityId": "1111027376017",
+      "coordinate": [
+        116.492227,
+        39.9147775
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.5047,
+        39.922163
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027376017.html",
+      "sha256": "382410762efe198916921723b09d45d0a6f7640f0ecbdf959319b0cb64227224",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "百子湾"
+    },
+    {
+      "name": "力鸿花园",
+      "district": "朝阳",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.435161,
+        39.955577950000006
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "862117225",
+      "communityId": "1111027377871",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027377871/",
+      "business": "国展"
+    },
+    {
+      "name": "劲松南路",
+      "district": "朝阳",
+      "coordinate": [
+        116.4491288,
+        39.880061
+      ],
+      "communityId": "1111027377364",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "740322124",
+      "business": "广渠门"
+    },
+    {
+      "name": "北苑家园茉藜园",
+      "district": "朝阳",
+      "communityId": "1111027376255",
+      "coordinate": [
+        116.4178623,
+        40.0380434
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.430562,
+        40.045549
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027376255.html",
+      "sha256": "c0bad5eb7f355950a141ce942e095c8f8cefdec36ab1472d02ca2a26a2457ada",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "立水桥"
+    },
+    {
+      "name": "十里堡南区",
+      "district": "朝阳",
+      "coordinate": [
+        116.4994914,
+        39.9223918
+      ],
+      "communityId": "1111027379404",
+      "basis": "catalog",
+      "precision": "osm_residential_reference",
+      "evidence": "严格同名 OSM 住宅范围包络中心；与官网小区位置就近核对。",
+      "referenceId": "809365027",
+      "business": "甘露园"
+    },
+    {
+      "name": "南太平庄北巷",
+      "district": "朝阳",
+      "coordinate": [
+        116.528494,
+        39.9171938
+      ],
+      "communityId": "1111027378621",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "810939257",
+      "business": "甘露园"
+    },
+    {
+      "name": "南新园",
+      "district": "朝阳",
+      "communityId": "1111027378657",
+      "coordinate": [
+        116.4712231,
+        39.8688539
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.483923,
+        39.875949
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027378657.html",
+      "sha256": "4891fafc9f2b9518f77d7d0bb730d9272a681247cc1a648f33733f7b9f5f4cc6",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "北工大"
+    },
+    {
+      "name": "城锦苑",
+      "district": "朝阳",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.4174348,
+        40.03513615
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "682594078",
+      "communityId": "1111048258943",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111048258943/",
+      "business": "北苑"
+    },
+    {
+      "name": "延静里",
+      "district": "朝阳",
+      "coordinate": [
+        116.4758347,
+        39.9220568
+      ],
+      "communityId": "1111027381794",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "810937493",
+      "business": "石佛营"
+    },
+    {
+      "name": "延静里中街",
+      "district": "朝阳",
+      "communityId": "1111027381799",
+      "coordinate": [
+        116.4782375,
+        39.9153684
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.490847,
+        39.922547
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027381799.html",
+      "sha256": "f7aca371beabd5dccba284b42d30fe6749fc61ea5eeb1934b1670d948528c779",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "百子湾"
+    },
+    {
+      "name": "慈云寺",
+      "district": "朝阳",
+      "coordinate": [
+        116.4772587,
+        39.9128908
+      ],
+      "communityId": "1111027376675",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "810783990",
+      "business": "百子湾"
+    },
+    {
+      "name": "慧忠里D区",
+      "district": "朝阳",
+      "communityId": "1111027376953",
+      "coordinate": [
+        116.3986614,
+        39.9953953
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.4113176894668,
+        40.00314680079443
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027376953.html",
+      "sha256": "9ad13a020bd196ce7ae766d7bb3fc100d2904ea49e6af9ce03a5d18443875698",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "亚运村"
+    },
+    {
+      "name": "明天第一城7号院",
+      "district": "朝阳",
+      "communityId": "1111027378407",
+      "coordinate": [
+        116.4017883,
+        40.0457899
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.414421,
+        40.053513
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027378407.html",
+      "sha256": "7e2066c3e73a147157ef53a335bf6ff501f91c70e630d480603413eb6003ca37",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "立水桥"
+    },
+    {
+      "name": "晨光家园A区",
+      "district": "朝阳",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.50072555,
+        39.92357115
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "1380631603"
+    },
+    {
+      "name": "松榆西里",
+      "district": "朝阳",
+      "coordinate": [
+        116.4581128,
+        39.870057
+      ],
+      "communityId": "1111027379691",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "809313598",
+      "business": "北工大"
+    },
+    {
+      "name": "松榆里",
+      "district": "朝阳",
+      "coordinate": [
+        116.4627708,
+        39.873382
+      ],
+      "communityId": "1111027379667",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "809336257",
+      "business": "北工大"
+    },
+    {
+      "name": "水碓子社区",
+      "district": "朝阳",
+      "communityId": "1111027379196",
+      "coordinate": [
+        116.4641513,
+        39.9222121
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.476874,
+        39.92923
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027379196.html",
+      "sha256": "c9fd3a0aa08ba73563338846e3fa2be9b52e376640bb2efa7657ca8486ac9807",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "国贸"
+    },
+    {
+      "name": "澳洲康都",
+      "district": "朝阳",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.45415365,
+        40.0119694
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "128829560",
+      "communityId": "1111027375680",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027375680/",
+      "business": "望京"
+    },
+    {
+      "name": "甜水园北里",
+      "district": "朝阳",
+      "coordinate": [
+        116.4759187,
+        39.9271149
+      ],
+      "communityId": "1111027380003",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "810948945",
+      "business": "朝阳公园"
+    },
+    {
+      "name": "白家庄东里",
+      "district": "朝阳",
+      "coordinate": [
+        116.4582347,
+        39.9275024
+      ],
+      "communityId": "1111027375954",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "719500395",
+      "business": "三里屯"
+    },
+    {
+      "name": "砖角楼北里",
+      "district": "朝阳",
+      "communityId": "1111027382523",
+      "coordinate": [
+        116.4241082,
+        39.9552148
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.436842,
+        39.962603
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027382523.html",
+      "sha256": "47cab436b20150c3e7d21b4904081ff50b8ce4adfaeb1136f8745fcbcbb26252",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "和平里"
+    },
+    {
+      "name": "秀水园",
+      "district": "朝阳",
+      "coordinate": [
+        116.4719727,
+        39.9265618
+      ],
+      "communityId": "1111027381209",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "810940083",
+      "business": "朝阳公园"
+    },
+    {
+      "name": "美立方",
+      "district": "朝阳",
+      "coordinate": [
+        116.4121593,
+        40.0374471
+      ],
+      "communityId": "1111027378336",
+      "basis": "catalog",
+      "precision": "osm_residential_reference",
+      "evidence": "严格同名 OSM 住宅范围包络中心；与官网小区位置就近核对。",
+      "referenceId": "810515736",
+      "business": "立水桥"
+    },
+    {
+      "name": "花园闸小区",
+      "district": "朝阳",
+      "communityId": "1111027375533",
+      "coordinate": [
+        116.5421821,
+        39.9103302
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.55452,
+        39.917468
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027375533.html",
+      "sha256": "d69802559327f1c5426b1a298c28906c61ec8a793082379d0635808d64f6acb8",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "定福庄"
+    },
+    {
+      "name": "芳园里",
+      "district": "朝阳",
+      "communityId": "1111027374425",
+      "coordinate": [
+        116.4782592,
+        39.9709995
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.490901,
+        39.97819
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027374425.html",
+      "sha256": "a22a0efeeff5d538046bd2ddaebb203cb4e7b5fbda6eeadd138e43794fb657d2",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "大山子"
+    },
+    {
+      "name": "酒仙桥十一街坊",
+      "district": "朝阳",
+      "coordinate": [
+        116.4832527,
+        39.9592134
+      ],
+      "communityId": "1111027377466",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "810944416",
+      "business": "朝阳公园"
+    },
+    {
+      "name": "酒仙桥路7号院",
+      "district": "朝阳",
+      "coordinate": [
+        116.4825222,
+        39.982406
+      ],
+      "basis": "poi",
+      "precision": "poi_community_estimate",
+      "referenceUrl": "https://www.amap.com/place/B000A84JAN",
+      "sourcePoint": [
+        116.488604,
+        39.983682
+      ],
+      "sourceCRS": "GCJ-02",
+      "evidence": "高德住宅小区地点已核对行政区和名称，换算为 WGS84。"
+    },
+    {
+      "name": "金驹家园",
+      "district": "朝阳",
+      "communityId": "1111046985931",
+      "coordinate": [
+        116.557693,
+        39.96087
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.570102,
+        39.967718
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111046985931.html",
+      "sha256": "9c71e6e955b2611d2d6796ee483950defffb1356a457a8befef582b5ce5886c8",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "东坝"
+    },
+    {
+      "name": "万寿路西街11号院",
+      "district": "海淀",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.2823145,
+        39.91029005
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "1023964526",
+      "communityId": "1111027380460",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027380460/",
+      "business": "万寿路"
+    },
+    {
+      "name": "中关园",
+      "district": "海淀",
+      "coordinate": [
+        116.3125767,
+        39.9896176
+      ],
+      "communityId": "1111027382444",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "810944843",
+      "business": "中关村"
+    },
+    {
+      "name": "信悦华庭",
+      "district": "海淀",
+      "communityId": "1111027381355",
+      "coordinate": [
+        116.3207273,
+        39.8969308
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.333438,
+        39.903958
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027381355.html",
+      "sha256": "e10de24f747014ceb1a9f66dfd46a51534265d6c7d266a1dcc7b5a8cacb684d2",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "军博"
+    },
+    {
+      "name": "八里庄北里",
+      "district": "海淀",
+      "coordinate": [
+        116.2858982,
+        39.92843
+      ],
+      "communityId": "1111027376013",
+      "basis": "catalog",
+      "precision": "osm_residential_reference",
+      "evidence": "严格同名 OSM 住宅范围包络中心；与官网小区位置就近核对。",
+      "referenceId": "768846041",
+      "business": "紫竹桥"
+    },
+    {
+      "name": "友谊社区",
+      "district": "海淀",
+      "communityId": "1111027376068",
+      "coordinate": [
+        116.3091931,
+        39.9655535
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.321832,
+        39.972738
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027376068.html",
+      "sha256": "786870d097fa18f9d0c4e990c8a1845213a218e2777da3cc89c88044a361af34",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "双榆树"
+    },
+    {
+      "name": "塔院小区迎春园",
+      "district": "海淀",
+      "coordinate": [
+        116.35225969999999,
+        39.97667575
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "656808574",
+      "referenceUrl": "https://www.openstreetmap.org/way/656808574",
+      "evidence": "OSM 住宅范围“塔院迎春园”的小区参考点。"
+    },
+    {
+      "name": "复兴路46号院",
+      "district": "海淀",
+      "communityId": "1111027374388",
+      "coordinate": [
+        116.247341,
+        39.9051397
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.259844,
+        39.912414
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027374388.html",
+      "sha256": "b38624e72e606caed04f234595baada9035d582eacf2154b52bc7f69c5cd7111",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "青塔"
+    },
+    {
+      "name": "天兆家园",
+      "district": "海淀",
+      "communityId": "1111027380141",
+      "coordinate": [
+        116.3474663,
+        39.9520314
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.360233,
+        39.959116
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027380141.html",
+      "sha256": "e367d36f907c39e4574f3dc9cdacacd0a032ca76078749d59707808a6bd20cd0",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "皂君庙"
+    },
+    {
+      "name": "学知园",
+      "district": "海淀",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.34913220000001,
+        40.010673600000004
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "1005471147",
+      "communityId": "1111027381481",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027381481/",
+      "business": "学院路"
+    },
+    {
+      "name": "建西苑北里",
+      "district": "海淀",
+      "communityId": "1111027377486",
+      "coordinate": [
+        116.202245,
+        39.9209392
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.214924,
+        39.927902
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027377486.html",
+      "sha256": "c5624fdb570cbc628ab815363e359a9aee6ee9d03990a4d587e230a54abb7161",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "八角"
+    },
+    {
+      "name": "德胜门西大街甲5号",
+      "district": "海淀",
+      "communityId": "1111027373875",
+      "coordinate": [
+        116.358625,
+        39.9458521
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.37135,
+        39.953123
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027373875.html",
+      "sha256": "6e6929de939c06fc384e79a4038cb82bda3fc803e737d8ca9c12a8afe000ffc6",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "德胜"
+    },
+    {
+      "name": "成府路20号院",
+      "district": "海淀",
+      "communityId": "1111027376386",
+      "coordinate": [
+        116.3348324,
+        39.9910732
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.347631,
+        39.998059
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027376386.html",
+      "sha256": "6da650b775b4444be98b48d229f65a554c0b788584974853c75888d900ff521a",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "二里庄"
+    },
+    {
+      "name": "柳林馆",
+      "district": "海淀",
+      "communityId": "1111027377963",
+      "coordinate": [
+        116.3057563,
+        39.9095219
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.318343,
+        39.916755
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027377963.html",
+      "sha256": "d40f207a3e447ca2b40fbbc1a36f65f06b867901854ff5ffa9a8cecc94280760",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "公主坟"
+    },
+    {
+      "name": "烟树园",
+      "district": "海淀",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.2726551,
+        39.96128695
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "159938966",
+      "communityId": "1111027382059",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027382059/",
+      "business": "世纪城"
+    },
+    {
+      "name": "知春里",
+      "district": "海淀",
+      "coordinate": [
+        116.3159531,
+        39.9719573
+      ],
+      "communityId": "1111027382321",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "809031134",
+      "business": "双榆树"
+    },
+    {
+      "name": "紫竹院南路20号院",
+      "district": "海淀",
+      "communityId": "1111027382790",
+      "coordinate": [
+        116.3144251,
+        39.9352759
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.327077,
+        39.942373
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027382790.html",
+      "sha256": "557c40fe7f46168707964369dc764336aa10423c88d4aa1f6ea20f070a7b915f",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "紫竹桥"
+    },
+    {
+      "name": "花园村小区",
+      "district": "海淀",
+      "communityId": "1111027375435",
+      "coordinate": [
+        116.3130493,
+        39.9304369
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.325689,
+        39.937553
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027375435.html",
+      "sha256": "4f519322ca636ab59378263d68b6b24450b4d6336cecb8008ce791af45fb884d",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "紫竹桥"
+    },
+    {
+      "name": "金隅瑞和园",
+      "district": "海淀",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.22773964999999,
+        39.9198215
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "759774671"
+    },
+    {
+      "name": "铭科苑",
+      "district": "海淀",
+      "communityId": "1111027378318",
+      "coordinate": [
+        116.3091758,
+        40.0509278
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.3218,
+        40.058108
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027378318.html",
+      "sha256": "ee3a8a763753ee3a1d758b9f3d2f379abdbc9991e88fb3090b858581c637242e",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "上地"
+    },
+    {
+      "name": "阜北小区",
+      "district": "海淀",
+      "communityId": "1111027374135",
+      "coordinate": [
+        116.3230353,
+        39.9230488
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.335743,
+        39.93005
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027374135.html",
+      "sha256": "40c41bf1de2af10026e226675e46019309c2e65aea3ae79b3dcfd7825229fe49",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "月坛"
+    },
+    {
+      "name": "阜成路8号院",
+      "district": "海淀",
+      "communityId": "1111027374160",
+      "coordinate": [
+        116.3120039,
+        39.9219297
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.32463557553032,
+        39.92906124687924
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027374160.html",
+      "sha256": "7fc38f61436b12e34011bc2599ee3517ab3238dce8795ac9ebac4fe3d3ef086e",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "紫竹桥"
+    },
+    {
+      "name": "十万坪",
+      "district": "石景山",
+      "communityId": "1111027379591",
+      "coordinate": [
+        116.1768358,
+        39.9064001
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.189448,
+        39.913822
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027379591.html",
+      "sha256": "9d030cb3a4d3d32b5a1b55ee06a25743788adb60c39239938bb9cee09fe909e8",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "八角"
+    },
+    {
+      "name": "古城南路",
+      "district": "石景山",
+      "coordinate": [
+        116.1866715,
+        39.908011
+      ],
+      "communityId": "1111027374521",
+      "basis": "catalog",
+      "precision": "osm_residential_reference",
+      "evidence": "严格同名 OSM 住宅范围包络中心；与官网小区位置就近核对。",
+      "referenceId": "810935442",
+      "business": "八角"
+    },
+    {
+      "name": "古城路小区",
+      "district": "石景山",
+      "communityId": "1111027374518",
+      "coordinate": [
+        116.1825288,
+        39.9135576
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.195155,
+        39.920866
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027374518.html",
+      "sha256": "8d46aff0bd009c729c997e7986a344f44eb4ebe80e37df55e61f979bfbda5f91",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "八角"
+    },
+    {
+      "name": "模式口东里",
+      "district": "石景山",
+      "communityId": "1111027378398",
+      "coordinate": [
+        116.1625896,
+        39.9327128
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.17517,
+        39.940346
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027378398.html",
+      "sha256": "7f995027f6975b60ece564fa853b8d3b0f5d583d88a5ffc6b195e570efe9534d",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "古城"
+    },
+    {
+      "name": "海特花园西区",
+      "district": "石景山",
+      "coordinate": [
+        116.1821797,
+        39.9317495
+      ],
+      "communityId": "1111027375313",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "613976943",
+      "business": "杨庄"
+    },
+    {
+      "name": "三里河一区3号院",
+      "district": "西城",
+      "evidence": "同一行政区内唯一同名的 OSM 住宅区范围中心。",
+      "coordinate": [
+        116.3360333,
+        39.91479715
+      ],
+      "basis": "osm",
+      "precision": "osm_residential_reference",
+      "osmFeatureId": "941843722",
+      "communityId": "1111027379430",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027379430/",
+      "business": "月坛"
+    },
+    {
+      "name": "京畿道",
+      "district": "西城",
+      "communityId": "1111027377196",
+      "coordinate": [
+        116.3617353,
+        39.9080074
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.374445,
+        39.915338
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027377196.html",
+      "sha256": "aa7830a10998b3449d7ddb04d62ee3703314bad27f89cb8961a0a0354dad0596",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "西单"
+    },
+    {
+      "name": "北营房东里",
+      "district": "西城",
+      "communityId": "1111027376241",
+      "coordinate": [
+        116.3438902,
+        39.9253292
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.356647,
+        39.932364
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027376241.html",
+      "sha256": "d3fdfc6f14b81a46d7da38d0b689d91f7b6ac91fb17f1729d34c1ac6fe92b9b0",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "月坛"
+    },
+    {
+      "name": "宣武门外东大街",
+      "district": "西城",
+      "communityId": "1111027381288",
+      "coordinate": [
+        116.3684176,
+        39.8981835
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.381105,
+        39.905647
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027381288.html",
+      "sha256": "0c5588497a0bb2e8d223b1b15e5bdd4bb9d45e3488d48d317cff985bff22f0f0",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "牛街"
+    },
+    {
+      "name": "宣武门西大街南区",
+      "district": "西城",
+      "coordinate": [
+        116.3590675,
+        39.8977306
+      ],
+      "communityId": "11000000071267",
+      "basis": "catalog",
+      "precision": "registered_community_estimate",
+      "evidence": "官网百度小区坐标，按附近严格同名 OSM 住宅参考点的偏移中位数估算。",
+      "referenceId": "809470398",
+      "business": "牛街"
+    },
+    {
+      "name": "民康胡同30号院",
+      "district": "西城",
+      "communityId": "1111027378315",
+      "coordinate": [
+        116.3515901,
+        39.9206801
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.364332,
+        39.927822
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027378315.html",
+      "sha256": "3e44a82b4cc3b3311fd15bb27755f39bc84212684ff2f6a1c8a1264c2ec80a3e",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "月坛"
+    },
+    {
+      "name": "汽南小区",
+      "district": "西城",
+      "coordinate": [
+        116.3356259,
+        39.899815
+      ],
+      "basis": "archive",
+      "precision": "archive_community_estimate",
+      "controlCount": 7,
+      "nearestMetres": 834,
+      "dispersionMetres": 77,
+      "evidence": "同区同名链家历史小区坐标，按周边已核验 OSM 小区参考点配准估算。",
+      "communityId": "1111027378900",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1111027378900/",
+      "business": "木樨地"
+    },
+    {
+      "name": "牛街东里一区",
+      "district": "西城",
+      "coordinate": [
+        116.359524,
+        39.8860072
+      ],
+      "basis": "poi",
+      "precision": "poi_community_estimate",
+      "referenceUrl": "https://ditu.amap.com/place/B000A9L15P",
+      "sourcePoint": [
+        116.365723,
+        39.887374
+      ],
+      "sourceCRS": "GCJ-02",
+      "evidence": "高德住宅小区地点已核对行政区和名称，换算为 WGS84。"
+    },
+    {
+      "name": "白云观南里",
+      "district": "西城",
+      "coordinate": [
+        116.3406759,
+        39.897668
+      ],
+      "basis": "archive",
+      "precision": "archive_community_estimate",
+      "controlCount": 7,
+      "nearestMetres": 967,
+      "dispersionMetres": 77,
+      "evidence": "同区同名链家历史小区坐标，按周边已核验 OSM 小区参考点配准估算。",
+      "communityId": "1114120673905699",
+      "referenceUrl": "https://bj.lianjia.com/xiaoqu/1114120673905699/",
+      "business": "木樨地"
+    },
+    {
+      "name": "白广路",
+      "district": "西城",
+      "communityId": "1111027375808",
+      "coordinate": [
+        116.3534017,
+        39.8847255
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.366163,
+        39.891907
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027375808.html",
+      "sha256": "25e088a873529e00bf816ec4813f27293b734bdc26090faddef04ce9a465ea90",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "白纸坊"
+    },
+    {
+      "name": "裕中东里农业局宿舍",
+      "district": "西城",
+      "communityId": "1111027382251",
+      "coordinate": [
+        116.3846864,
+        39.9696487
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.39733513026857,
+        39.97736179023614
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027382251.html",
+      "sha256": "a164d1937d87f17d7ac9be79a79c3837f3c8421e54d6e2122f90b7d49994f698",
+      "evidence": "小区内分区仅定位到所属的裕中东里，参考点来自该小区官网。",
+      "business": "北太平庄",
+      "parentName": "裕中东里",
+      "parentEvidence": "https://www.bjxch.gov.cn/zt/jdjmpdsjd/xxxq/pnidpv949104.html"
+    },
+    {
+      "name": "锦上国际公寓",
+      "district": "西城",
+      "communityId": "1111027377345",
+      "coordinate": [
+        116.345352,
+        39.8919577
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.358128,
+        39.899017
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027377345.html",
+      "sha256": "22a006855d92cec932e71680fce4a50df65f0c47f2db4f737e295f9a98a8c471",
+      "evidence": "自如官网小区页已核对北京、行政区和小区名称，百度坐标换算为 WGS84。",
+      "business": "白纸坊"
+    },
+    {
+      "name": "马连道中里三区",
+      "district": "西城",
+      "communityId": "1111027378335",
+      "coordinate": [
+        116.3241791,
+        39.886506
+      ],
+      "basis": "official",
+      "precision": "official_bd09_community_estimate",
+      "sourcePoint": [
+        116.336918,
+        39.893507
+      ],
+      "sourceCRS": "BD-09",
+      "referenceUrl": "https://www.ziroom.com/xiaoqu/1111027378335.html",
+      "sha256": "0f5880c7309b2cd0a49ebb835ca86f1dfbc09c44aed86eb2cbad020a3a67bccd",
+      "evidence": "小区内分区仅定位到所属的马连道中里，参考点来自该小区官网。",
+      "business": "军博",
+      "parentName": "马连道中里",
+      "parentEvidence": "https://www.bjxch.gov.cn/zt/jdjmpgwjd/gwjdgk/sqjs/sqjs-xxxq/pnidpv949269.html"
+    }
+  ]
+}

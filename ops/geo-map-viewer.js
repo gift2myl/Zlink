@@ -5,6 +5,26 @@ import * as THREE from 'three';
 const OSM_ATTRIBUTION = '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>';
 const TERRAIN_ATTRIBUTION = 'Terrain: <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener">Mapzen / AWS</a> · <a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md" target="_blank" rel="noopener">Contributors</a>';
 const BEIJING = [116.4, 39.91];
+const GROUP_WIDTH = 112;
+const GROUP_HEIGHT = 52;
+const HOUSE_SIZE = 44;
+
+function markerSummary(entry) {
+  const homes = new Set();
+  const buildings = new Map();
+  let highest = 0;
+  function visit(node) {
+    if (node.members) { node.members.forEach(visit); return; }
+    if (!node.property) return;
+    homes.add(node.id);
+    buildings.set(node.communityKey,node.name);
+    const level = node.property.healthRecord?.level;
+    if (level === 3 || level === 4) highest = Math.max(highest, level);
+  }
+  visit(entry);
+  return { count: homes.size, highest, buildings };
+}
+
 const LISTING_ICON = new URL('./assets/logo-icon-blue.png', import.meta.url).href;
 // Keep roads, water and parks distinct while reducing saturation below the listing overlays.
 const MONITOR_RASTER_PAINT = {
@@ -13,7 +33,6 @@ const MONITOR_RASTER_PAINT = {
   'raster-brightness-min': .10,
   'raster-brightness-max': 1
 };
-const propertyColour = entry => entry.priority === 'P1' ? 0xb52f48 : entry.priority === 'P2' ? 0xa15b05 : 0x1375bd;
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 const hasPoint = entry => Array.isArray(entry.position) && entry.position.length === 2 && entry.position.every(Number.isFinite) && entry.position[0] >= 115 && entry.position[0] <= 118 && entry.position[1] >= 39 && entry.position[1] <= 42;
 class InitializationPaused extends Error {}
@@ -87,7 +106,7 @@ function createPropertyLayer(maplibre, entries) {
         const point = maplibre.MercatorCoordinate.fromLngLat(entry.position, 0);
         const placement = new THREE.Group();
         placement.position.set((point.x - origin.x) / metre, 0, (point.y - origin.y) / metre);
-        const colour = propertyColour(entry);
+        const colour = 0x1375bd;
         const height = entry.hasPending ? 95 : 65;
         const stalk = new THREE.Mesh(new THREE.CylinderGeometry(13, 13, height, 12), new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: .8 }));
         stalk.position.y = height / 2;
@@ -400,25 +419,33 @@ export class GeographicMap {
   markerElement(entry) {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'geo-map-marker' + (entry.matchType === 'station_proxy' ? ' is-proxy' : '') + (entry.hasPending ? ' is-alert' : '') + (entry.priority === 'P1' ? ' is-p1' : entry.priority === 'P2' ? ' is-p2' : '') + (entry.id === this.selectedId ? ' is-selected' : '');
+    button.className = 'geo-map-marker' + (entry.matchType === 'station_proxy' ? ' is-proxy' : '') + (entry.id === this.selectedId ? ' is-selected' : '');
     button.dataset.propertyId = entry.id;
     button.dataset.geoLevel = entry.type || 'property';
     button.dataset.positionKind = entry.positionPrecision || entry.geography?.precision || '';
-    const listing=entry.property && !entry.type;
-    const caption=listing ? listingBasics(entry.property).title : entry.name;
-    const face = listing
-      ? '<img class="geo-marker-logo" src="' + escapeHtml(LISTING_ICON) + '" alt="" draggable="false" width="36" height="36">'
-      : '<span class="geo-marker-number">' + escapeHtml(entry.mapIndex) + '</span>';
-    button.innerHTML = face + (entry.priority ? '<span class="geo-marker-priority" aria-hidden="true">' + escapeHtml(entry.priority) + '</span>' : '') + '<span class="geo-marker-caption" aria-hidden="true">' + escapeHtml(caption) + '</span>';
-    const precision = entry.type === 'nearby' ? '相邻分组 · 点击放大，或选择房源'
-      : entry.type === 'business' ? '按商圈聚合 · 已定位小区参考点'
+    const basics = entry.property && !entry.type ? listingBasics(entry.property) : null;
+    const { count, highest, buildings } = markerSummary(entry);
+    const risk = highest ? '<span class="geo-pin-risk" data-risk="' + highest + '">P' + highest + '</span>' : '';
+    const icon = buildings.size > 1 || entry.type === 'point' ? 'stack' : 'community';
+    const firstName = buildings.values().next().value || entry.name;
+    const shortName = firstName + (buildings.size > 1 ? '等' : '');
+    const name = basics ? basics.title : buildings.size > 1 ? firstName + '等 ' + buildings.size + ' 个小区' : firstName;
+    const buildingCount = buildings.size > 1 ? '<small class="geo-pin-buildings">' + buildings.size + '小区</small>' : '';
+    const precision = entry.type === 'nearby' ? '点击查看楼盘或房源'
       : entry.type === 'point' ? '同一参考位置 · 点击选择'
-      : entry.matchType === 'station_proxy' ? '地铁参考点，非房源位置' : '小区级参考位置';
-    const label = entry.type ? (entry.type === 'business' ? entry.district + ' · ' : '') + entry.name + ' · ' + entry.mapIndex + (['point','nearby'].includes(entry.type) ? ' 项' : ' 条房源') : caption;
-    const status = entry.hasPending ? (entry.priority || '') + ' 演示待办 ' + (entry.pendingCount || 1) + ' 条' : '暂无演示待办 · 真实状态未接入';
-    button.setAttribute('aria-label', label + ' · ' + precision + ' · ' + status);
+      : entry.matchType === 'station_proxy' ? '地铁参考点' : '小区参考点';
+    const health = basics ? basics.healthLabel : highest ? '已匹配房源最高 P' + highest : '';
+    const caption = [name, basics ? '' : count + ' 套', health].filter(Boolean).join(' · ');
+    button.innerHTML = (basics
+      ? '<span class="geo-house-face"><img class="geo-marker-logo" src="' + escapeHtml(LISTING_ICON) + '" alt="" draggable="false" width="36" height="36"></span>'
+      : '<span class="geo-pin-face"><span class="geo-pin-icon"><svg aria-hidden="true"><use href="#geo-icon-' + icon + '"></use></svg></span>'
+        + '<span class="geo-pin-copy"><span class="geo-pin-name">' + escapeHtml(shortName) + '</span>'
+        + '<span class="geo-pin-total"><b class="geo-marker-number">' + count + '</b><small>套</small>' + buildingCount + '</span></span></span>')
+      + risk + '<span class="geo-marker-caption" aria-hidden="true">' + escapeHtml(caption) + '</span>';
+    const label = [entry.type === 'community' ? entry.district : '', caption, precision].filter(Boolean).join(' · ');
+    button.setAttribute('aria-label', label);
     button.setAttribute('aria-pressed', String(entry.id === this.selectedId));
-    button.title = label + ' · ' + precision + ' · ' + status;
+    button.title = label;
     button.addEventListener('click', event => { event.stopPropagation(); if (entry.type === 'nearby') this.expandNearby(entry); else this.onProperty?.(entry); });
     return button;
   }
@@ -426,33 +453,30 @@ export class GeographicMap {
   visibleGroups() {
     const pins = this.map.getZoom() >= 14 && this.listingPins.length ? this.listingPins : this.entries;
     const {clientWidth,clientHeight}=this.element;
-    // Choose real anchors and merge markers whose 40px hit areas would overlap at this camera angle.
+    // Reserve the full aggregate footprint so camera movement cannot stack labels on each other.
     const batches = [];
     for (const pin of pins) {
       if (!hasPoint(pin)) continue;
       const px = this.mode === 'webgl' ? this.map.project(pin.position)
         : this.map.latLngToContainerPoint([pin.position[1],pin.position[0]]);
       if (px.x < -48 || px.y < -48 || px.x > clientWidth+48 || px.y > clientHeight+48) continue;
-      const existing = batches.find(g => Math.abs(g.px.x - px.x) < 43 && Math.abs(g.px.y - px.y) < 43);
+      const existing = batches.find(g => Math.abs(g.px.x - px.x) < GROUP_WIDTH + 6 && Math.abs(g.px.y - px.y) < GROUP_HEIGHT + 8);
       if (existing) existing.pins.push(pin);
       else batches.push({px,pins:[pin]});
     }
     return batches.map(({pins:members}) => {
       const anchor = members[0];
       if (members.length === 1) return anchor;
-      const priority = members.some(e => e.priority === 'P1') ? 'P1'
-        : members.some(e => e.priority === 'P2') ? 'P2' : null;
-      const kind = members.every(e => e.type === 'business') ? '商圈' : members.every(e => e.type === 'community') ? '小区' : '位置';
-      return {id:'nearby:' + anchor.id, type:'nearby',name:'相邻' + kind, position:anchor.position,
-        mapIndex:members.length, members, matchType:'community', hasPending:Boolean(priority), priority,
-        pendingCount:members.reduce((sum,entry) => sum + (entry.pendingCount || 0),0)};
+      return {id:'nearby:' + anchor.id, type:'nearby',name:anchor.name, position:anchor.position,
+        mapIndex:members.length, members, matchType:anchor.matchType};
     });
   }
 
   expandNearby(entry) {
     const positions = entry.members.map(e => e.position);
     const zoom = this.map.getZoom();
-    if (zoom >= 16) { this.onNearby?.(entry.members); return; }
+    this.onNearby?.(entry.members);
+    if (zoom >= 16) return;
     const lng = positions.map(p => p[0]), lat = positions.map(p => p[1]);
     const west = Math.min(...lng), east = Math.max(...lng), south = Math.min(...lat), north = Math.max(...lat);
     const maxZoom = Math.min(zoom + 3,17);
@@ -475,7 +499,8 @@ export class GeographicMap {
       if (this.mode === 'webgl') {
         marker = new this.maplibre.Marker({ element, anchor: 'center', pitchAlignment: 'viewport', rotationAlignment: 'viewport' }).setLngLat(entry.position).addTo(this.map);
       } else {
-        const icon = this.leaflet.divIcon({ html: element, className: 'geo-leaflet-marker', iconSize: [40,40], iconAnchor: [20,20] });
+        const [width, height] = entry.type ? [GROUP_WIDTH, GROUP_HEIGHT] : [HOUSE_SIZE, HOUSE_SIZE];
+        const icon = this.leaflet.divIcon({ html: element, className: 'geo-leaflet-marker', iconSize: [width, height], iconAnchor: [width/2, height/2] });
         marker = this.leaflet.marker([entry.position[1], entry.position[0]], { icon, keyboard: false, riseOnHover: true }).addTo(this.map);
       }
       this.markerRecords.push({ marker, element, entry });

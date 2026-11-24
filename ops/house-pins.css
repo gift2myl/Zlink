@@ -75,8 +75,42 @@ a.geo-listing-id:hover{text-decoration:underline;color:#145b8c}
 /* MapLibre positions each marker from the canvas origin. Leaflet positions its outer icon. */
 .maplibregl-marker.geo-map-marker{position:absolute}
 .geo-marker-logo{display:block;width:36px;height:36px;object-fit:contain;pointer-events:none;user-select:none}
-body[data-scene=city] .geo-map-marker[data-geo-level=property]::before{inset:0;border-radius:27%;transform:none}
-body[data-scene=city] .geo-map-marker[data-geo-level=property]:is(:focus-visible,.is-selected){border-radius:27%}
+/* Marker buttons stay centered on their recorded map coordinates in both renderers. */
+body[data-scene=city] .geo-map-marker {width:112px;height:52px;min-width:0;overflow:visible;box-sizing:border-box;
+  border:0;border-radius:10px;background:none;font-family:inherit;color:#17354a;isolation:isolate}
+body[data-scene=city] .geo-map-marker::before,body[data-scene=city] .geo-map-marker::after {content:none}
+body[data-scene=city] .geo-map-marker[data-geo-level=property] {width:44px;height:44px}
+.geo-pin-face,.geo-house-face {box-sizing:border-box;display:flex;align-items:center;border:1.5px solid #91aabd;
+  background:#fff;border-radius:10px;box-shadow:0 2px 3px #18364928,0 4px 11px #18364925;pointer-events:none}
+.geo-pin-face {width:100%;height:44px;text-align:left;gap:5px;padding:4px 6px 4px 5px}
+.geo-house-face {width:39px;height:39px;justify-content:center;background:#fff;border-color:#2771af;border-radius:11px}
+.geo-pin-icon,.geo-key svg {display:grid;place-items:center;flex:none;width:22px;height:25px;border-radius:6px;background:#e8f0f5;color:#345b78}
+.geo-pin-icon svg,.geo-key svg {fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.6}
+.geo-pin-icon svg {width:17px;height:17px}
+.geo-pin-copy {display:grid;gap:2px;min-width:0;width:100%}
+.geo-pin-name {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:550;line-height:1.15;color:#476377}
+.geo-pin-total {display:flex;align-items:baseline;gap:3px;color:#17364e}
+.geo-marker-number {font-size:16px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.geo-pin-total small {font-size:10px;line-height:1;font-weight:500}
+.geo-pin-total .geo-pin-buildings {margin-left:auto;color:#536d7e}
+[data-geo-level=community] .geo-pin-face {border-color:#144c73;background:#1d537a}
+[data-geo-level=community] .geo-pin-icon,.geo-key.community svg {background:#2d658d;color:#fff}
+[data-geo-level=community] .geo-pin-name {color:#e3f0fa}
+[data-geo-level=community] .geo-pin-total {color:#fff}
+.geo-map-marker.is-proxy :is(.geo-pin-face,.geo-house-face),
+.geo-map-marker[data-position-kind=registered_community_estimate] :is(.geo-pin-face,.geo-house-face){border-style:dashed}
+.geo-map-marker[data-position-kind=city_registered_community_estimate] :is(.geo-pin-face,.geo-house-face){border-style:dotted;border-width:2px}
+.geo-pin-risk {position:absolute;right:1px;top:-3px;border:1px solid white;border-radius:5px;background:#a8492e;color:white;
+  padding:1px 4px;font-size:10px;line-height:12px;font-weight:700;font-variant-numeric:tabular-nums;pointer-events:none}
+.geo-pin-risk[data-risk="4"] {background:#902747}
+.geo-map-marker:is(:hover,:focus-visible,.is-selected) {z-index:5}
+.geo-map-marker:is(:hover,:focus-visible,.is-selected) :is(.geo-pin-face,.geo-house-face) {outline:2px solid #246b9c;outline-offset:2px}
+.geo-marker-caption {position:absolute;display:none;top:100%;left:50%;transform:translateX(-50%);width:max-content;max-width:min(260px,65vw);
+  padding:6px 9px;background:#17394e;color:#fff;border-radius:6px;font-size:12px;font-weight:500;line-height:1.45;pointer-events:none}
+.geo-map-marker:is(:hover,:focus-visible,.is-selected) .geo-marker-caption {display:block}
+.geo-key svg {width:20px;height:20px;padding:2px;box-sizing:border-box}
+.geo-key img {border-radius:5px}
+.geo-key-risk {padding:2px 5px;border-radius:4px;background:#f8e6e7;color:#843348;font-size:10px;line-height:1.2}
 [data-geo-list-back]{align-self:flex-start;flex:none;margin:0 14px 4px;padding:4px 9px;min-height:36px;border:0;background:transparent;color:#235f92;font:inherit;font-size:14px;cursor:pointer}
 [data-geo-list-back]::before{content:"‹";margin-right:7px;font-size:18px;line-height:1}
 [data-geo-list-back][hidden]{display:none}
